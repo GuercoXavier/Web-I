@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASUS Republic of Gamers — For Those Who Dare</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+    }
+
+    .cartaz-asus {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      background: #030303;
+    }
+
+    .fundo-dinamico {
+      position: absolute;
+      inset: 0;
+      background-size: 55px 55px, cover;
+      background-color: #0a0202;
+      background-blend-mode: overlay;
+      background-position: center;
+      background-repeat: repeat, no-repeat;
+    }
+
+    .fundo-dinamico::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 70% 20%, rgba(180, 0, 0, 0.2) 0%, #020202 85%),
+                  linear-gradient(115deg, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.65) 40%, rgba(80, 0, 0, 0.3) 80%);
+      pointer-events: none;
+    }
+
+    .emblema-lateral {
+      position: absolute;
+      top: clamp(28px, 5vh, 55px);
+      right: clamp(28px, 4vw, 65px);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .emblema-lateral .linha {
+      width: 1.5px;
+      height: 48px;
+      background: rgba(220, 40, 40, 0.6);
+    }
+
+    .emblema-lateral .texto-vertical {
+      font-family: "Barlow", sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      color: rgba(255, 70, 70, 0.7);
+    }
+
+    .secao-heroi {
+      position: relative;
+      z-index: 25;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .secao-heroi > * {
+      pointer-events: auto;
+    }
+
+    .bloco-texto {
+      padding: clamp(40px, 7vh, 80px) clamp(35px, 5vw, 100px);
+      max-width: 780px;
+      animation: surgir 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+    }
+
+    .pre-titulo {
+      font-family: "Barlow", sans-serif;
+      font-weight: 600;
+      font-size: clamp(13px, 1.4vw, 19px);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #e83a3a;
+      margin-bottom: 12px;
+    }
+
+    .titulo-principal {
+      font-family: "Barlow Condensed", sans-serif;
+      font-weight: 900;
+      font-size: clamp(42px, 8vw, 136px);
+      line-height: 1.0;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: -1.2px;
+      word-break: break-word;
+      max-width: 100%;
+    }
+
+    .titulo-principal span {
+      display: block;
+    }
+
+    .destaque-vermelho {
+      color: #e83a3a;
+      font-style: italic;
+      text-shadow: 0 0 8px rgba(220, 40, 40, 0.5);
+    }
+
+    .frase-ousadia {
+      margin-top: 22px;
+      font-family: "Barlow Condensed", sans-serif;
+      font-weight: 700;
+      font-size: clamp(16px, 2.2vw, 30px);
+      letter-spacing: 1px;
+      color: #e83a3a;
+      text-transform: uppercase;
+      border-left: 4px solid #e83a3a;
+      padding-left: 18px;
+      word-break: break-word;
+    }
+
+    .linha-decorativa {
+      margin: 0 clamp(35px, 5vw, 100px) clamp(20px, 3vh, 32px);
+      width: 160px;
+      height: 2px;
+      background: linear-gradient(90deg, #e83a3a, rgba(200, 40, 40, 0.2));
+    }
+
+    .palco-dispositivos {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 80%;
+      height: 88%;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .aura-vermelha {
+      position: absolute;
+      bottom: -5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 95%;
+      height: 75%;
+      background: radial-gradient(ellipse at 50% 75%, rgba(220, 40, 40, 0.45), rgba(180, 20, 20, 0) 70%);
+      filter: blur(34px);
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .dispositivo-asus {
+      position: absolute;
+      object-fit: contain;
+      filter: drop-shadow(0 30px 35px rgba(0, 0, 0, 0.8));
+      transition: filter 0.2s ease;
+      animation: flutuarGenerico 5.2s ease-in-out infinite;
+    }
+
+    .laptop-rog-1 {
+      width: min(48%, 620px);
+      left: -6%;
+      bottom: 2%;
+      z-index: 2;
+      filter: drop-shadow(-20px 35px 45px rgba(0, 0, 0, 0.85));
+      animation-delay: 0s;
+    }
+
+    .laptop-rog-2 {
+      width: min(40%, 520px);
+      right: 5%;
+      bottom: -3%;
+      z-index: 3;
+      filter: drop-shadow(15px 30px 40px rgba(0, 0, 0, 0.8));
+      animation-delay: 0.5s;
+    }
+
+    .smartphone-rog-1 {
+      width: min(28%, 340px);
+      left: 32%;
+      bottom: 10%;
+      z-index: 10;
+      filter: drop-shadow(0 28px 40px rgba(200, 30, 30, 0.55));
+      animation: flutuarTelefone 5.5s ease-in-out infinite 0.3s;
+    }
+
+    .smartphone-rog-2 {
+      width: min(25%, 300px);
+      right: 15%;
+      bottom: 16%;
+      z-index: 9;
+      filter: drop-shadow(10px 28px 38px rgba(150, 20, 20, 0.65));
+      animation: flutuarTelefone2 5.8s ease-in-out infinite 0.9s;
+    }
+
+    @keyframes flutuarGenerico {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-14px); }
+    }
+
+    @keyframes flutuarTelefone {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(1deg); }
+    }
+
+    @keyframes flutuarTelefone2 {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-18px); }
+    }
+
+    /* Ajustes responsivos (sem descrição ou botão) */
+    @media (max-height: 850px) {
+      .titulo-principal {
+        font-size: clamp(36px, 6vw, 90px);
+      }
+      .bloco-texto {
+        padding: clamp(25px, 4vh, 50px) clamp(35px, 5vw, 100px);
+      }
+      .frase-ousadia {
+        margin-top: 16px;
+      }
+    }
+
+    @media (max-height: 700px) {
+      .titulo-principal {
+        font-size: clamp(30px, 5vw, 70px);
+        line-height: 0.95;
+      }
+      .bloco-texto {
+        padding: 18px clamp(35px, 5vw, 100px);
+      }
+      .frase-ousadia {
+        margin-top: 10px;
+        font-size: clamp(14px, 1.8vw, 22px);
+      }
+      .pre-titulo {
+        margin-bottom: 6px;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .palco-dispositivos { width: 84%; }
+      .laptop-rog-1 { width: 52%; left: -10%; }
+      .laptop-rog-2 { width: 44%; right: 0%; }
+      .smartphone-rog-1 { width: 32%; left: 28%; }
+      .smartphone-rog-2 { width: 28%; right: 8%; }
+    }
+
+    @media (max-width: 820px) {
+      .palco-dispositivos { width: 92%; height: 80%; }
+      .laptop-rog-1 { width: 58%; left: -14%; }
+      .laptop-rog-2 { width: 48%; right: -4%; bottom: 0%; }
+      .smartphone-rog-1 { width: 36%; left: 24%; bottom: 14%; }
+      .smartphone-rog-2 { width: 32%; right: 2%; bottom: 18%; }
+      .bloco-texto { max-width: 90%; padding: 28px 24px; }
+      .titulo-principal { line-height: 1; }
+    }
+
+    @media (max-width: 580px) {
+      .palco-dispositivos { width: 100%; height: 74%; }
+      .laptop-rog-1 { width: 68%; left: -18%; }
+      .laptop-rog-2 { width: 55%; right: -8%; }
+      .smartphone-rog-1 { width: 42%; left: 20%; bottom: 10%; }
+      .smartphone-rog-2 { width: 38%; right: -2%; bottom: 14%; }
+      .frase-ousadia { font-size: 16px; padding-left: 12px; }
+      .titulo-principal { font-size: clamp(32px, 8vw, 60px); }
+    }
+
+    @keyframes surgir {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .bloco-texto { animation: surgir 0.9s forwards; }
+    .palco-dispositivos { animation: surgir 0.9s 0.2s forwards; opacity: 0; animation-fill-mode: forwards; }
+    .linha-decorativa { opacity: 0; animation: surgir 0.7s 0.35s forwards; }
+    .destaque-vermelho { text-shadow: 0 0 5px rgba(230, 50, 50, 0.4); }
+  </style>
+</head>
+<body>
+  <div class="cartaz-asus">
+    <div class="fundo-dinamico"></div>
+
+    <div class="emblema-lateral">
+      <div class="linha"></div>
+      <div class="texto-vertical">#ROG · DARE</div>
+    </div>
+
+    <div class="secao-heroi">
+      <div class="bloco-texto">
+        <div class="pre-titulo"> REPUBLIC OF GAMERS </div>
+        <h1 class="titulo-principal">
+          <span>For those</span>
+          <span class="destaque-vermelho">who dare.</span>
+          <span>Unleash the</span>
+          <span>power.</span>
+        </h1>
+        <div class="frase-ousadia">#FOR THOSE WHO DARE — INNOVATION WITHOUT LIMITS</div>
+      </div>
+      <div class="linha-decorativa"></div>
+    </div>
+
+    <div class="palco-dispositivos">
+      <div class="aura-vermelha"></div>
+      <img class="dispositivo-asus laptop-rog-1" src="../../imagens/poster/asus/h732.png" alt="ASUS ROG Zephyrus G16" />
+      <img class="dispositivo-asus laptop-rog-2" src="../../imagens/poster/asus/h733.png" alt="ASUS ROG Strix G16" />
+      <img class="dispositivo-asus smartphone-rog-1" src="../../imagens/poster/asus/phone 2.png" alt="Asus Zenfone 12 Ultra" />
+      <img class="dispositivo-asus smartphone-rog-2" src="../../imagens/poster/asus/phone.png" alt="ROG Phone 9 Pro" />
+    </div>
+  </div>
+</body>
+</html>
