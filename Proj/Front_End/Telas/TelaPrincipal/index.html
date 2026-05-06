@@ -1,50 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BASGAM Tech</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <!-- ========== CABEÇALHO ========== -->
     <header id="topo">
       <div class="container flex">
-
         <div class="esquerda-header">
           <div class="logo" onclick="ir('home')">
             <span class="logo-icone"
-              ><img src="imagens/colorless.png" alt="B"
+              ><img src="../../imagens/colorless.png" alt="B"
             /></span>
           </div>
           <nav id="menu">
             <a href="javascript:void(0)" onclick="ir('home')">
-              <img src="imagens/icon/home_icon.svg" title="Home" alt="Home" />
+              <img
+                src="../../imagens/icon/home_icon.svg"
+                title="Home"
+                alt="Home"
+              />
             </a>
             <a href="javascript:void(0)" onclick="ir('produtos')">
               <img
-                src="imagens/icon/products_icon.svg"
+                src="../../imagens/icon/products_icon.svg"
                 title="Produtos"
                 alt="Produtos"
               />
             </a>
-            <a href="javascript:void(0)" onclick="ir('sobre')">
-              <img
-                src="imagens/icon/about_icon.svg"
-                title="Sobre"
-                alt="Sobre"
-              />
-            </a>
+
             <a href="javascript:void(0)" onclick="ir('contato')">
               <img
-                src="imagens/icon/contact_icon.svg"
+                src="../../imagens/icon/contact_icon.svg"
                 title="Contacto"
                 alt="Contacto"
               />
             </a>
+            
+            <a href="javascript:void(0)" onclick="ir('sobre')">
+              <img
+                src="../../imagens/icon/about_icon.svg"
+                title="Sobre"
+                alt="Sobre"
+              />
+            </a>
+
           </nav>
         </div>
 
@@ -57,19 +65,27 @@
               onkeyup="buscarProdutos(event)"
             />
             <span class="search-icon" onclick="buscarProdutosPorTexto()"
-              ><img src="imagens/icon/search.svg" alt=""
+              ><img src="../../imagens/icon/search.svg" alt=""
             /></span>
           </div>
           <button class="btn-carrinho" onclick="ir('carrinho')">
             <img
-              src="imagens/icon/cart_icon.svg"
+              src="../../imagens/icon/cart_icon.svg"
               title="Carrinho"
               alt="Carrinho"
             />
             <span id="badge" class="badge oculto">0</span>
           </button>
-            <a href="Telas/TelaLogin/tela_login.html" class="btn-login" target="_blank">
-            <img src="imagens/icon/login-icon.svg" title="Login" alt="Login"/>
+          <a
+            href="Telas/TelaLogin/tela_login.html"
+            class="btn-login"
+            target="_blank"
+          >
+            <img
+              src="../../imagens/icon/login-icon.svg"
+              title="Login"
+              alt="Login"
+            />
           </a>
           <button class="btn-menu" onclick="toggleMenu()">☰</button>
         </div>
@@ -78,38 +94,59 @@
 
     <!-- ========== CONTEÚDO PRINCIPAL ========== -->
     <main>
-
-        <!-- ===== HOME ===== -->
-        <section id="view-home" class="pagina">
-            <div id="sroll-Lateral">
-                <div id="button">
-                    <button id="prev"> <img src="imagens/icon/prev.png" alt="prev"></button>
-                    <div id="scroll-container">
-                        <div class="track">
-                            <iframe src="posters/apple/appleSite.html" class="poster-frame" title="''"></iframe>
-                            <iframe src="posters/samgung/samsungSite.html" class="poster-frame" title="''"></iframe>
-                            <iframe src="posters/asus/Poster.html" class="poster-frame" title="''"></iframe>
-                            <iframe src="posters/diversos/index.html" class="poster-frame" title="''"></iframe>
-                        </div>
-                    </div>
-                    <button id="next"> <img src="imagens/icon/next.png" alt="next"></button>
-                </div>
+      <!-- ===== HOME ===== -->
+      <section id="view-home" class="pagina">
+        <div id="sroll-Lateral">
+          <div id="button">
+            <button id="prev">
+              <img src="../../imagens/icon/prev.png" alt="prev" />
+            </button>
+            <div id="scroll-container">
+              <div class="track">
+                <iframe
+                  src="../../posters/apple/appleSite.html"
+                  class="poster-frame"
+                  title="''"
+                ></iframe>
+                <iframe
+                  src="../../posters/samgung/samsungSite.html"
+                  class="poster-frame"
+                  title="''"
+                ></iframe>
+                <iframe
+                  src="../../posters/asus/Poster.html"
+                  class="poster-frame"
+                  title="''"
+                ></iframe>
+                <iframe
+                  src="../../posters/diversos/index.html"
+                  class="poster-frame"
+                  title="''"
+                ></iframe>
+              </div>
             </div>
+            <button id="next">
+              <img src="../../imagens/icon/next.png" alt="next" />
+            </button>
+          </div>
+        </div>
 
-            <div class="secao">
-                <div class="container">
-                    <h2>Produtos em Destaque</h2>
-                    <div id="grid-destaque" class="grade"></div>
-                    <button class="link-mais" onclick="ir('produtos')">Ver todos os produtos →</button>
-                </div>
-            </div>
+        <div class="secao">
+          <div class="container">
+            <h2>Produtos em Destaque</h2>
+            <div id="grid-destaque" class="grade"></div>
+            <button class="link-mais" onclick="ir('produtos')">
+              Ver todos os produtos →
+            </button>
+          </div>
+        </div>
 
-            <div class="secao alt">
+        <div class="secao alt">
           <div class="container beneficios-container">
             <div class="grade-3 beneficios-grade">
               <div class="card">
                 <span class="icone"
-                  ><img src="imagens/icon/truck.svg" alt=""
+                  ><img src="../../imagens/icon/truck.svg" alt=""
                 /></span>
                 <h3>Entrega Rápida</h3>
                 <p>
@@ -119,7 +156,7 @@
               </div>
               <div class="card">
                 <span class="icone"
-                  ><img src="imagens/icon/shield-fill-check.svg" alt=""
+                  ><img src="../../imagens/icon/shield-fill-check.svg" alt=""
                 /></span>
                 <h3>Qualidade Garantida</h3>
                 <p>
@@ -129,7 +166,7 @@
               </div>
               <div class="card">
                 <span class="icone"
-                  ><img src="imagens/icon/headset.svg" alt=""
+                  ><img src="../../imagens/icon/headset.svg" alt=""
                 /></span>
                 <h3>Suporte Especializado</h3>
                 <p>
@@ -140,518 +177,1233 @@
             </div>
           </div>
         </div>
+      </section>
 
-        </section>
+      <!-- ===== PRODUTOS ===== -->
+      <section id="view-produtos" class="pagina oculta">
+        <div class="produtos-layout">
+          <!-- ── SIDEBAR DE FILTROS ── -->
+          <aside class="sidebar-filtros">
+            <div class="sidebar-header">
+              <h2 class="sidebar-titulo">Produtos</h2>
+              <button class="btn-limpar-filtros" onclick="limparFiltros()">
+                Limpar
+              </button>
+            </div>
 
-        <!-- ===== PRODUTOS ===== -->
-        <section id="view-produtos" class="pagina oculta">
-            <div class="produtos-layout">
+            <!-- ── Filtros Globais ── -->
+            <details class="filtro-grupo" open>
+              <summary class="filtro-grupo-titulo">Filtros Globais</summary>
+              <div class="filtro-corpo">
+                <details class="filtro-sub">
+                  <summary>Marca</summary>
+                  <div class="filtro-opcoes">
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="global"
+                        value="Apple"
+                        onchange="aplicarFiltros()"
+                      />
+                      Apple</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="global"
+                        value="Samsung"
+                        onchange="aplicarFiltros()"
+                      />
+                      Samsung</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="global"
+                        value="Xiaomi"
+                        onchange="aplicarFiltros()"
+                      />
+                      Xiaomi</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="global"
+                        value="Asus"
+                        onchange="aplicarFiltros()"
+                      />
+                      Asus</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="global"
+                        value="Dell"
+                        onchange="aplicarFiltros()"
+                      />
+                      Dell</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="global"
+                        value="Lenovo"
+                        onchange="aplicarFiltros()"
+                      />
+                      Lenovo</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="global"
+                        value="HP"
+                        onchange="aplicarFiltros()"
+                      />
+                      HP</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="global"
+                        value="Tecno"
+                        onchange="aplicarFiltros()"
+                      />
+                      Tecno</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="global"
+                        value="JBL"
+                        onchange="aplicarFiltros()"
+                      />
+                      JBL</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="global"
+                        value="ASUS"
+                        onchange="aplicarFiltros()"
+                      />
+                      ASUS</label
+                    >
+                  </div>
+                </details>
+                <details class="filtro-sub">
+                  <summary>Preço</summary>
+                  <div class="filtro-preco">
+                    <input
+                      type="number"
+                      placeholder="Mín"
+                      class="preco-min"
+                      data-cat="global"
+                      onchange="aplicarFiltros()"
+                    />
+                    <span>–</span>
+                    <input
+                      type="number"
+                      placeholder="Máx"
+                      class="preco-max"
+                      data-cat="global"
+                      onchange="aplicarFiltros()"
+                    />
+                  </div>
+                </details>
+                <label class="filtro-check-label">
+                  <input
+                    type="checkbox"
+                    class="filtro-stock"
+                    data-cat="global"
+                    onchange="aplicarFiltros()"
+                  />
+                  <span>Em Stock</span>
+                </label>
+              </div>
+            </details>
 
-                <!-- ── SIDEBAR DE FILTROS ── -->
-                <aside class="sidebar-filtros">
-                    <div class="sidebar-header">
-                        <h2 class="sidebar-titulo">Produtos</h2>
-                        <button class="btn-limpar-filtros" onclick="limparFiltros()">Limpar</button>
-                    </div>
+            <!-- ── Celulares ── -->
+            <details class="filtro-grupo" id="grupo-celulares">
+              <summary class="filtro-grupo-titulo">Celulares</summary>
+              <div class="filtro-corpo">
+                <details class="filtro-sub">
+                  <summary>Marca</summary>
+                  <div class="filtro-opcoes">
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="celulares"
+                        value="Apple"
+                        onchange="aplicarFiltros()"
+                      />
+                      Apple</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="celulares"
+                        value="Samsung"
+                        onchange="aplicarFiltros()"
+                      />
+                      Samsung</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="celulares"
+                        value="Xiaomi"
+                        onchange="aplicarFiltros()"
+                      />
+                      Xiaomi</label
+                    >
+                    <label
+                      ><input
+                        type="checkbox"
+                        class="filtro-marca"
+                        data-cat="celulares"
+                        value="Tecno"
+                        onchange="aplicarFiltros()"
+                      />
+                      Tecno</label
+                    >
+                  </div>
+                </details>
+                <details class="filtro-sub">
+                  <summary>Preço</summary>
+                  <div class="filtro-preco">
+                    <input
+                      type="number"
+                      placeholder="Mín"
+                      class="preco-min"
+                      data-cat="celulares"
+                      onchange="aplicarFiltros()"
+                    />
+                    <span>–</span>
+                    <input
+                      type="number"
+                      placeholder="Máx"
+                      class="preco-max"
+                      data-cat="celulares"
+                      onchange="aplicarFiltros()"
+                    />
+                  </div>
+                </details>
+                <label class="filtro-check-label">
+                  <input
+                    type="checkbox"
+                    class="filtro-stock"
+                    data-cat="celulares"
+                    onchange="aplicarFiltros()"
+                  />
+                  <span>Em Stock</span>
+                </label>
+              </div>
+            </details>
 
-                    <!-- ── Filtros Globais ── -->
-                    <details class="filtro-grupo" open>
-                        <summary class="filtro-grupo-titulo">Filtros Globais</summary>
-                        <div class="filtro-corpo">
-                            <details class="filtro-sub">
-                                <summary>Marca</summary>
-                                <div class="filtro-opcoes">
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Apple"        onchange="aplicarFiltros()"> Apple</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Samsung"      onchange="aplicarFiltros()"> Samsung</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Xiaomi"       onchange="aplicarFiltros()"> Xiaomi</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Asus"         onchange="aplicarFiltros()"> Asus</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Dell"         onchange="aplicarFiltros()"> Dell</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Lenovo"       onchange="aplicarFiltros()"> Lenovo</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="global" value="HP"           onchange="aplicarFiltros()"> HP</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Tecno"        onchange="aplicarFiltros()"> Tecno</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="global" value="JBL"          onchange="aplicarFiltros()"> JBL</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="global" value="ASUS"         onchange="aplicarFiltros()"> ASUS</label>
-                                </div>
-                            </details>
-                            <details class="filtro-sub">
-                                <summary>Preço</summary>
-                                <div class="filtro-preco">
-                                    <input type="number" placeholder="Mín" class="preco-min" data-cat="global" onchange="aplicarFiltros()">
-                                    <span>–</span>
-                                    <input type="number" placeholder="Máx" class="preco-max" data-cat="global" onchange="aplicarFiltros()">
-                                </div>
-                            </details>
-                            <label class="filtro-check-label">
-                                <input type="checkbox" class="filtro-stock" data-cat="global" onchange="aplicarFiltros()">
-                                <span>Em Stock</span>
-                            </label>
-                        </div>
+            <!-- ── Computadores ── -->
+            <details class="filtro-grupo" id="grupo-computadores">
+              <summary class="filtro-grupo-titulo">Computadores</summary>
+              <div class="filtro-corpo">
+                <!-- Laptop -->
+                <details class="filtro-sub" id="grupo-laptop">
+                  <summary>Laptop</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="laptop"
+                            value="Apple"
+                            onchange="aplicarFiltros()"
+                          />
+                          Apple</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="laptop"
+                            value="Asus"
+                            onchange="aplicarFiltros()"
+                          />
+                          Asus</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="laptop"
+                            value="Samsung"
+                            onchange="aplicarFiltros()"
+                          />
+                          Samsung</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="laptop"
+                            value="Dell"
+                            onchange="aplicarFiltros()"
+                          />
+                          Dell</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="laptop"
+                            value="Lenovo"
+                            onchange="aplicarFiltros()"
+                          />
+                          Lenovo</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="laptop"
+                            value="HP"
+                            onchange="aplicarFiltros()"
+                          />
+                          HP</label
+                        >
+                      </div>
                     </details>
-
-                    <!-- ── Celulares ── -->
-                    <details class="filtro-grupo" id="grupo-celulares">
-                        <summary class="filtro-grupo-titulo">Celulares</summary>
-                        <div class="filtro-corpo">
-                            <details class="filtro-sub">
-                                <summary>Marca</summary>
-                                <div class="filtro-opcoes">
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="celulares" value="Apple"   onchange="aplicarFiltros()"> Apple</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="celulares" value="Samsung" onchange="aplicarFiltros()"> Samsung</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="celulares" value="Xiaomi"  onchange="aplicarFiltros()"> Xiaomi</label>
-                                    <label><input type="checkbox" class="filtro-marca" data-cat="celulares" value="Tecno"   onchange="aplicarFiltros()"> Tecno</label>
-                                </div>
-                            </details>
-                            <details class="filtro-sub">
-                                <summary>Preço</summary>
-                                <div class="filtro-preco">
-                                    <input type="number" placeholder="Mín" class="preco-min" data-cat="celulares" onchange="aplicarFiltros()">
-                                    <span>–</span>
-                                    <input type="number" placeholder="Máx" class="preco-max" data-cat="celulares" onchange="aplicarFiltros()">
-                                </div>
-                            </details>
-                            <label class="filtro-check-label">
-                                <input type="checkbox" class="filtro-stock" data-cat="celulares" onchange="aplicarFiltros()">
-                                <span>Em Stock</span>
-                            </label>
-                        </div>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="laptop"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="laptop"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
                     </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="laptop"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
 
-                    <!-- ── Computadores ── -->
-                    <details class="filtro-grupo" id="grupo-computadores">
-                        <summary class="filtro-grupo-titulo">Computadores</summary>
-                        <div class="filtro-corpo">
-
-                            <!-- Laptop -->
-                            <details class="filtro-sub" id="grupo-laptop">
-                                <summary>Laptop</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="laptop" value="Apple"   onchange="aplicarFiltros()"> Apple</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="laptop" value="Asus"    onchange="aplicarFiltros()"> Asus</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="laptop" value="Samsung" onchange="aplicarFiltros()"> Samsung</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="laptop" value="Dell"    onchange="aplicarFiltros()"> Dell</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="laptop" value="Lenovo"  onchange="aplicarFiltros()"> Lenovo</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="laptop" value="HP"      onchange="aplicarFiltros()"> HP</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="laptop" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="laptop" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="laptop" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                            <!-- Monitor -->
-                            <details class="filtro-sub" id="grupo-monitor">
-                                <summary>Monitor</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="monitor" value="Samsung" onchange="aplicarFiltros()"> Samsung</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="monitor" value="Dell"    onchange="aplicarFiltros()"> Dell</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="monitor" value="HP"      onchange="aplicarFiltros()"> HP</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="monitor" value="Asus"    onchange="aplicarFiltros()"> Asus</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="monitor" value="Apple"   onchange="aplicarFiltros()"> Apple</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="monitor" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="monitor" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="monitor" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                        </div>
+                <!-- Monitor -->
+                <details class="filtro-sub" id="grupo-monitor">
+                  <summary>Monitor</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="monitor"
+                            value="Samsung"
+                            onchange="aplicarFiltros()"
+                          />
+                          Samsung</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="monitor"
+                            value="Dell"
+                            onchange="aplicarFiltros()"
+                          />
+                          Dell</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="monitor"
+                            value="HP"
+                            onchange="aplicarFiltros()"
+                          />
+                          HP</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="monitor"
+                            value="Asus"
+                            onchange="aplicarFiltros()"
+                          />
+                          Asus</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="monitor"
+                            value="Apple"
+                            onchange="aplicarFiltros()"
+                          />
+                          Apple</label
+                        >
+                      </div>
                     </details>
-
-                    <!-- ── Acessórios ── -->
-                    <details class="filtro-grupo" id="grupo-acessorios">
-                        <summary class="filtro-grupo-titulo">Acessórios</summary>
-                        <div class="filtro-corpo">
-
-                            <!-- Fone -->
-                            <details class="filtro-sub">
-                                <summary>Fone</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="fone" value="Apple"   onchange="aplicarFiltros()"> Apple</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="fone" value="Samsung" onchange="aplicarFiltros()"> Samsung</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="fone" value="JBL"     onchange="aplicarFiltros()"> JBL</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="fone" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="fone" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="fone" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                            <!-- Teclado -->
-                            <details class="filtro-sub">
-                                <summary>Teclado</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="teclado" value="Logitech" onchange="aplicarFiltros()"> Logitech</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="teclado" value="Corsair" onchange="aplicarFiltros()"> Corsair</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="teclado" value="Razer"   onchange="aplicarFiltros()"> Razer</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="teclado" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="teclado" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="teclado" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                            <!-- Mouse -->
-                            <details class="filtro-sub">
-                                <summary>Mouse</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="mouse" value="Logitech" onchange="aplicarFiltros()"> Logitech</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="mouse" value="Razer"    onchange="aplicarFiltros()"> Razer</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="mouse" value="Dell"     onchange="aplicarFiltros()"> Dell</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="mouse" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="mouse" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="mouse" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                            <!-- GPU -->
-                            <details class="filtro-sub">
-                                <summary>GPU</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="gpu" value="NVIDIA" onchange="aplicarFiltros()"> NVIDIA</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="gpu" value="AMD"    onchange="aplicarFiltros()"> AMD</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="gpu" value="Intel"  onchange="aplicarFiltros()"> Intel</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="gpu" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="gpu" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="gpu" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                            <!-- Relógio Digital -->
-                            <details class="filtro-sub">
-                                <summary>Relógio Digital</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="relogio" value="Apple"   onchange="aplicarFiltros()"> Apple</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="relogio" value="Samsung" onchange="aplicarFiltros()"> Samsung</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="relogio" value="Xiaomi"  onchange="aplicarFiltros()"> Xiaomi</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="relogio" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="relogio" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="relogio" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                            <!-- Memória RAM -->
-                            <details class="filtro-sub">
-                                <summary>Memória RAM</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="ram" value="Kingston" onchange="aplicarFiltros()"> Kingston</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="ram" value="Corsair"  onchange="aplicarFiltros()"> Corsair</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="ram" value="Crucial"  onchange="aplicarFiltros()"> Crucial</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="ram" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="ram" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="ram" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                            <!-- Cooler -->
-                            <details class="filtro-sub">
-                                <summary>Cooler</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="cooler" value="CoolerMaster" onchange="aplicarFiltros()"> Cooler Master</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="cooler" value="Noctua"       onchange="aplicarFiltros()"> Noctua</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="cooler" value="Corsair"      onchange="aplicarFiltros()"> Corsair</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="cooler" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="cooler" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="cooler" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                            <!-- CPU -->
-                            <details class="filtro-sub">
-                                <summary>CPU</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="cpu" value="Intel" onchange="aplicarFiltros()"> Intel</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="cpu" value="AMD"   onchange="aplicarFiltros()"> AMD</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="cpu" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="cpu" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="cpu" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                            <!-- Placa-mãe -->
-                            <details class="filtro-sub">
-                                <summary>Placa-mãe</summary>
-                                <div class="filtro-corpo filtro-aninhado">
-                                    <details class="filtro-sub">
-                                        <summary>Marca</summary>
-                                        <div class="filtro-opcoes">
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="placamae" value="ASUS"     onchange="aplicarFiltros()"> ASUS</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="placamae" value="MSI"      onchange="aplicarFiltros()"> MSI</label>
-                                            <label><input type="checkbox" class="filtro-marca" data-cat="placamae" value="Gigabyte" onchange="aplicarFiltros()"> Gigabyte</label>
-                                        </div>
-                                    </details>
-                                    <details class="filtro-sub">
-                                        <summary>Preço</summary>
-                                        <div class="filtro-preco">
-                                            <input type="number" placeholder="Mín" class="preco-min" data-cat="placamae" onchange="aplicarFiltros()">
-                                            <span>–</span>
-                                            <input type="number" placeholder="Máx" class="preco-max" data-cat="placamae" onchange="aplicarFiltros()">
-                                        </div>
-                                    </details>
-                                    <label class="filtro-check-label">
-                                        <input type="checkbox" class="filtro-stock" data-cat="placamae" onchange="aplicarFiltros()">
-                                        <span>Em Stock</span>
-                                    </label>
-                                </div>
-                            </details>
-
-                        </div>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="monitor"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="monitor"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
                     </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="monitor"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
+              </div>
+            </details>
 
-                </aside>
-                <!-- ── FIM SIDEBAR ── -->
+            <!-- ── Acessórios ── -->
+            <details class="filtro-grupo" id="grupo-acessorios">
+              <summary class="filtro-grupo-titulo">Acessórios</summary>
+              <div class="filtro-corpo">
+                <!-- Fone -->
+                <details class="filtro-sub">
+                  <summary>Fone</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="fone"
+                            value="Apple"
+                            onchange="aplicarFiltros()"
+                          />
+                          Apple</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="fone"
+                            value="Samsung"
+                            onchange="aplicarFiltros()"
+                          />
+                          Samsung</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="fone"
+                            value="JBL"
+                            onchange="aplicarFiltros()"
+                          />
+                          JBL</label
+                        >
+                      </div>
+                    </details>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="fone"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="fone"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
+                    </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="fone"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
 
-                <!-- ── ÁREA DE PRODUTOS ── -->
-                <div class="produtos-conteudo">
-                    <div class="topo-produtos">
-                        <h1>Todos os Produtos</h1>
-                        <span class="contador-resultados" id="contador-resultados"></span>
-                    </div>
-                    <div id="grade-produtos" class="grade"></div>
-                </div>
+                <!-- Teclado -->
+                <details class="filtro-sub">
+                  <summary>Teclado</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="teclado"
+                            value="Logitech"
+                            onchange="aplicarFiltros()"
+                          />
+                          Logitech</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="teclado"
+                            value="Corsair"
+                            onchange="aplicarFiltros()"
+                          />
+                          Corsair</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="teclado"
+                            value="Razer"
+                            onchange="aplicarFiltros()"
+                          />
+                          Razer</label
+                        >
+                      </div>
+                    </details>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="teclado"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="teclado"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
+                    </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="teclado"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
 
+                <!-- Mouse -->
+                <details class="filtro-sub">
+                  <summary>Mouse</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="mouse"
+                            value="Logitech"
+                            onchange="aplicarFiltros()"
+                          />
+                          Logitech</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="mouse"
+                            value="Razer"
+                            onchange="aplicarFiltros()"
+                          />
+                          Razer</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="mouse"
+                            value="Dell"
+                            onchange="aplicarFiltros()"
+                          />
+                          Dell</label
+                        >
+                      </div>
+                    </details>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="mouse"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="mouse"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
+                    </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="mouse"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
+
+                <!-- GPU -->
+                <details class="filtro-sub">
+                  <summary>GPU</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="gpu"
+                            value="NVIDIA"
+                            onchange="aplicarFiltros()"
+                          />
+                          NVIDIA</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="gpu"
+                            value="AMD"
+                            onchange="aplicarFiltros()"
+                          />
+                          AMD</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="gpu"
+                            value="Intel"
+                            onchange="aplicarFiltros()"
+                          />
+                          Intel</label
+                        >
+                      </div>
+                    </details>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="gpu"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="gpu"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
+                    </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="gpu"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
+
+                <!-- Relógio Digital -->
+                <details class="filtro-sub">
+                  <summary>Relógio Digital</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="relogio"
+                            value="Apple"
+                            onchange="aplicarFiltros()"
+                          />
+                          Apple</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="relogio"
+                            value="Samsung"
+                            onchange="aplicarFiltros()"
+                          />
+                          Samsung</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="relogio"
+                            value="Xiaomi"
+                            onchange="aplicarFiltros()"
+                          />
+                          Xiaomi</label
+                        >
+                      </div>
+                    </details>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="relogio"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="relogio"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
+                    </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="relogio"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
+
+                <!-- Memória RAM -->
+                <details class="filtro-sub">
+                  <summary>Memória RAM</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="ram"
+                            value="Kingston"
+                            onchange="aplicarFiltros()"
+                          />
+                          Kingston</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="ram"
+                            value="Corsair"
+                            onchange="aplicarFiltros()"
+                          />
+                          Corsair</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="ram"
+                            value="Crucial"
+                            onchange="aplicarFiltros()"
+                          />
+                          Crucial</label
+                        >
+                      </div>
+                    </details>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="ram"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="ram"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
+                    </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="ram"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
+
+                <!-- Cooler -->
+                <details class="filtro-sub">
+                  <summary>Cooler</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="cooler"
+                            value="CoolerMaster"
+                            onchange="aplicarFiltros()"
+                          />
+                          Cooler Master</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="cooler"
+                            value="Noctua"
+                            onchange="aplicarFiltros()"
+                          />
+                          Noctua</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="cooler"
+                            value="Corsair"
+                            onchange="aplicarFiltros()"
+                          />
+                          Corsair</label
+                        >
+                      </div>
+                    </details>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="cooler"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="cooler"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
+                    </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="cooler"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
+
+                <!-- CPU -->
+                <details class="filtro-sub">
+                  <summary>CPU</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="cpu"
+                            value="Intel"
+                            onchange="aplicarFiltros()"
+                          />
+                          Intel</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="cpu"
+                            value="AMD"
+                            onchange="aplicarFiltros()"
+                          />
+                          AMD</label
+                        >
+                      </div>
+                    </details>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="cpu"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="cpu"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
+                    </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="cpu"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
+
+                <!-- Placa-mãe -->
+                <details class="filtro-sub">
+                  <summary>Placa-mãe</summary>
+                  <div class="filtro-corpo filtro-aninhado">
+                    <details class="filtro-sub">
+                      <summary>Marca</summary>
+                      <div class="filtro-opcoes">
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="placamae"
+                            value="ASUS"
+                            onchange="aplicarFiltros()"
+                          />
+                          ASUS</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="placamae"
+                            value="MSI"
+                            onchange="aplicarFiltros()"
+                          />
+                          MSI</label
+                        >
+                        <label
+                          ><input
+                            type="checkbox"
+                            class="filtro-marca"
+                            data-cat="placamae"
+                            value="Gigabyte"
+                            onchange="aplicarFiltros()"
+                          />
+                          Gigabyte</label
+                        >
+                      </div>
+                    </details>
+                    <details class="filtro-sub">
+                      <summary>Preço</summary>
+                      <div class="filtro-preco">
+                        <input
+                          type="number"
+                          placeholder="Mín"
+                          class="preco-min"
+                          data-cat="placamae"
+                          onchange="aplicarFiltros()"
+                        />
+                        <span>–</span>
+                        <input
+                          type="number"
+                          placeholder="Máx"
+                          class="preco-max"
+                          data-cat="placamae"
+                          onchange="aplicarFiltros()"
+                        />
+                      </div>
+                    </details>
+                    <label class="filtro-check-label">
+                      <input
+                        type="checkbox"
+                        class="filtro-stock"
+                        data-cat="placamae"
+                        onchange="aplicarFiltros()"
+                      />
+                      <span>Em Stock</span>
+                    </label>
+                  </div>
+                </details>
+              </div>
+            </details>
+          </aside>
+          <!-- ── FIM SIDEBAR ── -->
+
+          <!-- ── ÁREA DE PRODUTOS ── -->
+          <div class="produtos-conteudo">
+            <div class="topo-produtos">
+              <h1>Todos os Produtos</h1>
+              <span class="contador-resultados" id="contador-resultados"></span>
             </div>
-        </section>
+            <div id="grade-produtos" class="grade"></div>
+          </div>
+        </div>
+      </section>
 
-        <!-- ===== DETALHE ===== -->
-        <section id="view-detalhe" class="pagina oculta">
-            <div class="container">
-                <button class="btn-voltar" onclick="ir('produtos')">← Voltar para produtos</button>
-                <div id="detalhe-conteudo" class="detalhe"></div>
+      <!-- ===== DETALHE ===== -->
+      <section id="view-detalhe" class="pagina oculta">
+        <div class="container">
+          <button class="btn-voltar" onclick="ir('produtos')">
+            ← Voltar para produtos
+          </button>
+          <div id="detalhe-conteudo" class="detalhe"></div>
+        </div>
+      </section>
+
+      <!-- ===== CARRINHO ===== -->
+      <section id="view-carrinho" class="pagina oculta">
+        <div class="container">
+          <h1>Carrinho de Compras</h1>
+          <div class="layout-carrinho">
+            <div id="itens-carrinho"></div>
+
+            <aside class="resumo">
+              <h2>Resumo do Pedido</h2>
+              <div class="linha">
+                <span>Subtotal</span><span id="subtotal">R$ 0,00</span>
+              </div>
+              <div class="linha"><span>Frete</span><span>A calcular</span></div>
+              <div class="linha total">
+                <span>Total</span><span id="total">R$ 0,00</span>
+              </div>
+              <button class="btn primario full" onclick="finalizar()">
+                Finalizar Compra 🔒
+              </button>
+              <p class="aviso">Simulação apenas</p>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SOBRE ===== -->
+      <section id="view-sobre" class="pagina oculta">
+        <div class="hero-mini">
+          <div class="container">
+            <h1>Sobre a BASGAM Tech</h1>
+            <p>
+              Fundada com a convicção de que tecnologia premium não precisa
+              estar fora de alcance. Equipamos estudantes, profissionais e
+              criadores com ferramentas confiáveis.
+            </p>
+          </div>
+        </div>
+        <div class="secao">
+          <div class="container">
+            <div class="grade-3">
+              <div class="card">
+                <span class="icone">🎯</span>
+                <h3>Nossa Missão</h3>
+                <p>
+                  Democratizar o acesso a equipamentos de informática de
+                  qualidade, garantindo que todos tenham as ferramentas para
+                  prosperar no mundo digital.
+                </p>
+              </div>
+              <div class="card">
+                <span class="icone">👁️</span>
+                <h3>Nossa Visão</h3>
+                <p>
+                  Ser o varejista de tecnologia mais confiável, reconhecido pela
+                  qualidade, acessibilidade e suporte excepcional ao cliente.
+                </p>
+              </div>
+              <div class="card">
+                <span class="icone">❤️</span>
+                <h3>Nossos Valores</h3>
+                <p>
+                  Confiança, Transparência, Inovação e Sucesso do Cliente são o
+                  núcleo de tudo que fazemos.
+                </p>
+              </div>
             </div>
-        </section>
+          </div>
+        </div>
+      </section>
 
-        <!-- ===== CARRINHO ===== -->
-        <section id="view-carrinho" class="pagina oculta">
-            <div class="container">
-                <h1>Carrinho de Compras</h1>
-                <div class="layout-carrinho">
+      <!-- ===== CONTATO ===== -->
+      <section id="view-contato" class="pagina oculta">
+        <div class="container">
+          <div class="topo-centro">
+            <h1>Entre em Contato</h1>
+            <p>
+              Alguma dúvida sobre produto ou precisa de suporte? Nossa equipe
+              está aqui para ajudar.
+            </p>
+          </div>
+          <div class="layout-contato">
+            <form onsubmit="enviarForm(event)">
+              <div class="campo">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" required placeholder="Seu nome" />
+              </div>
+              <div class="campo">
+                <label for="email">E-mail</label>
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  placeholder="seu@email.com"
+                />
+              </div>
+              <div class="campo">
+                <label for="msg">Mensagem</label>
+                <textarea
+                  id="msg"
+                  rows="5"
+                  required
+                  placeholder="Como podemos ajudar?"
+                ></textarea>
+              </div>
+              <button type="submit" class="btn primario full">
+                Enviar Mensagem
+              </button>
+            </form>
 
-                    <div id="itens-carrinho"></div>
-
-                    <aside class="resumo">
-                        <h2>Resumo do Pedido</h2>
-                        <div class="linha"><span>Subtotal</span><span id="subtotal">R$ 0,00</span></div>
-                        <div class="linha"><span>Frete</span><span>A calcular</span></div>
-                        <div class="linha total"><span>Total</span><span id="total">R$ 0,00</span></div>
-                        <button class="btn primario full" onclick="finalizar()">Finalizar Compra 🔒</button>
-                        <p class="aviso">🛡️ Simulação apenas</p>
-                    </aside>
-
-                </div>
+            <div class="card">
+              <h3>Informações</h3>
+              <ul class="info-lista">
+                <li>
+                  <img src="../../imagens/icon/geo-alt-fill.svg" alt="" /> Av.
+                  do Zimbabwe , 1037 - Maputo
+                </li>
+                <li>
+                  <img src="../../imagens/icon/telephone-fill.svg" alt="" />
+                  (+258) 84 135 4863
+                </li>
+                <li>
+                  <img src="../../imagens/icon/envelope-fill.svg" alt="" />
+                  guercoxavierCEO@basgamtech.com
+                </li>
+              </ul>
+              <h3>Horário</h3>
+              <ul class="horario">
+                <li><span>Seg – Sex</span><strong>9h às 18h</strong></li>
+                <li><span>Sábado</span><strong>10h às 16h</strong></li>
+                <li><span>Domingo</span><strong>Fechado</strong></li>
+              </ul>
             </div>
-        </section>
-
-        <!-- ===== SOBRE ===== -->
-        <section id="view-sobre" class="pagina oculta">
-            <div class="hero-mini">
-                <div class="container">
-                    <h1>Sobre a BASGAM Tech</h1>
-                    <p>Fundada com a convicção de que tecnologia premium não precisa estar fora de alcance. Equipamos estudantes, profissionais e criadores com ferramentas confiáveis.</p>
-                </div>
-            </div>
-            <div class="secao">
-                <div class="container">
-                    <div class="grade-3">
-                        <div class="card">
-                            <span class="icone">🎯</span>
-                            <h3>Nossa Missão</h3>
-                            <p>Democratizar o acesso a equipamentos de informática de qualidade, garantindo que todos tenham as ferramentas para prosperar no mundo digital.</p>
-                        </div>
-                        <div class="card">
-                            <span class="icone">👁️</span>
-                            <h3>Nossa Visão</h3>
-                            <p>Ser o varejista de tecnologia mais confiável, reconhecido pela qualidade, acessibilidade e suporte excepcional ao cliente.</p>
-                        </div>
-                        <div class="card">
-                            <span class="icone">❤️</span>
-                            <h3>Nossos Valores</h3>
-                            <p>Confiança, Transparência, Inovação e Sucesso do Cliente são o núcleo de tudo que fazemos.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== CONTATO ===== -->
-        <section id="view-contato" class="pagina oculta">
-            <div class="container">
-                <div class="topo-centro">
-                    <h1>Entre em Contato</h1>
-                    <p>Alguma dúvida sobre produto ou precisa de suporte? Nossa equipe está aqui para ajudar.</p>
-                </div>
-                <div class="layout-contato">
-
-                    <form onsubmit="enviarForm(event)">
-                        <div class="campo">
-                            <label for="nome">Nome Completo</label>
-                            <input type="text" id="nome" required placeholder="Seu nome">
-                        </div>
-                        <div class="campo">
-                            <label for="email">E-mail</label>
-                            <input type="email" id="email" required placeholder="seu@email.com">
-                        </div>
-                        <div class="campo">
-                            <label for="msg">Mensagem</label>
-                            <textarea id="msg" rows="5" required placeholder="Como podemos ajudar?"></textarea>
-                        </div>
-                        <button type="submit" class="btn primario full">Enviar Mensagem</button>
-                    </form>
-
-                    <div class="card">
-                        <h3>Informações</h3>
-                        <ul class="info-lista">
-                            <li>📍 Rua Tech, 123 – São Paulo, SP</li>
-                            <li>📞 +55 (11) 1234-5678</li>
-                            <li>✉️ suporte@basgamtech.com</li>
-                        </ul>
-                        <h3>Horário</h3>
-                        <ul class="horario">
-                            <li><span>Seg – Sex</span><strong>9h às 18h</strong></li>
-                            <li><span>Sábado</span><strong>10h às 16h</strong></li>
-                            <li><span>Domingo</span><strong>Fechado</strong></li>
-                        </ul>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- ========== RODAPÉ ========== -->
@@ -660,7 +1412,7 @@
         <div class="footer-coluna">
           <div class="footer-logo" onclick="ir('home')">
             <span class="logo-icone"
-              ><img src="imagens/colorless.png" alt=""
+              ><img src="../../imagens/colorless.png" alt=""
             /></span>
             <strong>BASGAM Tech</strong>
           </div>
@@ -669,42 +1421,119 @@
             Qualidade e confiança em cada produto.
           </p>
           <div class="footer-social">
-            <a href="https://www.instagram.com/honkaistarrail/" target="_blank" aria-label="Instagram" rel="noopener"
-              ><img src="imagens/icon/instagram.svg" alt=""/></a>
-            <a rel="noopener" href="https://x.com/honkaistarrail" target="_blank" aria-label="Twitter"
-              ><img src="imagens/icon/twitter-x.svg" alt=""/></a>
-            <a rel="noopener" href="https://www.linkedin.com/company/hoyoverse/" target="_blank" aria-label="LinkedIn"
-              ><img src="imagens/icon/linkedin.svg" alt=""/></a>
+            <a
+              href="https://www.instagram.com/honkaistarrail/"
+              target="_blank"
+              aria-label="Instagram"
+              rel="noopener"
+              ><img src="../../imagens/icon/instagram.svg" alt=""
+            /></a>
+            <a
+              rel="noopener"
+              href="https://x.com/honkaistarrail"
+              target="_blank"
+              aria-label="Twitter"
+              ><img src="../../imagens/icon/twitter-x.svg" alt=""
+            /></a>
+            <a
+              rel="noopener"
+              href="https://www.linkedin.com/company/hoyoverse/"
+              target="_blank"
+              aria-label="LinkedIn"
+              ><img src="../../imagens/icon/linkedin.svg" alt=""
+            /></a>
           </div>
         </div>
 
         <div class="footer-coluna">
           <h3>Navegação</h3>
           <ul>
-            <li><a href="javascript:void(0)" onclick="ir('home')">Início</a></li>
-            <li><a href="javascript:void(0)" onclick="ir('produtos')">Produtos</a></li>
-            <li><a href="javascript:void(0)" onclick="ir('sobre')">Sobre</a></li>
-            <li><a href="javascript:void(0)" onclick="ir('contato')">Contato</a></li>
+            <li>
+              <a href="javascript:void(0)" onclick="ir('home')">Início</a>
+            </li>
+            <li>
+              <a href="javascript:void(0)" onclick="ir('produtos')">Produtos</a>
+            </li>
+            <li>
+              <a href="javascript:void(0)" onclick="ir('sobre')">Sobre</a>
+            </li>
+            <li>
+              <a href="javascript:void(0)" onclick="ir('contato')">Contato</a>
+            </li>
           </ul>
         </div>
 
         <div class="footer-coluna">
           <h3>Categorias</h3>
           <ul>
-            <li><a href="javascript:void(0)" onclick="filtrar('celulares'); ir('produtos');">Celulares</a></li>
-            <li><a href="javascript:void(0)" onclick="filtrar('laptop'); ir('produtos');">Laptops</a></li>
-            <li><a href="javascript:void(0)" onclick="filtrar('monitor'); ir('produtos');">Monitores</a></li>
-            <li><a href="javascript:void(0)" onclick="filtrar('gpu'); ir('produtos');">GPUs</a></li>
-            <li><a href="javascript:void(0)" onclick="filtrar('cpu'); ir('produtos');">CPUs</a></li>
+            <li>
+              <a
+                href="javascript:void(0)"
+                onclick="
+                  filtrar('celulares');
+                  ir('produtos');
+                "
+                >Celulares</a
+              >
+            </li>
+            <li>
+              <a
+                href="javascript:void(0)"
+                onclick="
+                  filtrar('laptop');
+                  ir('produtos');
+                "
+                >Laptops</a
+              >
+            </li>
+            <li>
+              <a
+                href="javascript:void(0)"
+                onclick="
+                  filtrar('monitor');
+                  ir('produtos');
+                "
+                >Monitores</a
+              >
+            </li>
+            <li>
+              <a
+                href="javascript:void(0)"
+                onclick="
+                  filtrar('gpu');
+                  ir('produtos');
+                "
+                >GPUs</a
+              >
+            </li>
+            <li>
+              <a
+                href="javascript:void(0)"
+                onclick="
+                  filtrar('cpu');
+                  ir('produtos');
+                "
+                >CPUs</a
+              >
+            </li>
           </ul>
         </div>
 
         <div class="footer-coluna">
           <h3>Contato</h3>
           <ul class="footer-contato">
-            <li><img src="imagens/icon/geo-alt-fill.svg" alt="" /> Av. do Zimbabwe , 1037 - Maputo</li>
-            <li><img src="imagens/icon/telephone-fill.svg" alt="" /> (+258) 84 135 4863</li>
-            <li><img src="imagens/icon/envelope-fill.svg" alt="" /> guercoxavierCEO@basgamtech.com</li>
+            <li>
+              <img src="../../imagens/icon/geo-alt-fill.svg" alt="" /> Av. do
+              Zimbabwe , 1037 - Maputo
+            </li>
+            <li>
+              <img src="../../imagens/icon/telephone-fill.svg" alt="" /> (+258)
+              84 135 4863
+            </li>
+            <li>
+              <img src="../../imagens/icon/envelope-fill.svg" alt="" />
+              guercoxavierCEO@basgamtech.com
+            </li>
           </ul>
           <div class="footer-newsletter">
             <div class="newsletter-input">
@@ -716,11 +1545,14 @@
       </div>
       <div class="footer-bottom">
         <div class="container">
-          <p>© <span id="anoFooter"></span> BASGAM Tech. Todos os direitos reservados.</p>
+          <p>
+            © <span id="anoFooter"></span> BASGAM Tech. Todos os direitos
+            reservados.
+          </p>
         </div>
       </div>
     </footer>
     <script src="app.js"></script>
-    <script src="posters/posters.js" defer></script>
-</body>
+    <script src="../../posters/posters.js" defer></script>
+  </body>
 </html>
