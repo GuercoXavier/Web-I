@@ -1,0 +1,519 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ===================== FUNDO ESCURO COM BOLAS ===================== */
+
+body {
+  min-height: 100vh;
+  background: #1a1e24;
+  overflow: hidden;
+}
+
+/* ================= SCENE ================= */
+.scene {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* ================= SPHERES ================= */
+.sphere {
+  position: absolute;
+  border-radius: 50%;
+  animation: float ease-in-out infinite;
+  filter: blur(0.3px); /* leve suavização */
+  z-index: 1;
+}
+
+/* GRANDE topo */
+.s1 {
+  width: 180px; height: 180px;
+  top: 10px; left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle at 35% 30%, #c0c6c8, #5a6264 45%, #2e3436 75%);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.8),
+    inset 0 4px 12px rgba(255,255,255,0.25);
+  animation-duration: 10s;
+  z-index: 6;
+}
+
+/* GRANDE esquerda */
+.s2 {
+  width: 210px; height: 210px;
+  bottom: -20px; left: 20px;
+  background: radial-gradient(circle at 38% 28%, #d0d6d8, #707880 40%, #363c40 70%);
+  box-shadow:
+    0 30px 90px rgba(0,0,0,0.85),
+    inset 0 5px 14px rgba(255,255,255,0.2);
+  animation-duration: 12s;
+  animation-delay: -3s;
+  z-index: 8;
+}
+
+/* MEDIA direita */
+.s3 {
+  width: 150px; height: 150px;
+  bottom: 40px; right: 120px;
+  background: radial-gradient(circle at 36% 28%, #9aa0a2, #484e52 45%, #252a2c 75%);
+  box-shadow:
+    0 20px 70px rgba(0,0,0,0.7),
+    inset 0 3px 10px rgba(255,255,255,0.18);
+  animation-duration: 9s;
+  animation-delay: -2s;
+  z-index: 7;
+}
+
+/* PEQUENA topo esquerda */
+.s4 {
+  width: 80px; height: 80px;
+  top: 60px; left: 60px;
+  background: radial-gradient(circle at 35% 30%, #e0e6e8, #7a8284 50%, #3a4042);
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.6),
+    inset 0 2px 6px rgba(255,255,255,0.3);
+  animation-duration: 7s;
+  animation-delay: -4s;
+}
+
+/* DESTAQUE branca */
+.s5 {
+  width: 120px;
+  height: 120px;
+
+  position: fixed; /* importante para não depender do scene */
+
+  top: calc(50% - 270px - 60px); /* 60px acima do card */
+  right: 80px;
+  background: radial-gradient(circle at 38% 28%, #ffffff, #d0d4d4 40%, #909698 70%);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.6),
+    inset 0 3px 10px rgba(255,255,255,0.6);
+  animation-duration: 11s;
+  animation-delay: -5s;
+  z-index: 12;
+}
+
+/* MINI detalhe */
+.s6 {
+  width: 45px; height: 45px;
+  top: 220px; right: 20px;
+  background: radial-gradient(circle at 35% 30%, #d0d4d4, #848a8c 50%, #404648);
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.5),
+    inset 0 1px 4px rgba(255,255,255,0.3);
+  animation-duration: 6s;
+  animation-delay: -2s;
+}
+
+/* ================= ANIMAÇÃO ================= */
+@keyframes float {
+  0%   { transform: translateY(0px) scale(1); }
+  50%  { transform: translateY(-20px) scale(1.03); }
+  100% { transform: translateY(0px) scale(1); }
+}
+/* ===================== CONTAINER GLASS ===================== */
+
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 860px;
+  height: 540px;
+  z-index: 10;
+
+  /* USANDO O ESTILO DO GLASS-CARD */
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(9px);
+
+  box-shadow:
+    0 10px 60px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+
+  overflow: hidden;
+
+  z-index: 10;
+}
+
+/* Reflexo de luz no topo */
+.container::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.35) 30%,
+    rgba(255,255,255,0.55) 50%,
+    rgba(255,255,255,0.35) 70%,
+    transparent 100%
+  );
+  z-index: 10;
+}
+
+/* ===================== FORM BOX ===================== */
+
+.form-box {
+  position: absolute;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  color: #e0e4e8;
+  text-align: center;
+  padding: 40px 36px;
+  z-index: 1;
+  transition: .6s ease-in-out 1.2s, visibility 0s 1s;
+}
+
+.container.active .form-box {
+  right: 50%;
+}
+.container.active .form-box.login {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: .4s ease;
+}
+.form-box.register {
+  visibility: hidden;
+}
+
+.container.active .form-box.register {
+  visibility: visible;
+}
+
+form {
+  width: 100%;
+}
+
+.form-box h1 {
+  font-size: 30px;
+  font-weight: 600;
+  color: #f0f2f4;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+}
+
+/* ===================== INPUTS ===================== */
+
+.input-box {
+  position: relative;
+  margin: 20px 0;
+}
+
+.input-box input {
+  width: 100%;
+  padding: 12px 46px 12px 18px;
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  outline: none;
+  font-size: 14px;
+  color: #e8ecf0;
+  font-weight: 400;
+  transition: .3s;
+}
+
+.input-box input::placeholder {
+  color: rgba(200, 210, 220, 0.55);
+}
+
+.input-box input:focus {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 0 0 3px rgba(180, 190, 200, 0.15);
+}
+
+.input-box i {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: rgba(200, 210, 220, 0.6);
+}
+
+/* ===================== LINKS ===================== */
+
+.forget-link {
+  margin: -12px 0 14px;
+  text-align: right;
+}
+
+.forget-link a {
+  font-size: 12.5px;
+  color: rgba(200, 212, 222, 0.7);
+  text-decoration: none;
+  transition: .2s;
+}
+
+.forget-link a:hover {
+  color: #cfd6dc;
+}
+
+/* ===================== BOTÃO PRINCIPAL ===================== */
+
+.btn {
+  width: 100%;
+  height: 46px;
+  background: rgba(108, 118, 126, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  cursor: pointer;
+  font-size: 14px;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: .4px;
+  transition: .3s;
+}
+
+.btn:hover {
+  background: rgba(130, 140, 150, 0.7);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.container p {
+  font-size: 13px;
+  margin: 14px 0;
+  color: rgba(180, 190, 200, 0.65);
+}
+
+/* ===================== REDES SOCIAIS ===================== */
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.social-icons a {
+  display: inline-flex;
+  padding: 9px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  font-size: 17px;
+  color: rgba(210, 220, 230, 0.8);
+  text-decoration: none;
+  transition: .3s;
+}
+
+.social-icons a:hover {
+  background: rgba(180, 190, 200, 0.25);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+/* ===================== TOGGLE BOX ===================== */
+
+.toggle-box {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* O painel deslizante — glass mais denso e escuro */
+.toggle-box::before {
+  content: '';
+  position: absolute;
+  left: -250%;
+  width: 300%;
+  height: 100%;
+
+  background: rgba(40, 46, 54, 0.72);
+  backdrop-filter: blur(30px) saturate(1.5);
+  -webkit-backdrop-filter: blur(30px) saturate(1.5);
+
+  border-radius: 150px;
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+
+  z-index: 2;
+  transition: 1.8s ease-in-out;
+  pointer-events: none;
+}
+
+.container.active .toggle-box::before {
+  left: 50%;
+}
+
+/* ===================== TOGGLE PANELS ===================== */
+
+.toggle-panel {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  color: #f0f2f4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+  transition: .6s ease-in-out;
+  padding: 32px;
+  text-align: center;
+}
+
+.toggle-panel h1 {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  letter-spacing: -.2px;
+}
+
+.toggle-panel p {
+  font-size: 13.5px;
+  opacity: .8;
+  margin-bottom: 24px;
+  color: #cfd6dc;
+}
+
+.toggle-panel.toggle-left {
+  left: 0;
+  transition-delay: 1.2s;
+}
+
+.container.active .toggle-panel.toggle-left {
+  left: -50%;
+  transition-delay: .6s;
+}
+
+.toggle-panel.toggle-right {
+  right: -50%;
+  transition-delay: .6s;
+}
+
+.container.active .toggle-panel.toggle-right {
+  right: 0;
+  transition-delay: 1.2s;
+}
+
+.toggle-panel .btn {
+  width: 155px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.toggle-panel .btn:hover {
+  background: rgba(255, 255, 255, 0.88);
+  color: #3a4249;
+  border-color: transparent;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+}
+
+/* ===================== RESPONSIVO ===================== */
+
+@media screen and (max-width: 650px) {
+  .container {
+    height: calc(100vh - 40px);
+    width: calc(100vw - 40px);
+  }
+
+  .form-box {
+    bottom: 0;
+    width: 100%;
+    height: 70%;
+  }
+
+  .container.active .form-box {
+    right: 0;
+    bottom: 30%;
+  }
+
+  .toggle-box::before {
+    left: 0;
+    top: -270%;
+    width: 100%;
+    height: 300%;
+    border-radius: 20vw;
+  }
+
+  .container.active .toggle-box::before {
+    left: 0;
+    top: 70%;
+  }
+
+  .toggle-panel {
+    width: 100%;
+    height: 30%;
+  }
+
+  .toggle-panel.toggle-left {
+    top: 0;
+  }
+
+  .container.active .toggle-panel.toggle-left {
+    left: 0;
+    top: -30%;
+  }
+
+  .toggle-panel.toggle-right {
+    right: 0;
+    bottom: -30%;
+  }
+
+  .container.active .toggle-panel.toggle-right {
+    bottom: 0;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .form-box {
+    padding: 20px;
+  }
+
+  .toggle-panel h1 {
+    font-size: 22px;
+  }
+}
+
+.scene,
+.sphere,
+.toggle-box,
+.toggle-box::before {
+  pointer-events: none;
+}
+
+.toggle-panel {
+  pointer-events: auto; /* reativa para os painéis e seus filhos (botões) */
+}
+
+.form-box,
+.container {
+  pointer-events: auto;
+}

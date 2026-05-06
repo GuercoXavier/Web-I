@@ -1,0 +1,27 @@
+{
+  "name": "web-i",
+  "version": "1.0.0",
+  "description": "proj-web1",
+  "homepage": "https://github.com/GuercoXavier/Web-I#readme",
+  "bugs": {
+    "url": "https://github.com/GuercoXavier/Web-I/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GuercoXavier/Web-I.git"
+  },
+  "license": "ISC",
+  "author": "BAGSAM",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^12.9.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3"
+  }
+}

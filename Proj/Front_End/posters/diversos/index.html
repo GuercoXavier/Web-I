@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+
+    <title>Periféricos — Controlo Supremo</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #05050f;
+      }
+
+      .container-cartaz {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+        background: radial-gradient(circle at 30% 10%, #0a0a2a, #010108);
+      }
+
+      .fundo-tech {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(0, 212, 255, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 212, 255, 0.06) 1px, transparent 1px);
+        background-size: 35px 35px;
+        pointer-events: none;
+      }
+
+      .fundo-tech::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at 80% 40%,
+          rgba(0, 212, 255, 0.12),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .circulo-decorativo {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 212, 255, 0.15),
+          transparent
+        );
+        filter: blur(40px);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .circulo-1 {
+        width: 350px;
+        height: 350px;
+        top: -100px;
+        right: -80px;
+        background: radial-gradient(
+          circle,
+          rgba(138, 43, 226, 0.2),
+          transparent
+        );
+      }
+
+      .circulo-2 {
+        width: 280px;
+        height: 280px;
+        bottom: -80px;
+        left: -60px;
+        background: radial-gradient(
+          circle,
+          rgba(0, 212, 255, 0.15),
+          transparent
+        );
+      }
+
+      .secao-heroi {
+        position: relative;
+        z-index: 25;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        pointer-events: none;
+      }
+
+      .secao-heroi {
+        pointer-events: auto;
+      }
+
+      .bloco-texto {
+        padding: clamp(25px, 5vh, 50px) clamp(30px, 4vw, 80px);
+        max-width: 650px;
+        animation: surgir 0.8s forwards;
+      }
+
+      .pre-titulo {
+        font-family: "Segoe UI", "Barlow", sans-serif;
+        font-weight: 500;
+        font-size: clamp(11px, 1.2vw, 15px);
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: #00d4ff;
+        margin-bottom: 8px;
+      }
+
+      .titulo-principal {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 900;
+        font-size: clamp(40px, 7vw, 100px);
+        line-height: 0.96;
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+      }
+
+      .titulo-principal span {
+        display: block;
+      }
+
+      .destaque-roxo {
+        color: #b77eff;
+        text-shadow: 0 0 8px rgba(138, 43, 226, 0.5);
+        font-style: italic;
+      }
+
+      .frase-impacto {
+        margin-top: 18px;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 600;
+        font-size: clamp(16px, 2vw, 26px);
+        letter-spacing: 0.5px;
+        color: #00d4ff;
+        text-transform: uppercase;
+        border-left: 3px solid #00d4ff;
+        padding-left: 16px;
+      }
+
+      .linha-decorativa {
+        margin: 0 clamp(30px, 4vw, 80px) clamp(15px, 2vh, 25px);
+        width: 140px;
+        height: 2px;
+        background: linear-gradient(90deg, #00d4ff, #8a2be2);
+      }
+
+      .palco-dispositivos {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 72%;
+        height: 88%;
+        z-index: 15;
+        pointer-events: none;
+      }
+
+      .sombra-neon {
+        position: absolute;
+        bottom: -5%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 85%;
+        height: 65%;
+        background: radial-gradient(
+          ellipse at 50% 80%,
+          rgba(0, 212, 255, 0.35),
+          rgba(138, 43, 226, 0) 70%
+        );
+        filter: blur(40px);
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      .dispositivo {
+        position: absolute;
+        object-fit: contain;
+        filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+        transition: filter 0.2s;
+        animation: flutuar 4.8s ease-in-out infinite;
+      }
+
+      .teclado-principal {
+        width: min(50%, 520px);
+        left: -4%;
+        bottom: 16%; 
+        z-index: 3;
+        filter: drop-shadow(0 25px 35px rgba(0, 180, 220, 0.3));
+        animation-delay: 0s;
+      }
+
+      .mouse-principal {
+        width: min(20%, 180px);
+        left: 32%;
+        bottom: 32%;
+        z-index: 10;
+        filter: drop-shadow(0 14px 25px rgba(0, 212, 255, 0.4));
+        animation: flutuarMouse 5s ease-in-out infinite 0.3s;
+      }
+
+      .teclado-secundario {
+        width: min(42%, 420px);
+        right: 6%;
+        bottom: 2%; 
+        z-index: 2;
+        filter: drop-shadow(8px 20px 30px rgba(0, 0, 0, 0.5));
+        animation-delay: 0.5s;
+      }
+
+      .mouse-secundario {
+        width: min(18%, 160px);
+        right: 18%;
+        bottom: 12%; 
+        z-index: 8;
+        filter: drop-shadow(0 15px 25px rgba(138, 43, 226, 0.4));
+        animation: flutuarMouse2 5.4s ease-in-out infinite 0.8s;
+      }
+
+      @keyframes flutuar {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes flutuarMouse {
+        0%,
+        100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-14px) rotate(1.5deg);
+        }
+      }
+
+      @keyframes flutuarMouse2 {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-12px);
+        }
+      }
+
+      /* responsividade */
+      @media (max-width: 1000px) {
+        .palco-dispositivos {
+          width: 80%;
+          height: 86%;
+        }
+        .teclado-principal {
+          width: 56%;
+          left: -8%;
+          bottom: 14%;
+        }
+        .teclado-secundario {
+          width: 48%;
+          right: 0%;
+          bottom: 0%;
+        }
+        .mouse-principal {
+          width: 24%;
+          left: 28%;
+          bottom: 28%;
+        }
+        .mouse-secundario {
+          width: 22%;
+          right: 10%;
+          bottom: 8%;
+        }
+      }
+
+      @media (max-width: 750px) {
+        .palco-dispositivos {
+          width: 90%;
+          height: 82%;
+        }
+        .teclado-principal {
+          width: 64%;
+          left: -12%;
+          bottom: 12%;
+        }
+        .teclado-secundario {
+          width: 52%;
+          right: -4%;
+          bottom: -2%;
+        }
+        .mouse-principal {
+          width: 30%;
+          left: 22%;
+          bottom: 24%;
+        }
+        .mouse-secundario {
+          width: 26%;
+          right: 0%;
+          bottom: 6%;
+        }
+        .bloco-texto {
+          max-width: 80%;
+          padding: 20px 20px;
+        }
+        .titulo-principal {
+          line-height: 1;
+        }
+      }
+
+      @media (max-width: 550px) {
+        .palco-dispositivos {
+          width: 100%;
+          height: 76%;
+        }
+        .teclado-principal {
+          width: 74%;
+          left: -16%;
+          bottom: 10%;
+        }
+        .teclado-secundario {
+          width: 60%;
+          right: -8%;
+          bottom: -4%;
+        }
+        .mouse-principal {
+          width: 38%;
+          left: 16%;
+          bottom: 20%;
+        }
+        .mouse-secundario {
+          width: 34%;
+          right: -4%;
+          bottom: 4%;
+        }
+        .frase-impacto {
+          font-size: 14px;
+          padding-left: 12px;
+        }
+        .titulo-principal {
+          font-size: clamp(32px, 8vw, 60px);
+        }
+      }
+
+      @media (max-height: 700px) {
+        .titulo-principal {
+          font-size: clamp(30px, 5vw, 70px);
+        }
+        .bloco-texto {
+          padding: 15px 30px;
+        }
+        .frase-impacto {
+          margin-top: 10px;
+          font-size: 14px;
+        }
+        .pre-titulo {
+          margin-bottom: 4px;
+        }
+        .teclado-principal {
+          bottom: 12%;
+        }
+        .mouse-principal {
+          bottom: 28%;
+        }
+        .teclado-secundario {
+          bottom: 0%;
+        }
+        .mouse-secundario {
+          bottom: 6%;
+        }
+      }
+
+      @keyframes surgir {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .bloco-texto {
+        animation: surgir 0.8s forwards;
+      }
+      .palco-dispositivos {
+        animation: surgir 0.8s 0.15s forwards;
+        opacity: 0;
+        animation-fill-mode: forwards;
+      }
+      .linha-decorativa {
+        opacity: 0;
+        animation: surgir 0.6s 0.25s forwards;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-cartaz">
+      <div class="fundo-tech"></div>
+      <div class="circulo-decorativo circulo-1"></div>
+      <div class="circulo-decorativo circulo-2"></div>
+
+      <div class="secao-heroi">
+        <div class="bloco-texto">
+          <div class="pre-titulo">PRECISÃO E VELOCIDADE</div>
+          <h1 class="titulo-principal">
+            <span>Domina o</span>
+            <span class="destaque-roxo">campo de batalha.</span>
+            <span>O teu equipamento,</span>
+            <span>as tuas regras.</span>
+          </h1>
+          <div class="frase-impacto">
+            #CONTROLO ABSOLUTO — FEITO PARA VENCER
+          </div>
+        </div>
+        <div class="linha-decorativa"></div>
+      </div>
+
+      <div class="palco-dispositivos">
+        <div class="sombra-neon"></div>
+
+        <img
+          class="dispositivo teclado-principal"
+          src="mx-keys.png"
+          alt="Teclado 1"
+        />
+
+        <img
+          class="dispositivo teclado-secundario"
+          src="keyBoardZZZ.png"
+          alt="Teclado 2"
+        />
+
+        <img
+          class="dispositivo mouse-principal"
+          src="mx-master-3s.png"
+          alt="Mouse 1"
+        />
+
+        <img
+          class="dispositivo mouse-secundario"
+          src="g502-lightspeed.png"
+          alt="Mouse 2"
+        />
+      </div>
+    </div>
+  </body>
+</html>
