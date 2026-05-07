@@ -1,4 +1,8 @@
 node_modules/
 .env
-db/database.db
 .vscode/
+*.log
+.DS_Store
+*.basgam.db
+*.basgam.db-shm
+*.basgam.db-wal

@@ -1,27 +1,47 @@
 {
   "name": "web-i",
   "version": "1.0.0",
-  "description": "proj-web1",
+  "description": "BASGAM Tech",
+  "author": "BAGSAM",
+  "license": "ISC",
+  "type": "commonjs",
+  "main": "server.js",
   "homepage": "https://github.com/GuercoXavier/Web-I#readme",
-  "bugs": {
-    "url": "https://github.com/GuercoXavier/Web-I/issues"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GuercoXavier/Web-I.git"
   },
-  "license": "ISC",
-  "author": "BAGSAM",
-  "type": "commonjs",
-  "main": "server.js",
+  "bugs": {
+    "url": "https://github.com/GuercoXavier/Web-I/issues"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node Proj/Back_End/server.js",
+    "dev": "nodemon Proj/Back_End/server.js",
+    "test": "echo \"No tests configured\" && exit 0"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.9.0",
     "cors": "^2.8.6",
-    "express": "^5.2.1",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.3"
-  }
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "sqlite",
+    "jwt",
+    "backend",
+    "basgam",
+    "api"
+  ]
 }
