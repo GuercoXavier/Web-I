@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BASGAM Tech — Recibo da Compra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --bg-panel: #141414;
+        --borda: rgba(255, 255, 255, 0.08);
+        --texto: #d4d4d4;
+        --muted: #6b7280;
+        --branco: #ffffff;
+        --azul: #3b82f6;
+        --azul-esc: #2563eb;
+        --fonte-titulo: "Syne", sans-serif;
+        --fonte-corpo: "DM Sans", sans-serif;
+        --fonte-mono: "JetBrains Mono", monospace;
+        --raio: 14px;
+        --sombra: 0 4px 24px rgba(0, 0, 0, 0.4);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        font-family: var(--fonte-corpo);
+        color: var(--texto);
+        line-height: 1.5;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .recibo-container {
+        max-width: 600px;
+        width: 100%;
+        background: var(--bg-panel);
+        border: 1px solid var(--borda);
+        border-radius: var(--raio);
+        box-shadow: var(--sombra);
+        overflow: hidden;
+      }
+
+      .recibo-header {
+        padding: 24px 28px;
+        border-bottom: 1px solid var(--borda);
+        background: rgba(255, 255, 255, 0.02);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .logo-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo-icone {
+        width: 40px;
+        height: 40px;
+        background: var(--branco);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .logo-icone img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .logo-texto {
+        font-family: var(--fonte-titulo);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--branco);
+        letter-spacing: -0.02em;
+      }
+
+      .titulo-recibo {
+        text-align: right;
+      }
+
+      .titulo-recibo h1 {
+        font-family: var(--fonte-titulo);
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--branco);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .titulo-recibo p {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .icone-header {
+        width: 24px;
+        height: 24px;
+        filter: brightness(0) invert(1);
+      }
+
+      .recibo-corpo {
+        padding: 28px;
+      }
+
+      .info-linha {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--borda);
+        font-size: 0.9rem;
+      }
+
+      .info-linha strong {
+        color: var(--branco);
+      }
+
+      .divisor {
+        margin: 20px 0;
+        border: none;
+        border-top: 1px solid var(--borda);
+      }
+
+      .produto-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--borda);
+      }
+
+      .produto-item:last-child {
+        border-bottom: none;
+      }
+
+      .produto-nome {
+        color: var(--texto);
+      }
+
+      .produto-preco {
+        color: var(--branco);
+        font-weight: 500;
+      }
+
+      .total-final {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 2px solid var(--borda);
+        display: flex;
+        justify-content: space-between;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--branco);
+      }
+
+      .mensagem-agradecimento {
+        margin-top: 32px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.85rem;
+        padding-top: 16px;
+        border-top: 1px solid var(--borda);
+      }
+
+      .acoes {
+        padding: 20px 28px 28px;
+        display: flex;
+        gap: 16px;
+        justify-content: flex-end;
+        border-top: 1px solid var(--borda);
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 40px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        background: none;
+        border: none;
+      }
+
+      .btn-primario {
+        background: var(--azul);
+        color: white;
+      }
+
+      .btn-primario:hover {
+        background: var(--azul-esc);
+        transform: translateY(-1px);
+      }
+
+      .btn-secundario {
+        background: transparent;
+        color: var(--texto);
+        border: 1px solid var(--borda);
+      }
+
+      .btn-secundario:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--branco);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-icon {
+        width: 18px;
+        height: 18px;
+        filter: brightness(0) invert(1);
+      }
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+        }
+        .recibo-container {
+          box-shadow: none;
+          border: 1px solid #ccc;
+          background: white;
+        }
+        .recibo-header {
+          background: #f5f5f5;
+          border-bottom: 1px solid #ccc;
+        }
+        .recibo-header h1 img,
+        .btn img {
+          filter: brightness(0);
+        }
+        .btn {
+          display: none !important;
+        }
+        .acoes {
+          display: none !important;
+        }
+        .info-linha,
+        .produto-item,
+        .total-final,
+        .mensagem-agradecimento {
+          color: black;
+        }
+        .info-linha strong,
+        .produto-preco,
+        .total-final {
+          color: black;
+        }
+      }
+
+      @media (max-width: 550px) {
+        .recibo-header {
+          flex-direction: column;
+          text-align: center;
+        }
+        .titulo-recibo {
+          text-align: center;
+        }
+        .acoes {
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .recibo-header,
+        .recibo-corpo,
+        .acoes {
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="recibo-container">
+      <div class="recibo-header">
+        <div class="logo-area">
+          <div class="logo-icone">
+            <img src="../../imagens/colorless.png" alt="BASGAM" />
+          </div>
+          <span class="logo-texto">BASGAM Tech</span>
+        </div>
+        <div class="titulo-recibo">
+          <h1>
+            <img src="icons/receipt.svg" class="icone-header" alt="" />
+            Recibo da Compra
+          </h1>
+          <p>Obrigado por escolher a BASGAM Tech!</p>
+        </div>
+      </div>
+
+      <div class="recibo-corpo">
+        <div class="info-linha">
+          <span><strong>ID do pedido</strong></span>
+          <span id="idPedido"> ---- </span>
+        </div>
+        <div class="info-linha">
+          <span><strong>ID da fatura</strong></span>
+          <span id="idFatura"> ---- </span>
+        </div>
+        <div class="info-linha">
+          <span><strong>Data</strong></span>
+          <span id="dataPedido"> ---- </span>
+        </div>
+        <div class="info-linha">
+          <span><strong>Cliente</strong></span>
+          <span id="clienteNome"> ---- </span>
+        </div>
+        <div class="info-linha">
+          <span><strong>E-mail</strong></span>
+          <span id="clienteEmail"> ---- </span>
+        </div>
+
+        <hr class="divisor" />
+
+        <div id="listaProdutos">
+          <div class="produto-item">
+            <span class="produto-nome"> ---- </span>
+            <span class="produto-preco"> ---- </span>
+          </div>
+          <div class="produto-item">
+            <span class="produto-nome"> ---- </span>
+            <span class="produto-preco"> ---- </span>
+          </div>
+        </div>
+
+        <div class="total-final">
+          <span>Total</span>
+          <span id="totalCompra"> ---- </span>
+        </div>
+
+        <div class="mensagem-agradecimento">
+          A sua compra foi registada com sucesso!<br />
+          <strong>BASGAM Tech — Tecnologia ao seu alcance</strong>
+        </div>
+      </div>
+
+      <div class="acoes">
+        <a href="../TelaPrincipal/index.html" class="btn btn-secundario">
+          <img src="icons/arrow-left.svg" class="btn-icon" alt="" />
+          Voltar à loja
+        </a>
+        <button class="btn btn-primario" onclick="window.print()">
+          <img src="icons/printer-fill.svg" class="btn-icon" alt="" />
+          Salvar Como PDF / Imprimir
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

@@ -303,8 +303,9 @@ function renderCarrinho() {
 }
 
 function finalizar() {
-    if (carrinho.length === 0) return;
-    alert('Simulação! O checkout seria iniciado aqui. 🎉');
+    //if (carrinho.length === 0) return;
+    alert('Simulação! O checkout seria iniciado aqui.');
+    window.open("../TelaRecibo/Recibo.html", "_blank");
     carrinho = [];
     atualizarBadge();
     renderCarrinho();
@@ -312,7 +313,7 @@ function finalizar() {
 
 function enviarForm(e) {
     e.preventDefault();
-    alert('Mensagem enviada! (simulação) ✅');
+    alert('Mensagem enviada! (simulação) ');
     e.target.reset();
 }
 
