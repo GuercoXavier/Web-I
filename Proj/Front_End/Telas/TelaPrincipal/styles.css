@@ -216,6 +216,29 @@ header .container {
   justify-content: center;
 }
 
+#contacto-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  transition: transform 0.2s ease;
+}
+
+#contacto-icon img {
+  width: 28px;
+  height: 28px;
+  filter: invert(0.65); 
+  transition: filter 0.2s, transform 0.2s;
+}
+
+#contacto-icon:hover {
+  filter: invert(1);   
+  transform: scale(1.1);
+}
+
+
 .btn-login {
   background: none;
   border: none;
