@@ -87,6 +87,7 @@ router.post('/login', async (req, res) => {
     return res.json({
       mensagem: 'Login bem-sucedido.',
       token,
+      redirectUrl: user.role === 'admin' ? '/admin/RegistroAdm.html' : '/index.html',
       utilizador: {
         id: user.id,
         username: user.username,
