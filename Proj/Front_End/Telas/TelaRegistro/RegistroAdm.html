@@ -16,8 +16,6 @@
             --texto:    #d4d4d4;
             --muted:    #6b7280;
             --branco:   #ffffff;
-            --azul:     #3b82f6;
-            --azul-esc: #2563eb;
             --verde:    #22c55e;
             --vermelho: #ef4444;
             --fonte-titulo: 'Syne', sans-serif;
@@ -70,18 +68,111 @@
 
         .tag-adm {
             font-family: var(--fonte-mono); font-size: 0.68rem;
-            background: rgba(59,130,246,0.15); color: var(--azul);
-            border: 1px solid rgba(59,130,246,0.25);
+            background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.12);
             border-radius: 4px; padding: 2px 8px; letter-spacing: 0.05em;
         }
+
+        /* ── Navegação de abas ── */
+        .nav-abas {
+            border-bottom: 1px solid var(--borda);
+            background: rgba(10,10,10,0.6);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            padding: 0 32px;
+            display: flex;
+            gap: 0;
+        }
+
+        .nav-aba {
+            padding: 0 24px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--fonte-titulo);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border-bottom: 2px solid transparent;
+            transition: color var(--trans), border-color var(--trans);
+            cursor: pointer;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            position: relative;
+            top: 1px;
+        }
+
+        .nav-aba:hover { color: rgba(255,255,255,0.7); }
+
+        .nav-aba.ativa {
+            color: var(--branco);
+            border-bottom-color: var(--branco);
+        }
+
+        .nav-aba svg { opacity: 0.6; }
+        .nav-aba.ativa svg { opacity: 1; }
+
+        /* ── Abas de conteúdo ── */
+        .aba-conteudo { display: none; }
+        .aba-conteudo.ativa { display: flex; }
 
         /* ── Layout principal ── */
         .layout {
             display: grid;
             grid-template-columns: 420px 1fr;
             gap: 0;
-            min-height: calc(100vh - 64px);
+            min-height: calc(100vh - 64px - 48px);
         }
+
+        /* ── Layout simples (para abas de remoção) ── */
+        .layout-simples {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 60px 40px;
+            min-height: calc(100vh - 64px - 48px);
+        }
+
+        .painel-remocao {
+            width: 100%;
+            max-width: 480px;
+            background: var(--bg-panel);
+            border: 1px solid var(--borda);
+            border-radius: var(--raio);
+            padding: 40px;
+        }
+
+        .painel-remocao .painel-titulo {
+            font-family: var(--fonte-titulo); font-size: 1.4rem; font-weight: 700;
+            color: var(--branco); letter-spacing: -0.02em; margin-bottom: 6px;
+        }
+
+        .painel-remocao .painel-sub {
+            font-size: 0.85rem; color: var(--muted); margin-bottom: 36px;
+        }
+
+        /* ── Botão remover ── */
+        .btn-remover-acao {
+            width: 100%; padding: 14px;
+            background: transparent;
+            color: var(--branco);
+            font-family: var(--fonte-titulo); font-size: 1rem; font-weight: 700;
+            border-radius: var(--raio);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: background var(--trans), border-color var(--trans), transform var(--trans);
+            margin-top: 8px; letter-spacing: 0.01em;
+        }
+        .btn-remover-acao:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.35);
+            transform: translateY(-1px);
+        }
+        .btn-remover-acao:active { transform: translateY(0); }
 
         /* ── Painel formulário ── */
         .painel-form {
@@ -112,7 +203,7 @@
         }
 
         .zona-foto:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
-        .zona-foto.drag-over { border-color: var(--azul); background: rgba(59,130,246,0.07); }
+        .zona-foto.drag-over { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); }
         .zona-foto.tem-foto { border-style: solid; border-color: var(--borda-hl); }
 
         #preview-img {
@@ -135,7 +226,6 @@
         .placeholder-foto p { font-size: 0.8rem; color: var(--muted); text-align: center; }
         .placeholder-foto p strong { color: rgba(255,255,255,0.5); display: block; }
 
-        .aviso-sem-foto { display: block; }
 
         .overlay-troca {
             position: absolute; inset: 0;
@@ -201,7 +291,7 @@
         .campo input:focus,
         .campo textarea:focus,
         .campo select:focus {
-            border-color: var(--azul);
+            border-color: rgba(255,255,255,0.35);
             background: rgba(255,255,255,0.07);
         }
 
@@ -256,15 +346,15 @@
             font-size: 0.68rem;
             padding: 3px 9px;
             border-radius: 999px;
-            border: 1px solid rgba(59,130,246,0.3);
-            background: rgba(59,130,246,0.1);
-            color: var(--azul);
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.7);
         }
 
         .caminho-pilula.marca {
-            border-color: rgba(34,197,94,0.3);
-            background: rgba(34,197,94,0.1);
-            color: var(--verde);
+            border-color: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.09);
+            color: var(--branco);
         }
 
         .caminho-sep {
@@ -287,13 +377,13 @@
         /* ── Botão adicionar ── */
         .btn-adicionar {
             width: 100%; padding: 14px;
-            background: var(--azul); color: var(--branco);
+            background: var(--branco); color: #0a0a0a;
             font-family: var(--fonte-titulo); font-size: 1rem; font-weight: 700;
             border-radius: var(--raio);
             transition: background var(--trans), transform var(--trans);
             margin-top: 8px; letter-spacing: 0.01em;
         }
-        .btn-adicionar:hover { background: var(--azul-esc); transform: translateY(-1px); }
+        .btn-adicionar:hover { background: rgba(255,255,255,0.85); transform: translateY(-1px); }
         .btn-adicionar:active { transform: translateY(0); }
 
         /* ── Painel lista ── */
@@ -365,9 +455,9 @@
             padding: 2px 7px; border-radius: 999px;
         }
 
-        .card-reg-cat-tag.cat  { background: rgba(59,130,246,0.12); color: var(--azul); border: 1px solid rgba(59,130,246,0.2); }
-        .card-reg-cat-tag.sub  { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid var(--borda); }
-        .card-reg-cat-tag.marca { background: rgba(34,197,94,0.1); color: var(--verde); border: 1px solid rgba(34,197,94,0.2); }
+        .card-reg-cat-tag.cat  { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.12); }
+        .card-reg-cat-tag.sub  { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--borda); }
+        .card-reg-cat-tag.marca { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75); border: 1px solid rgba(255,255,255,0.16); }
 
         .card-reg-sep { font-size: 0.6rem; color: var(--muted); }
 
@@ -381,7 +471,7 @@
         .card-reg-preco { font-family: var(--fonte-mono); font-size: 0.88rem; font-weight: 500; color: var(--branco); }
 
         .card-reg-stock { font-family: var(--fonte-mono); font-size: 0.72rem; padding: 3px 8px; border-radius: 999px; }
-        .card-reg-stock.ok    { background: rgba(34,197,94,0.12); color: var(--verde); border: 1px solid rgba(34,197,94,0.2); }
+        .card-reg-stock.ok    { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.12); }
         .card-reg-stock.zero  { background: rgba(239,68,68,0.12); color: var(--vermelho); border: 1px solid rgba(239,68,68,0.2); }
 
         .btn-remover-card {
@@ -396,7 +486,7 @@
         /* ── Toast ── */
         #toast {
             position: fixed; bottom: 32px; right: 32px;
-            background: var(--bg-panel); border: 1px solid var(--verde); color: var(--verde);
+            background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.2); color: var(--branco);
             font-size: 0.85rem; padding: 12px 20px; border-radius: 10px;
             font-family: var(--fonte-mono);
             opacity: 0; transform: translateY(10px);
@@ -410,11 +500,15 @@
             .layout { grid-template-columns: 1fr; }
             .painel-form  { border-right: none; border-bottom: 1px solid var(--borda); }
             .painel-lista { padding: 32px 20px 60px; }
+            .nav-abas { padding: 0 16px; }
+            .nav-aba { padding: 0 14px; font-size: 0.75rem; }
         }
         @media (max-width: 480px) {
             header { padding: 0 16px; }
             .painel-form  { padding: 28px 16px 40px; }
             #grid-registados { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .layout-simples { padding: 32px 16px; }
+            .painel-remocao { padding: 28px 20px; }
         }
     </style>
 </head>
@@ -424,7 +518,7 @@
         <div class="header-esq">
             <div class="logo-badge">B</div>
             <span class="header-titulo">BASGAM <span>/ Admin</span></span>
-            <span class="tag-adm">REGISTRO</span>
+            <span class="tag-adm">PAINEL</span>
         </div>
         <a href="index.html" style="font-size:0.82rem;color:var(--muted);transition:color .2s"
            onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">
@@ -432,130 +526,198 @@
         </a>
     </header>
 
-    <div class="layout">
+    <!-- ── Navegação de Abas ── -->
+    <nav class="nav-abas">
+        <button class="nav-aba ativa" onclick="mudarAba('registro')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Registar Produto
+        </button>
+        <button class="nav-aba" onclick="mudarAba('remover-produto')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Remover Produto
+        </button>
+        <button class="nav-aba" onclick="mudarAba('remover-perfil')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="18" y1="11" x2="23" y2="16"/><line x1="23" y1="11" x2="18" y2="16"/></svg>
+            Remover Perfil
+        </button>
+    </nav>
 
-        <!-- ════ FORMULÁRIO ════ -->
-        <aside class="painel-form">
-            <p class="painel-titulo">Adicionar Produto</p>
-            <p class="painel-sub">Preencha os dados abaixo e clique em Adicionar.</p>
+    <!-- ════ ABA: REGISTAR PRODUTO ════ -->
+    <div class="aba-conteudo ativa" id="aba-registro">
+        <div class="layout">
 
-            <!-- Zona de foto -->
-            <div class="zona-foto" id="zona-foto"
-                 onclick="document.getElementById('input-foto').click()"
-                 ondragover="dragOver(event)"
-                 ondragleave="dragLeave(event)"
-                 ondrop="drop(event)">
+            <!-- FORMULÁRIO -->
+            <aside class="painel-form">
+                <p class="painel-titulo">Adicionar Produto</p>
+                <p class="painel-sub">Preencha os dados abaixo e clique em Adicionar.</p>
 
-                <img id="preview-img" src="" alt="preview">
+                <!-- Zona de foto -->
+                <div class="zona-foto" id="zona-foto"
+                     onclick="document.getElementById('input-foto').click()"
+                     ondragover="dragOver(event)"
+                     ondragleave="dragLeave(event)"
+                     ondrop="drop(event)">
 
-                <div class="placeholder-foto" id="placeholder-foto">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="3"/>
-                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                        <polyline points="21 15 16 10 5 21"/>
-                    </svg>
-                    <p><strong>Clique ou arraste uma foto</strong>Opcional — JPG, PNG, WEBP</p>
+                    <img id="preview-img" src="" alt="preview">
+
+                    <div class="placeholder-foto" id="placeholder-foto">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="3"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <p><strong>Clique ou arraste uma foto</strong>Opcional — JPG, PNG, WEBP</p>
+                    </div>
+
+                    <div class="aviso-sem-foto" id="aviso-sem-foto" style="display:none">
+                        <h1 style="color:red">sem foto</h1>
+                    </div>
+
+                    <div class="overlay-troca">Trocar foto</div>
                 </div>
 
-                <div class="aviso-sem-foto" id="aviso-sem-foto" style="display:none">
-                    <h1 style="color:red">sem foto</h1>
-                </div>
+                <input type="file" id="input-foto" accept="image/*" onchange="fotoSelecionada(this)">
 
-                <div class="overlay-troca">Trocar foto</div>
-            </div>
-
-            <input type="file" id="input-foto" accept="image/*" onchange="fotoSelecionada(this)">
-
-            <!-- Nome -->
-            <div class="campo">
-                <label for="inp-nome">Nome <span>sem limite</span></label>
-                <input type="text" id="inp-nome" placeholder="Ex: iPhone 16 Pro Max 256 GB Titânio Natural">
-            </div>
-
-            <!-- Preço + Stock -->
-            <div class="campos-duplos">
+                <!-- Nome -->
                 <div class="campo">
-                    <label for="inp-preco">Preço</label>
-                    <div class="input-wrapper">
-                        <span class="prefix">MT</span>
-                        <input type="number" id="inp-preco" placeholder="0.00" min="0" step="0.01">
+                    <label for="inp-nome">Nome <span>sem limite</span></label>
+                    <input type="text" id="inp-nome" placeholder="Ex: iPhone 16 Pro Max 256 GB Titânio Natural">
+                </div>
+
+                <!-- Preço + Stock -->
+                <div class="campos-duplos">
+                    <div class="campo">
+                        <label for="inp-preco">Preço</label>
+                        <div class="input-wrapper">
+                            <span class="prefix">MT</span>
+                            <input type="number" id="inp-preco" placeholder="0.00" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="campo">
+                        <label for="inp-stock">Stock</label>
+                        <input type="number" id="inp-stock" placeholder="0" min="0" step="1">
                     </div>
                 </div>
+
+                <!-- BLOCO DE CATEGORIA -->
+                <div class="bloco-cat">
+                    <p class="bloco-cat-titulo">Categorização</p>
+
+                    <div class="campo">
+                        <label for="sel-cat">Categoria</label>
+                        <select id="sel-cat" onchange="onCategoria()">
+                            <option value="">— selecione —</option>
+                            <option value="celulares">Celulares</option>
+                            <option value="computadores">Computadores</option>
+                            <option value="acessorios">Acessórios</option>
+                        </select>
+                    </div>
+
+                    <div class="campo" id="wrap-sub" style="display:none">
+                        <label for="sel-sub">Subcategoria</label>
+                        <select id="sel-sub" onchange="onSubcategoria()">
+                            <option value="">— selecione —</option>
+                        </select>
+                    </div>
+
+                    <div class="campo" id="wrap-marca" style="display:none">
+                        <label for="sel-marca">Marca</label>
+                        <select id="sel-marca" onchange="onMarca()">
+                            <option value="">— selecione —</option>
+                        </select>
+                    </div>
+
+                    <div class="caminho-filtro" id="caminho-filtro"></div>
+                </div>
+
+                <!-- Descrição -->
                 <div class="campo">
-                    <label for="inp-stock">Stock</label>
-                    <input type="number" id="inp-stock" placeholder="0" min="0" step="1">
+                    <label for="inp-desc">Descrição</label>
+                    <textarea id="inp-desc" rows="4" placeholder="Descreva o produto, características principais, compatibilidade…"></textarea>
                 </div>
-            </div>
 
-            <!-- ════ BLOCO DE CATEGORIA ════ -->
-            <div class="bloco-cat">
-                <p class="bloco-cat-titulo">Categorização</p>
+                <button class="btn-adicionar" onclick="adicionarProduto()">+ Adicionar Produto</button>
+            </aside>
 
-                <!-- Categoria principal -->
+            <!-- LISTA DE PRODUTOS -->
+            <section class="painel-lista">
+                <div class="lista-header">
+                    <h2 class="lista-titulo">Produtos Registados</h2>
+                    <span class="badge-count" id="badge-count">0 produtos</span>
+                </div>
+
+                <div class="estado-vazio" id="estado-vazio">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                    <p>Nenhum produto registado ainda.<br>Preencha o formulário e clique em Adicionar.</p>
+                </div>
+
+                <div id="grid-registados"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- ════ ABA: REMOVER PRODUTO ════ -->
+    <div class="aba-conteudo" id="aba-remover-produto">
+        <div class="layout-simples">
+            <div class="painel-remocao">
+                <p class="painel-titulo">Remover Produto</p>
+                <p class="painel-sub">Insira o ID do produto que pretende remover permanentemente.</p>
+
                 <div class="campo">
-                    <label for="sel-cat">Categoria</label>
-                    <select id="sel-cat" onchange="onCategoria()">
-                        <option value="">— selecione —</option>
-                        <option value="celulares">Celulares</option>
-                        <option value="computadores">Computadores</option>
-                        <option value="acessorios">Acessórios</option>
-                    </select>
+                    <label for="inp-id-produto">ID do Produto</label>
+                    <input type="text" id="inp-id-produto" placeholder="Ex: 1717000000000">
                 </div>
 
-                <!-- Subcategoria (aparece apenas se aplicável) -->
-                <div class="campo" id="wrap-sub" style="display:none">
-                    <label for="sel-sub">Subcategoria</label>
-                    <select id="sel-sub" onchange="onSubcategoria()">
-                        <option value="">— selecione —</option>
-                    </select>
+                <div class="campo">
+                    <label for="inp-nome-busca-produto">Nome do Produto <span>opcional</span></label>
+                    <input type="text" id="inp-nome-busca-produto" placeholder="Ex: iPhone 16 Pro Max">
                 </div>
 
-                <!-- Marca -->
-                <div class="campo" id="wrap-marca" style="display:none">
-                    <label for="sel-marca">Marca</label>
-                    <select id="sel-marca" onchange="onMarca()">
-                        <option value="">— selecione —</option>
-                    </select>
+                <button class="btn-remover-acao">Remover Produto</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════ ABA: REMOVER PERFIL ════ -->
+    <div class="aba-conteudo" id="aba-remover-perfil">
+        <div class="layout-simples">
+            <div class="painel-remocao">
+                <p class="painel-titulo">Remover Perfil</p>
+                <p class="painel-sub">Insira o nome do perfil que pretende remover permanentemente.</p>
+
+                <div class="campo">
+                    <label for="inp-nome-perfil">Nome do Perfil</label>
+                    <input type="text" id="inp-nome-perfil" placeholder="Ex: João Silva">
                 </div>
 
-                <!-- Caminho nos filtros -->
-                <div class="caminho-filtro" id="caminho-filtro"></div>
+                <div class="campo">
+                    <label for="inp-email-perfil">Email <span>opcional</span></label>
+                    <input type="email" id="inp-email-perfil" placeholder="Ex: joao@email.com">
+                </div>
+
+                <button class="btn-remover-acao">Remover Perfil</button>
             </div>
-
-            <!-- Descrição -->
-            <div class="campo">
-                <label for="inp-desc">Descrição</label>
-                <textarea id="inp-desc" rows="4" placeholder="Descreva o produto, características principais, compatibilidade…"></textarea>
-            </div>
-
-            <button class="btn-adicionar" onclick="adicionarProduto()">+ Adicionar Produto</button>
-        </aside>
-
-        <!-- ════ LISTA DE PRODUTOS ════ -->
-        <section class="painel-lista">
-            <div class="lista-header">
-                <h2 class="lista-titulo">Produtos Registados</h2>
-                <span class="badge-count" id="badge-count">0 produtos</span>
-            </div>
-
-            <div class="estado-vazio" id="estado-vazio">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="3" width="20" height="14" rx="2"/>
-                    <line x1="8" y1="21" x2="16" y2="21"/>
-                    <line x1="12" y1="17" x2="12" y2="21"/>
-                </svg>
-                <p>Nenhum produto registado ainda.<br>Preencha o formulário e clique em Adicionar.</p>
-            </div>
-
-            <div id="grid-registados"></div>
-        </section>
-
+        </div>
     </div>
 
     <div id="toast">✓ Produto adicionado</div>
 
     <script>
-        /* ── Estrutura de categorias, subcategorias e marcas ── */
+        /* ── Navegação de Abas ── */
+        function mudarAba(aba) {
+            document.querySelectorAll('.nav-aba').forEach(b => b.classList.remove('ativa'));
+            document.querySelectorAll('.aba-conteudo').forEach(c => c.classList.remove('ativa'));
+
+            document.querySelector(`.nav-aba[onclick="mudarAba('${aba}')"]`).classList.add('ativa');
+            document.getElementById('aba-' + aba).classList.add('ativa');
+        }
+
+        /* ── Estrutura de categorias ── */
         const CATEGORIAS = {
             celulares: {
                 label: 'Celulares',
@@ -588,7 +750,6 @@
         let produtos    = [];
         let fotoDataUrl = null;
 
-        /* ── Helpers ── */
         function q(id) { return document.getElementById(id); }
         function hide(id) { q(id).style.display = 'none'; }
         function show(id) { q(id).style.display = ''; }
@@ -602,20 +763,14 @@
             });
         }
 
-        /* ── Lógica de categoria em cascata ── */
+        /* ── Categoria em cascata ── */
         function onCategoria() {
             const cat = q('sel-cat').value;
-
-            hide('wrap-sub');
-            hide('wrap-marca');
-            q('sel-sub').innerHTML   = '';
-            q('sel-marca').innerHTML = '';
+            hide('wrap-sub'); hide('wrap-marca');
+            q('sel-sub').innerHTML = ''; q('sel-marca').innerHTML = '';
             atualizarCaminho();
-
             if (!cat) return;
-
             const dados = CATEGORIAS[cat];
-
             if (dados.subcategorias) {
                 setOpcoes(q('sel-sub'), Object.keys(dados.subcategorias));
                 show('wrap-sub');
@@ -628,12 +783,8 @@
         function onSubcategoria() {
             const cat = q('sel-cat').value;
             const sub = q('sel-sub').value;
-
-            hide('wrap-marca');
-            atualizarCaminho();
-
+            hide('wrap-marca'); atualizarCaminho();
             if (!sub) return;
-
             const marcas = CATEGORIAS[cat].subcategorias[sub];
             setOpcoes(q('sel-marca'), marcas);
             show('wrap-marca');
@@ -646,19 +797,11 @@
             const sub   = q('sel-sub').value;
             const marca = q('sel-marca').value;
             const wrap  = q('caminho-filtro');
-
             if (!cat) { wrap.innerHTML = ''; return; }
-
             const catLabel = CATEGORIAS[cat].label;
             let html = `<span class="caminho-pilula cat">${catLabel}</span>`;
-
-            if (sub) {
-                html += `<span class="caminho-sep">›</span><span class="caminho-pilula">${sub}</span>`;
-            }
-            if (marca) {
-                html += `<span class="caminho-sep">›</span><span class="caminho-pilula marca">${marca}</span>`;
-            }
-
+            if (sub)   html += `<span class="caminho-sep">›</span><span class="caminho-pilula">${sub}</span>`;
+            if (marca) html += `<span class="caminho-sep">›</span><span class="caminho-pilula marca">${marca}</span>`;
             wrap.innerHTML = html;
         }
 
@@ -735,13 +878,11 @@
             mostrarToast();
         }
 
-        /* ── Remover ── */
         function removerProduto(id) {
             produtos = produtos.filter(p => p.id !== id);
             renderLista();
         }
 
-        /* ── Render lista ── */
         function renderLista() {
             const grid  = q('grid-registados');
             const vazio = q('estado-vazio');
@@ -766,7 +907,6 @@
                     ? `<img src="${p.foto}" alt="${p.nome}">`
                     : `<div class="card-reg-img-vazia"><h1 style="color:red">sem foto</h1></div>`;
 
-                /* Pílulas de categoria no card */
                 let catHtml = '';
                 if (p.catLabel) {
                     catHtml = `<div class="card-reg-cat">
@@ -793,7 +933,6 @@
             }).join('');
         }
 
-        /* ── Limpar form ── */
         function limparForm() {
             q('inp-nome').value  = '';
             q('inp-preco').value = '';
@@ -801,23 +940,19 @@
             q('inp-desc').value  = '';
             q('input-foto').value = '';
             fotoDataUrl = null;
-
-            /* Reset categoria */
             q('sel-cat').value   = '';
             q('sel-sub').innerHTML   = '';
             q('sel-marca').innerHTML = '';
             hide('wrap-sub');
             hide('wrap-marca');
             q('caminho-filtro').innerHTML = '';
-
             const zona = q('zona-foto');
-            zona.classList.remove('tem-foto'); 
+            zona.classList.remove('tem-foto');
             q('preview-img').src = '';
             q('aviso-sem-foto').style.display   = 'none';
             q('placeholder-foto').style.display  = 'flex';
         }
 
-        /* ── Toast ── */
         function mostrarToast() {
             const t = q('toast');
             t.classList.add('visivel');

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BASGAM — Perfil</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="header-esq">
+
+            <div class="logo-badge">
+                B
+            </div>
+
+            <span class="header-titulo">
+                BASGAM <span>/ Perfil</span>
+            </span>
+
+        </div>
+
+        <div class="header-dir">
+
+            <button class="btn-header" onclick="irPara('home')">
+                 Início
+            </button>
+
+            <button class="btn-header danger" onclick="confirmarSair()">
+                 Sair
+            </button>
+
+        </div>
+
+    </header>
+
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="avatar-bloco">
+
+                <div class="avatar-wrap">
+
+                    <div class="avatar-iniciais" id="avatarVisual">
+                        👤
+                    </div>
+
+                    <div class="avatar-edit-btn"
+                    onclick="document.getElementById('avatarInput').click()">
+
+                        ✎
+
+                    </div>
+
+                    <input
+                    type="file"
+                    id="avatarInput"
+                    accept="image/*"
+                    style="display:none"
+                    onchange="trocarAvatar(this)">
+
+                </div>
+
+                <div class="avatar-nome" id="sidebar-nome">
+                    Utilizador
+                </div>
+
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <span class="nav-section-label">
+                    Minha Conta
+                </span>
+
+                <div class="nav-item ativo"
+                onclick="mostrarSecao('visao-geral', this)">
+
+                     Visão Geral
+
+                </div>
+
+                <div class="nav-item"
+                onclick="mostrarSecao('pedidos', this)">
+
+                     Meus Pedidos
+
+                </div>
+
+            </nav>
+
+        </aside>
+
+        <!-- CONTEÚDO -->
+
+        <main class="conteudo">
+
+            <!-- VISÃO GERAL -->
+
+            <section id="visao-geral" class="secao ativa">
+
+                <h1 class="secao-titulo">
+                    Visão Geral
+                </h1>
+
+                <p class="secao-sub">
+                    Resumo da sua conta e actividade.
+                </p>
+
+                <div class="cards-stats">
+
+                    <div class="card-stat">
+
+                        <div class="stat-label">
+                            Pedidos Totais
+                        </div>
+
+                        <div class="stat-valor" id="stat-pedidos">
+                            0
+                        </div>
+
+                        <div class="stat-desc">
+                            histórico completo
+                        </div>
+
+                    </div>
+
+                    <div class="card-stat">
+
+                        <div class="stat-label">
+                            Créditos
+                        </div>
+
+                        <div class="stat-valor" id="stat-creditos">
+                            0
+                        </div>
+
+                        <div class="stat-desc">
+                            em MZN
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="painel-edicao">
+
+                    <div class="painel-header">
+
+                        <div class="painel-header-titulo">
+                            Adicionar Crédito
+                        </div>
+
+                        <div class="painel-header-sub">
+                            Insira o valor a carregar na sua conta
+                        </div>
+
+                    </div>
+
+                    <div class="painel-corpo">
+
+                        <div class="credito-wrap">
+
+                            <div class="credito-campo">
+
+                                <label>
+                                    Valor (MZN)
+                                </label>
+
+                                <div class="credito-input-wrap">
+
+                                    <span class="credito-prefix">
+                                        MZN
+                                    </span>
+
+                                    <input
+                                    type="number"
+                                    id="inp-credito"
+                                    placeholder="0">
+
+                                </div>
+
+                            </div>
+
+                            <button class="btn-adicionar-credito"
+                            onclick="adicionarCredito()">
+
+                                + Adicionar
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- PEDIDOS -->
+
+            <section id="pedidos" class="secao">
+
+                <h1 class="secao-titulo">
+                    Meus Pedidos
+                </h1>
+
+                <p class="secao-sub">
+                    Histórico de compras e estado das encomendas.
+                </p>
+
+                <div class="lista-pedidos">
+
+                    <div class="estado-vazio-pedidos">
+
+                        <div class="icone">
+                            📦
+                        </div>
+
+                        <p>
+                            Nenhum pedido ainda.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- TOAST -->
+
+    <div id="toast">
+        ✔ Feito!
+    </div>
+
+    <script>
+
+        function mostrarSecao(id, elemento){
+
+            document
+            .querySelectorAll('.secao')
+            .forEach(secao => {
+                secao.classList.remove('ativa');
+            });
+
+            document
+            .getElementById(id)
+            .classList.add('ativa');
+
+            document
+            .querySelectorAll('.nav-item')
+            .forEach(item => {
+                item.classList.remove('ativo');
+            });
+
+            elemento.classList.add('ativo');
+        }
+
+        function trocarAvatar(input){
+
+            const file = input.files[0];
+
+            if(!file){
+                return;
+            }
+
+            const leitor = new FileReader();
+
+            leitor.onload = function(e){
+
+                document.getElementById('avatarVisual').innerHTML = `
+                    <img
+                    src="${e.target.result}"
+                    style="
+                        width:100%;
+                        height:100%;
+                        object-fit:cover;
+                        border-radius:50%;
+                    ">
+                `;
+            }
+
+            leitor.readAsDataURL(file);
+        }
+
+        function adicionarCredito(){
+
+            const input = document.getElementById('inp-credito');
+
+            const valor = parseInt(input.value);
+
+            if(!valor || valor <= 0){
+
+                input.style.borderColor = 'red';
+
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                },1500);
+
+                return;
+            }
+
+            const creditos =
+            document.getElementById('stat-creditos');
+
+            const actual =
+            parseInt(creditos.textContent) || 0;
+
+            creditos.textContent = actual + valor;
+
+            input.value = '';
+
+            mostrarToast('Crédito adicionado!');
+        }
+
+        function mostrarToast(msg){
+
+            const toast =
+            document.getElementById('toast');
+
+            toast.textContent = '✔ ' + msg;
+
+            toast.classList.add('visivel');
+
+            setTimeout(() => {
+                toast.classList.remove('visivel');
+            },2400);
+        }
+
+        function confirmarSair(){
+
+            const sair =
+            confirm('Tem certeza que deseja sair?');
+
+            if(sair){
+                alert('Sessão terminada.');
+            }
+        }
+
+        function irPara(pagina){
+
+            alert('Ir para: ' + pagina);
+        }
+
+    </script>
+
+</body>
+</html>
