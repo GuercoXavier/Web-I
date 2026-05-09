@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('../config/database');
 const { autenticar } = require('../middleware/auth');
-
+const { validarId, validarQuantidade } = require('../middleware/validacao');
 const router = express.Router();
 
 function getCarrinho(utilizador_id) {
@@ -95,7 +95,7 @@ router.post('/adicionar', autenticar, (req, res) => {
       VALUES (?, ?, ?)
     `).run(carrinho.id, produto_id, quantidade);
   }
-
+router.post('/adicionar', autenticar, validarQuantidade, async (req, res) => { ... });
   res.json({ mensagem: 'Produto adicionado ao carrinho.' });
 });
 
@@ -128,7 +128,7 @@ router.put('/atualizar', autenticar, (req, res) => {
     SET quantidade = ?
     WHERE carrinho_id = ? AND produto_id = ?
   `).run(quantidade, carrinho.id, produto_id);
-
+router.put('/atualizar', autenticar, validarQuantidade, async (req, res) => { ... });
   res.json({ mensagem: 'Carrinho atualizado.' });
 });
 

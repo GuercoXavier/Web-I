@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('../config/database');
 const { autenticar, somenteAdmin } = require('../middleware/auth');
-
+const { validarProduto, validarId, limitarDescricao } = require('../middleware/validacao');
 const router = express.Router();
 
 const cache = new Map();
@@ -104,7 +104,7 @@ router.get('/', (req, res) => {
     setCache(cacheKey, result);
 
     return res.json(result);
-
+router.get('/:id', validarId, async (req, res) => { ... });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ erro: 'Erro interno.' });
@@ -172,7 +172,7 @@ router.post('/', autenticar, somenteAdmin, (req, res) => {
       mensagem: 'Produto adicionado.',
       id: result.lastInsertRowid
     });
-
+router.post('/', autenticar, somenteAdmin, validarProduto, limitarDescricao, async (req, res) => { ... });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ erro: 'Erro interno.' });
@@ -219,7 +219,7 @@ router.put('/:id', autenticar, somenteAdmin, (req, res) => {
     );
 
     return res.json({ mensagem: 'Produto atualizado.' });
-
+router.put('/:id', autenticar, somenteAdmin, validarId, validarProduto, limitarDescricao, async (req, res) => { ... });
   } catch (err) {
     return res.status(500).json({ erro: 'Erro interno.' });
   }
@@ -253,7 +253,7 @@ router.delete('/:id', autenticar, somenteAdmin, (req, res) => {
     }
     
     return res.json({ mensagem: 'Produto removido com sucesso.' });
-    
+   router.delete('/:id', autenticar, somenteAdmin, validarId, async (req, res) => { ... }); 
   } catch (err) {
     console.error('Erro ao remover produto:', err.message);
     return res.status(500).json({ erro: 'Erro interno: ' + err.message });

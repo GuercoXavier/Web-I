@@ -2,6 +2,7 @@ const API = 'http://localhost:3000/api';
 
 let produtos = [];
 let carrinhoAtual = { itens: [], total: 0 };
+let utilizadorLogado = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     const ano = document.getElementById('ano');
@@ -10,15 +11,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const anoFooter = document.getElementById('anoFooter');
     if (anoFooter) anoFooter.textContent = new Date().getFullYear();
 
+    // Verificar se utilizador está logado
     const token = localStorage.getItem('token');
-    if (!token) {
-        window.location.href = window.location.origin + '/Telas/TelaLogin/tela_login.html';
-        return;
+    if (token) {
+        utilizadorLogado = JSON.parse(localStorage.getItem('utilizador') || '{}');
+        atualizarUserDisplay();
+    } else {
+        // Mostrar botão de login no header
+        mostrarBotaoLogin();
     }
-    // Atualizar nome do usuário no header
-    atualizarUserDisplay();
+
     await carregarProdutos();
-    await carregarCarrinho();
+    await carregarCarrinho(); // Carrinho anónimo funciona sem login
     atualizarBadge();
     iniciarSlider();
     renderDestaque();
@@ -31,14 +35,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+function mostrarBotaoLogin() {
+    const userContainer = document.querySelector('.user-menu-container');
+    if (userContainer) {
+        userContainer.innerHTML = `
+            <a href="../TelaLogin/tela_login.html" class="btn-login-header">
+                <img src="../../imagens/icon/person-circle.svg" alt="Login" />
+                <span>Entrar</span>
+            </a>
+        `;
+    }
+}
+
 function getToken() {
     return localStorage.getItem('token');
 }
 
 function getAuthHeaders() {
+    const token = getToken();
+    if (!token) return { 'Content-Type': 'application/json' };
     return {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${getToken()}`
+        'Authorization': `Bearer ${token}`
     };
 }
 
@@ -260,25 +278,68 @@ async function renderDestaque() {
     }
 }
 
+// ==================== CARRINHO (Funciona sem login) ====================
 async function carregarCarrinho() {
-    try {
-        const res = await fetch(`${API}/carrinho`, {
-            headers: getAuthHeaders()
-        });
-
-        if (!res.ok) throw new Error('Erro ao carregar carrinho');
-
-        carrinhoAtual = await res.json();
-        atualizarBadge();
+    // Carrinho local para utilizadores não logados
+    const carrinhoLocal = localStorage.getItem('carrinho_local');
+    if (carrinhoLocal && !getToken()) {
+        carrinhoAtual = JSON.parse(carrinhoLocal);
         renderCarrinho();
-
-    } catch (err) {
-        console.error('Erro ao carregar carrinho:', err);
-        carrinhoAtual = { itens: [], total: 0 };
+        atualizarBadge();
+        return;
     }
+
+    // Se estiver logado, buscar do backend
+    if (getToken()) {
+        try {
+            const res = await fetch(`${API}/carrinho`, {
+                headers: getAuthHeaders()
+            });
+
+            if (res.ok) {
+                carrinhoAtual = await res.json();
+            }
+        } catch (err) {
+            console.error('Erro ao carregar carrinho:', err);
+        }
+    }
+    
+    renderCarrinho();
+    atualizarBadge();
 }
 
 async function addCarrinho(produtoId) {
+    const produto = produtos.find(p => p.id === produtoId);
+    if (!produto) return;
+
+    // Se não estiver logado, guardar no localStorage
+    if (!getToken()) {
+        const carrinhoLocal = JSON.parse(localStorage.getItem('carrinho_local') || '{"itens":[], "total":0}');
+        const itemExistente = carrinhoLocal.itens.find(i => i.produto_id === produtoId);
+        
+        if (itemExistente) {
+            itemExistente.quantidade++;
+        } else {
+            carrinhoLocal.itens.push({
+                produto_id: produto.id,
+                nome: produto.nome,
+                preco: produto.preco,
+                imagem: produto.imagem,
+                quantidade: 1
+            });
+        }
+        
+        carrinhoLocal.total = carrinhoLocal.itens.reduce((s, i) => s + (i.preco * i.quantidade), 0);
+        localStorage.setItem('carrinho_local', JSON.stringify(carrinhoLocal));
+        carrinhoAtual = carrinhoLocal;
+        
+        renderCarrinho();
+        atualizarBadge();
+        alert('Produto adicionado ao carrinho!');
+        return;
+    }
+
+    // Se estiver logado, usar API
     try {
         const res = await fetch(`${API}/carrinho/adicionar`, {
             method: 'POST',
@@ -306,6 +367,29 @@ async function addCarrinho(produtoId) {
 async function atualizarQuantidade(produtoId, quantidade) {
     if (quantidade < 0) return;
 
+    // Se não estiver logado, atualizar localStorage
+    if (!getToken()) {
+        const carrinhoLocal = JSON.parse(localStorage.getItem('carrinho_local') || '{"itens":[]}');
+        const item = carrinhoLocal.itens.find(i => i.produto_id === produtoId);
+        
+        if (item) {
+            if (quantidade === 0) {
+                carrinhoLocal.itens = carrinhoLocal.itens.filter(i => i.produto_id !== produtoId);
+            } else {
+                item.quantidade = quantidade;
+            }
+        }
+        
+        carrinhoLocal.total = carrinhoLocal.itens.reduce((s, i) => s + (i.preco * i.quantidade), 0);
+        localStorage.setItem('carrinho_local', JSON.stringify(carrinhoLocal));
+        carrinhoAtual = carrinhoLocal;
+        
+        renderCarrinho();
+        atualizarBadge();
+        return;
+    }
+
+    // Se estiver logado, usar API
     try {
         const res = await fetch(`${API}/carrinho/atualizar`, {
             method: 'PUT',
@@ -332,6 +416,14 @@ async function removerItemCarrinho(produtoId) {
 
 async function limparCarrinho() {
     if (!confirm('Limpar todo o carrinho?')) return;
+
+    if (!getToken()) {
+        localStorage.removeItem('carrinho_local');
+        carrinhoAtual = { itens: [], total: 0 };
+        renderCarrinho();
+        atualizarBadge();
+        return;
+    }
 
     try {
         const res = await fetch(`${API}/carrinho/limpar`, {
@@ -369,6 +461,7 @@ function renderCarrinho() {
     carrinhoAtual.itens.forEach(item => {
         const subtotal = item.preco * item.quantidade;
         total += subtotal;
+        const produtoId = item.produto_id || item.id;
 
         itemsHtml += `
             <div class="carrinho-item">
@@ -380,14 +473,14 @@ function renderCarrinho() {
                     <p>${fmt(item.preco)}</p>
                 </div>
                 <div class="carrinho-item-qtd">
-                    <button onclick="atualizarQuantidade(${item.produto_id}, ${item.quantidade - 1})">-</button>
+                    <button onclick="atualizarQuantidade(${produtoId}, ${item.quantidade - 1})">-</button>
                     <span>${item.quantidade}</span>
-                    <button onclick="atualizarQuantidade(${item.produto_id}, ${item.quantidade + 1})">+</button>
+                    <button onclick="atualizarQuantidade(${produtoId}, ${item.quantidade + 1})">+</button>
                 </div>
                 <div class="carrinho-item-subtotal">
                     ${fmt(subtotal)}
                 </div>
-                <button class="carrinho-item-remove" onclick="removerItemCarrinho(${item.produto_id})">Remover</button>
+                <button class="carrinho-item-remove" onclick="removerItemCarrinho(${produtoId})">Remover</button>
             </div>
         `;
     });
@@ -411,32 +504,33 @@ function atualizarBadge() {
     }
 }
 
+// ==================== FINALIZAR COMPRA (Exige Login) ====================
 async function finalizar() {
+    // Verificar se está logado
+    if (!getToken()) {
+        const confirmar = confirm('Para finalizar a compra, precisa fazer login. Deseja ir para a página de login?');
+        if (confirmar) {
+            // Guardar carrinho atual antes de redirecionar
+            if (!getToken()) {
+                localStorage.setItem('carrinho_local', JSON.stringify(carrinhoAtual));
+            }
+            window.location.href = '../TelaLogin/tela_login.html';
+        }
+        return;
+    }
+
+    // Se estiver logado, verificar carrinho
     if (!carrinhoAtual.itens || carrinhoAtual.itens.length === 0) {
         alert('Carrinho vazio');
         return;
     }
 
-    // Verificar créditos do utilizador
-    try {
-        const credResponse = await fetch(`${API}/auth/creditos`, {
-            headers: getAuthHeaders()
-        });
-        const credData = await credResponse.json();
-        const creditosAtuais = credData.creditos || 0;
-
-        if (creditosAtuais > 0) {
-            const usarCreditos = confirm(`Você tem ${fmt(creditosAtuais)} em créditos. Deseja usá-los nesta compra?`);
-            if (usarCreditos) {
-                await usarCreditosNaCompra(creditosAtuais);
-                return;
-            }
-        }
-    } catch (err) {
-        console.error('Erro ao verificar créditos:', err);
+    // Verificar se há carrinho local para sincronizar
+    const carrinhoLocal = localStorage.getItem('carrinho_local');
+    if (carrinhoLocal) {
+        await sincronizarCarrinhoLocal();
     }
 
-    // Checkout normal
     try {
         const res = await fetch(`${API}/pedidos/checkout`, {
             method: 'POST',
@@ -449,6 +543,8 @@ async function finalizar() {
 
         alert(`Pedido ${data.pedido_id} realizado! Total: ${fmt(data.total)}`);
         
+        // Limpar carrinho local após compra
+        localStorage.removeItem('carrinho_local');
         await carregarCarrinho();
         ir('produtos');
 
@@ -458,27 +554,26 @@ async function finalizar() {
     }
 }
 
-async function usarCreditosNaCompra(valorCreditos) {
-    try {
-        const res = await fetch(`${API}/pedidos/checkout-com-creditos`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify({ usar_creditos: true, valor_creditos: valorCreditos })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) throw new Error(data.erro || 'Erro ao finalizar');
-
-        alert(`Pedido ${data.pedido_id} realizado! Total pago: ${fmt(data.total_pago)} | Créditos usados: ${fmt(data.creditos_usados)}`);
-        
-        await carregarCarrinho();
-        ir('produtos');
-
-    } catch (err) {
-        console.error('Erro:', err);
-        alert(err.message);
+async function sincronizarCarrinhoLocal() {
+    const carrinhoLocal = JSON.parse(localStorage.getItem('carrinho_local') || '{"itens":[]}');
+    
+    for (const item of carrinhoLocal.itens) {
+        try {
+            await fetch(`${API}/carrinho/adicionar`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    produto_id: item.produto_id,
+                    quantidade: item.quantidade
+                })
+            });
+        } catch (err) {
+            console.error('Erro ao sincronizar:', err);
+        }
     }
+    
+    localStorage.removeItem('carrinho_local');
+    await carregarCarrinho();
 }
 
 function ir(pagina, id = null) {
@@ -596,42 +691,6 @@ function iniciarSlider() {
     });
 }
 
-function iniciarSlider() {
-    const track = document.querySelector('.track');
-    const container = document.getElementById('scroll-container');
-    
-    if (!track || !container) return;
-
-    let index = 0;
-    const slides = document.querySelectorAll('.track > *');
-    const total = slides.length;
-
-    if (total === 0) return;
-
-    const slideWidth = () => container.offsetWidth;
-
-    const nextBtn = document.getElementById('next');
-    const prevBtn = document.getElementById('prev');
-
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            index = Math.min(index + 1, total - 1);
-            track.style.transform = `translateX(-${index * slideWidth()}px)`;
-        });
-    }
-
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            index = Math.max(index - 1, 0);
-            track.style.transform = `translateX(-${index * slideWidth()}px)`;
-        });
-    }
-
-    window.addEventListener('resize', () => {
-        track.style.transform = `translateX(-${index * slideWidth()}px)`;
-    });
-}
-
 function toggleMenu() {
     const menu = document.getElementById('menu');
     if (menu) {
@@ -647,7 +706,6 @@ function toggleUserMenu() {
     }
 }
 
-// Fechar menu ao clicar fora
 document.addEventListener('click', function(e) {
     const container = document.querySelector('.user-menu-container');
     const menu = document.getElementById('userMenu');

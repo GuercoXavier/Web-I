@@ -3,9 +3,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/database');
 const { autenticar } = require('../middleware/auth');
-
+const { validarRegisto, validarLogin } = require('../middleware/validacao');
 const router = express.Router();
-
+const { 
+  autenticar, 
+  verificarTentativasLogin, 
+  registrarTentativaFalha, 
+  limparTentativasSucesso 
+} = require('../middleware/auth');
 // ==================== LOGIN ====================
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -48,7 +53,7 @@ router.post('/login', async (req, res) => {
         creditos: user.creditos || 0
       }
     });
-
+router.post('/login', validarLogin, async (req, res) => { ... });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ erro: 'Erro interno.' });
@@ -87,7 +92,7 @@ router.post('/register', async (req, res) => {
       mensagem: 'Conta criada com sucesso!',
       id: result.lastInsertRowid
     });
-
+router.post('/register', validarRegisto, async (req, res) => { ... });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ erro: 'Erro interno.' });
