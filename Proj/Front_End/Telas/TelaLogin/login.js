@@ -5,7 +5,6 @@ const loginBtn = document.querySelector('.login-btn');
 
 /* ── Toggle login / register ── */
 if (registerBtn && loginBtn && container) {
-
     registerBtn.addEventListener('click', () => {
         container.classList.add('active');
     });
@@ -55,13 +54,26 @@ if (loginForm) {
                 return;
             }
 
+            // guardar sessão
             localStorage.setItem('token', data.token);
             localStorage.setItem('utilizador', JSON.stringify(data.utilizador));
 
             alert('Login bem-sucedido!');
 
-            // 🔥 caminho correto
-            window.location.href = '../TelaPrincipal/index.html';
+            // 🔥 REDIRECT POR ROLE
+            const role = data.utilizador.role;
+
+            if (role === 'admin') {
+                window.location.href = '../TelaRegistro/registroAdm.html';
+            }
+
+            else if (role === 'cliente') {
+                window.location.href = '../TelaPrincipal/index.html';
+            }
+
+            else {
+                alert('Role inválido');
+            }
 
         } catch (err) {
             console.error(err);
@@ -88,7 +100,7 @@ if (registerForm) {
         const password = inputs[2].value;
 
         if (!username || !email || !password) {
-            alert('Preencha todos os campos');
+            alert('Preenche todos os campos');
             return;
         }
 

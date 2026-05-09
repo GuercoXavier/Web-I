@@ -41,11 +41,9 @@
         button { cursor: pointer; border: none; background: none; font-family: inherit; }
         ul { list-style: none; }
 
-        /* ── Cabeçalho ── */
         header {
             position: sticky; top: 0; z-index: 50;
             background: rgba(10,10,10,0.9);
-            -webkit-backdrop-filter: blur(16px);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--borda);
             height: 64px;
@@ -73,11 +71,9 @@
             border-radius: 4px; padding: 2px 8px; letter-spacing: 0.05em;
         }
 
-        /* ── Navegação de abas ── */
         .nav-abas {
             border-bottom: 1px solid var(--borda);
             background: rgba(10,10,10,0.6);
-            -webkit-backdrop-filter: blur(8px);
             backdrop-filter: blur(8px);
             padding: 0 32px;
             display: flex;
@@ -100,28 +96,18 @@
             transition: color var(--trans), border-color var(--trans);
             cursor: pointer;
             background: none;
-            border-top: none;
-            border-left: none;
-            border-right: none;
             position: relative;
             top: 1px;
         }
 
         .nav-aba:hover { color: rgba(255,255,255,0.7); }
-
-        .nav-aba.ativa {
-            color: var(--branco);
-            border-bottom-color: var(--branco);
-        }
-
+        .nav-aba.ativa { color: var(--branco); border-bottom-color: var(--branco); }
         .nav-aba svg { opacity: 0.6; }
         .nav-aba.ativa svg { opacity: 1; }
 
-        /* ── Abas de conteúdo ── */
         .aba-conteudo { display: none; }
         .aba-conteudo.ativa { display: flex; }
 
-        /* ── Layout principal ── */
         .layout {
             display: grid;
             grid-template-columns: 420px 1fr;
@@ -129,7 +115,6 @@
             min-height: calc(100vh - 64px - 48px);
         }
 
-        /* ── Layout simples (para abas de remoção) ── */
         .layout-simples {
             display: flex;
             align-items: flex-start;
@@ -156,7 +141,6 @@
             font-size: 0.85rem; color: var(--muted); margin-bottom: 36px;
         }
 
-        /* ── Botão remover ── */
         .btn-remover-acao {
             width: 100%; padding: 14px;
             background: transparent;
@@ -164,17 +148,14 @@
             font-family: var(--fonte-titulo); font-size: 1rem; font-weight: 700;
             border-radius: var(--raio);
             border: 1px solid rgba(255,255,255,0.2);
-            transition: background var(--trans), border-color var(--trans), transform var(--trans);
-            margin-top: 8px; letter-spacing: 0.01em;
+            transition: background var(--trans), border-color var(--trans);
+            margin-top: 8px;
         }
         .btn-remover-acao:hover {
             background: rgba(255,255,255,0.06);
             border-color: rgba(255,255,255,0.35);
-            transform: translateY(-1px);
         }
-        .btn-remover-acao:active { transform: translateY(0); }
 
-        /* ── Painel formulário ── */
         .painel-form {
             border-right: 1px solid var(--borda);
             padding: 40px 32px 60px;
@@ -189,7 +170,6 @@
 
         .painel-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 36px; }
 
-        /* ── Zona de foto ── */
         .zona-foto {
             position: relative;
             border: 2px dashed var(--borda);
@@ -214,7 +194,6 @@
 
         .zona-foto.tem-foto #preview-img { display: block; }
         .zona-foto.tem-foto .placeholder-foto { display: none; }
-        .zona-foto.tem-foto .aviso-sem-foto  { display: none; }
 
         .placeholder-foto {
             display: flex; flex-direction: column; align-items: center;
@@ -222,10 +201,8 @@
         }
 
         .placeholder-foto svg { opacity: 0.3; }
-
         .placeholder-foto p { font-size: 0.8rem; color: var(--muted); text-align: center; }
         .placeholder-foto p strong { color: rgba(255,255,255,0.5); display: block; }
-
 
         .overlay-troca {
             position: absolute; inset: 0;
@@ -237,10 +214,8 @@
         }
 
         .zona-foto.tem-foto:hover .overlay-troca { opacity: 1; }
-
         #input-foto { display: none; }
 
-        /* ── Campos ── */
         .campo { margin-bottom: 20px; }
 
         .campo label {
@@ -268,8 +243,6 @@
             outline: none;
             transition: border-color var(--trans), background var(--trans);
             resize: none;
-            -webkit-appearance: none;
-            appearance: none;
         }
 
         .campo select {
@@ -280,11 +253,7 @@
             cursor: pointer;
         }
 
-        .campo select option {
-            background: #1a1a1a;
-            color: var(--branco);
-        }
-
+        .campo select option { background: #1a1a1a; color: var(--branco); }
         .campo input::placeholder,
         .campo textarea::placeholder { color: rgba(255,255,255,0.2); }
 
@@ -295,12 +264,6 @@
             background: rgba(255,255,255,0.07);
         }
 
-        .campo select:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-        }
-
-        /* ── Bloco de categoria ── */
         .bloco-cat {
             background: rgba(255,255,255,0.02);
             border: 1px solid var(--borda);
@@ -331,7 +294,6 @@
         .bloco-cat .campo { margin-bottom: 14px; }
         .bloco-cat .campo:last-child { margin-bottom: 0; }
 
-        /* Pílulas de caminho */
         .caminho-filtro {
             display: flex;
             align-items: center;
@@ -357,12 +319,8 @@
             color: var(--branco);
         }
 
-        .caminho-sep {
-            font-size: 0.7rem;
-            color: var(--muted);
-        }
+        .caminho-sep { font-size: 0.7rem; color: var(--muted); }
 
-        /* Campos duplos */
         .campos-duplos { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
         .campos-duplos .campo { margin-bottom: 0; }
 
@@ -374,19 +332,16 @@
         }
         .campo .input-wrapper input { padding-left: 36px; }
 
-        /* ── Botão adicionar ── */
         .btn-adicionar {
             width: 100%; padding: 14px;
             background: var(--branco); color: #0a0a0a;
             font-family: var(--fonte-titulo); font-size: 1rem; font-weight: 700;
             border-radius: var(--raio);
-            transition: background var(--trans), transform var(--trans);
-            margin-top: 8px; letter-spacing: 0.01em;
+            transition: background var(--trans);
+            margin-top: 8px;
         }
-        .btn-adicionar:hover { background: rgba(255,255,255,0.85); transform: translateY(-1px); }
-        .btn-adicionar:active { transform: translateY(0); }
+        .btn-adicionar:hover { background: rgba(255,255,255,0.85); }
 
-        /* ── Painel lista ── */
         .painel-lista { padding: 40px 40px 60px; overflow-y: auto; }
 
         .lista-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
@@ -402,7 +357,6 @@
             border-radius: 999px; padding: 3px 12px; color: var(--muted);
         }
 
-        /* Estado vazio */
         .estado-vazio {
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; gap: 12px; padding: 80px 40px; text-align: center;
@@ -410,17 +364,13 @@
         .estado-vazio svg { opacity: 0.15; }
         .estado-vazio p { font-size: 0.9rem; color: var(--muted); }
 
-        /* ── Grid de cards ── */
         #grid-registados { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
 
         .card-reg {
             background: var(--bg-panel); border: 1px solid var(--borda);
             border-radius: var(--raio); overflow: hidden;
             transition: border-color var(--trans);
-            animation: entrar 0.3s ease both;
         }
-
-        @keyframes entrar { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 
         .card-reg:hover { border-color: var(--borda-hl); }
 
@@ -444,7 +394,6 @@
             color: var(--branco); margin-bottom: 4px; word-break: break-word;
         }
 
-        /* Categoria no card */
         .card-reg-cat {
             display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
             margin-bottom: 8px;
@@ -483,7 +432,6 @@
         }
         .btn-remover-card:hover { color: var(--vermelho); background: rgba(239,68,68,0.07); }
 
-        /* ── Toast ── */
         #toast {
             position: fixed; bottom: 32px; right: 32px;
             background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.2); color: var(--branco);
@@ -495,17 +443,16 @@
         }
         #toast.visivel { opacity: 1; transform: translateY(0); }
 
-        /* ── Responsivo ── */
         @media (max-width: 900px) {
             .layout { grid-template-columns: 1fr; }
-            .painel-form  { border-right: none; border-bottom: 1px solid var(--borda); }
+            .painel-form { border-right: none; border-bottom: 1px solid var(--borda); }
             .painel-lista { padding: 32px 20px 60px; }
             .nav-abas { padding: 0 16px; }
             .nav-aba { padding: 0 14px; font-size: 0.75rem; }
         }
         @media (max-width: 480px) {
             header { padding: 0 16px; }
-            .painel-form  { padding: 28px 16px 40px; }
+            .painel-form { padding: 28px 16px 40px; }
             #grid-registados { grid-template-columns: 1fr 1fr; gap: 12px; }
             .layout-simples { padding: 32px 16px; }
             .painel-remocao { padding: 28px 20px; }
@@ -526,65 +473,57 @@
         </a>
     </header>
 
-    <!-- ── Navegação de Abas ── -->
     <nav class="nav-abas">
         <button class="nav-aba ativa" onclick="mudarAba('registro')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
             Registar Produto
         </button>
         <button class="nav-aba" onclick="mudarAba('remover-produto')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>
+            </svg>
             Remover Produto
         </button>
         <button class="nav-aba" onclick="mudarAba('remover-perfil')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="18" y1="11" x2="23" y2="16"/><line x1="23" y1="11" x2="18" y2="16"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
             Remover Perfil
         </button>
     </nav>
 
-    <!-- ════ ABA: REGISTAR PRODUTO ════ -->
+    <!-- ABA: REGISTAR PRODUTO -->
     <div class="aba-conteudo ativa" id="aba-registro">
         <div class="layout">
-
-            <!-- FORMULÁRIO -->
             <aside class="painel-form">
                 <p class="painel-titulo">Adicionar Produto</p>
                 <p class="painel-sub">Preencha os dados abaixo e clique em Adicionar.</p>
 
-                <!-- Zona de foto -->
                 <div class="zona-foto" id="zona-foto"
                      onclick="document.getElementById('input-foto').click()"
                      ondragover="dragOver(event)"
                      ondragleave="dragLeave(event)"
                      ondrop="drop(event)">
-
                     <img id="preview-img" src="" alt="preview">
-
-                    <div class="placeholder-foto" id="placeholder-foto">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="placeholder-foto">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
                             <rect x="3" y="3" width="18" height="18" rx="3"/>
                             <circle cx="8.5" cy="8.5" r="1.5"/>
                             <polyline points="21 15 16 10 5 21"/>
                         </svg>
                         <p><strong>Clique ou arraste uma foto</strong>Opcional — JPG, PNG, WEBP</p>
                     </div>
-
-                    <div class="aviso-sem-foto" id="aviso-sem-foto" style="display:none">
-                        <h1 style="color:red">sem foto</h1>
-                    </div>
-
                     <div class="overlay-troca">Trocar foto</div>
                 </div>
-
                 <input type="file" id="input-foto" accept="image/*" onchange="fotoSelecionada(this)">
 
-                <!-- Nome -->
                 <div class="campo">
                     <label for="inp-nome">Nome <span>sem limite</span></label>
-                    <input type="text" id="inp-nome" placeholder="Ex: iPhone 16 Pro Max 256 GB Titânio Natural">
+                    <input type="text" id="inp-nome" placeholder="Ex: iPhone 16 Pro Max 256 GB">
                 </div>
 
-                <!-- Preço + Stock -->
                 <div class="campos-duplos">
                     <div class="campo">
                         <label for="inp-preco">Preço</label>
@@ -599,47 +538,37 @@
                     </div>
                 </div>
 
-                <!-- BLOCO DE CATEGORIA -->
                 <div class="bloco-cat">
                     <p class="bloco-cat-titulo">Categorização</p>
-
                     <div class="campo">
                         <label for="sel-cat">Categoria</label>
                         <select id="sel-cat" onchange="onCategoria()">
                             <option value="">— selecione —</option>
-                            <option value="celulares">Celulares</option>
-                            <option value="computadores">Computadores</option>
-                            <option value="acessorios">Acessórios</option>
                         </select>
                     </div>
-
                     <div class="campo" id="wrap-sub" style="display:none">
                         <label for="sel-sub">Subcategoria</label>
                         <select id="sel-sub" onchange="onSubcategoria()">
                             <option value="">— selecione —</option>
                         </select>
                     </div>
-
                     <div class="campo" id="wrap-marca" style="display:none">
                         <label for="sel-marca">Marca</label>
                         <select id="sel-marca" onchange="onMarca()">
                             <option value="">— selecione —</option>
                         </select>
                     </div>
-
                     <div class="caminho-filtro" id="caminho-filtro"></div>
                 </div>
 
-                <!-- Descrição -->
                 <div class="campo">
                     <label for="inp-desc">Descrição</label>
-                    <textarea id="inp-desc" rows="4" placeholder="Descreva o produto, características principais, compatibilidade…"></textarea>
+                    <textarea id="inp-desc" rows="4" placeholder="Descreva o produto, características principais..."></textarea>
                 </div>
 
-                <button class="btn-adicionar" onclick="adicionarProduto()">+ Adicionar Produto</button>
+                <button class="btn-adicionar" id="btn-adicionar">+ Adicionar Produto</button>
             </aside>
 
-            <!-- LISTA DE PRODUTOS -->
             <section class="painel-lista">
                 <div class="lista-header">
                     <h2 class="lista-titulo">Produtos Registados</h2>
@@ -647,7 +576,7 @@
                 </div>
 
                 <div class="estado-vazio" id="estado-vazio">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
                         <rect x="2" y="3" width="20" height="14" rx="2"/>
                         <line x1="8" y1="21" x2="16" y2="21"/>
                         <line x1="12" y1="17" x2="12" y2="21"/>
@@ -657,11 +586,10 @@
 
                 <div id="grid-registados"></div>
             </section>
-
         </div>
     </div>
 
-    <!-- ════ ABA: REMOVER PRODUTO ════ -->
+    <!-- ABA: REMOVER PRODUTO -->
     <div class="aba-conteudo" id="aba-remover-produto">
         <div class="layout-simples">
             <div class="painel-remocao">
@@ -678,12 +606,12 @@
                     <input type="text" id="inp-nome-busca-produto" placeholder="Ex: iPhone 16 Pro Max">
                 </div>
 
-                <button class="btn-remover-acao">Remover Produto</button>
+                <button class="btn-remover-acao" id="btn-remover-produto">Remover Produto</button>
             </div>
         </div>
     </div>
 
-    <!-- ════ ABA: REMOVER PERFIL ════ -->
+    <!-- ABA: REMOVER PERFIL -->
     <div class="aba-conteudo" id="aba-remover-perfil">
         <div class="layout-simples">
             <div class="painel-remocao">
@@ -700,264 +628,13 @@
                     <input type="email" id="inp-email-perfil" placeholder="Ex: joao@email.com">
                 </div>
 
-                <button class="btn-remover-acao">Remover Perfil</button>
+                <button class="btn-remover-acao" id="btn-remover-perfil">Remover Perfil</button>
             </div>
         </div>
     </div>
 
     <div id="toast">✓ Produto adicionado</div>
 
-    <script>
-        /* ── Navegação de Abas ── */
-        function mudarAba(aba) {
-            document.querySelectorAll('.nav-aba').forEach(b => b.classList.remove('ativa'));
-            document.querySelectorAll('.aba-conteudo').forEach(c => c.classList.remove('ativa'));
-
-            document.querySelector(`.nav-aba[onclick="mudarAba('${aba}')"]`).classList.add('ativa');
-            document.getElementById('aba-' + aba).classList.add('ativa');
-        }
-
-        /* ── Estrutura de categorias ── */
-        const CATEGORIAS = {
-            celulares: {
-                label: 'Celulares',
-                subcategorias: null,
-                marcas: ['Apple', 'Samsung', 'Xiaomi', 'Tecno']
-            },
-            computadores: {
-                label: 'Computadores',
-                subcategorias: {
-                    'Laptop':  ['Apple', 'Asus', 'Samsung', 'Dell', 'Lenovo', 'HP'],
-                    'Monitor': ['Samsung', 'Dell', 'HP', 'Asus', 'Apple']
-                }
-            },
-            acessorios: {
-                label: 'Acessórios',
-                subcategorias: {
-                    'Fone':           ['Apple', 'Samsung', 'JBL'],
-                    'Teclado':        ['Logitech', 'Corsair', 'Razer'],
-                    'Mouse':          ['Logitech', 'Razer', 'Dell'],
-                    'GPU':            ['NVIDIA', 'AMD', 'Intel'],
-                    'Relógio Digital':['Apple', 'Samsung', 'Xiaomi'],
-                    'Memória RAM':    ['Kingston', 'Corsair', 'Crucial'],
-                    'Cooler':         ['Cooler Master', 'Noctua', 'Corsair'],
-                    'CPU':            ['Intel', 'AMD'],
-                    'Placa-mãe':      ['ASUS', 'MSI', 'Gigabyte']
-                }
-            }
-        };
-
-        let produtos    = [];
-        let fotoDataUrl = null;
-
-        function q(id) { return document.getElementById(id); }
-        function hide(id) { q(id).style.display = 'none'; }
-        function show(id) { q(id).style.display = ''; }
-
-        function setOpcoes(selectEl, arr) {
-            selectEl.innerHTML = '<option value="">— selecione —</option>';
-            arr.forEach(v => {
-                const o = document.createElement('option');
-                o.value = v; o.textContent = v;
-                selectEl.appendChild(o);
-            });
-        }
-
-        /* ── Categoria em cascata ── */
-        function onCategoria() {
-            const cat = q('sel-cat').value;
-            hide('wrap-sub'); hide('wrap-marca');
-            q('sel-sub').innerHTML = ''; q('sel-marca').innerHTML = '';
-            atualizarCaminho();
-            if (!cat) return;
-            const dados = CATEGORIAS[cat];
-            if (dados.subcategorias) {
-                setOpcoes(q('sel-sub'), Object.keys(dados.subcategorias));
-                show('wrap-sub');
-            } else if (dados.marcas) {
-                setOpcoes(q('sel-marca'), dados.marcas);
-                show('wrap-marca');
-            }
-        }
-
-        function onSubcategoria() {
-            const cat = q('sel-cat').value;
-            const sub = q('sel-sub').value;
-            hide('wrap-marca'); atualizarCaminho();
-            if (!sub) return;
-            const marcas = CATEGORIAS[cat].subcategorias[sub];
-            setOpcoes(q('sel-marca'), marcas);
-            show('wrap-marca');
-        }
-
-        function onMarca() { atualizarCaminho(); }
-
-        function atualizarCaminho() {
-            const cat   = q('sel-cat').value;
-            const sub   = q('sel-sub').value;
-            const marca = q('sel-marca').value;
-            const wrap  = q('caminho-filtro');
-            if (!cat) { wrap.innerHTML = ''; return; }
-            const catLabel = CATEGORIAS[cat].label;
-            let html = `<span class="caminho-pilula cat">${catLabel}</span>`;
-            if (sub)   html += `<span class="caminho-sep">›</span><span class="caminho-pilula">${sub}</span>`;
-            if (marca) html += `<span class="caminho-sep">›</span><span class="caminho-pilula marca">${marca}</span>`;
-            wrap.innerHTML = html;
-        }
-
-        /* ── Foto ── */
-        function fotoSelecionada(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = e => aplicarFoto(e.target.result);
-            reader.readAsDataURL(file);
-        }
-
-        function aplicarFoto(src) {
-            fotoDataUrl = src;
-            const img  = q('preview-img');
-            const zona = q('zona-foto');
-            img.src = src;
-            zona.classList.add('tem-foto');
-            q('aviso-sem-foto').style.display   = 'none';
-            q('placeholder-foto').style.display = 'flex';
-        }
-
-        function dragOver(e) { e.preventDefault(); q('zona-foto').classList.add('drag-over'); }
-        function dragLeave(e) { q('zona-foto').classList.remove('drag-over'); }
-
-        function drop(e) {
-            e.preventDefault();
-            q('zona-foto').classList.remove('drag-over');
-            const file = e.dataTransfer.files[0];
-            if (!file || !file.type.startsWith('image/')) return;
-            const reader = new FileReader();
-            reader.onload = ev => aplicarFoto(ev.target.result);
-            reader.readAsDataURL(file);
-        }
-
-        /* ── Adicionar produto ── */
-        function adicionarProduto() {
-            const nome  = q('inp-nome').value.trim();
-            const preco = parseFloat(q('inp-preco').value);
-            const stock = parseInt(q('inp-stock').value);
-            const desc  = q('inp-desc').value.trim();
-            const cat   = q('sel-cat').value;
-            const sub   = q('sel-sub').value;
-            const marca = q('sel-marca').value;
-
-            if (!nome) {
-                q('inp-nome').focus();
-                q('inp-nome').style.borderColor = 'var(--vermelho)';
-                setTimeout(() => q('inp-nome').style.borderColor = '', 1500);
-                return;
-            }
-
-            if (!fotoDataUrl) {
-                q('placeholder-foto').style.display = 'none';
-                q('aviso-sem-foto').style.display   = 'block';
-            }
-
-            const produto = {
-                id:    Date.now(),
-                nome,
-                preco: isNaN(preco) ? 0 : preco,
-                stock: isNaN(stock) ? 0 : stock,
-                desc,
-                foto:  fotoDataUrl,
-                cat,
-                catLabel: cat ? CATEGORIAS[cat].label : '',
-                sub,
-                marca
-            };
-
-            produtos.unshift(produto);
-            renderLista();
-            limparForm();
-            mostrarToast();
-        }
-
-        function removerProduto(id) {
-            produtos = produtos.filter(p => p.id !== id);
-            renderLista();
-        }
-
-        function renderLista() {
-            const grid  = q('grid-registados');
-            const vazio = q('estado-vazio');
-            const badge = q('badge-count');
-
-            badge.textContent = `${produtos.length} produto${produtos.length !== 1 ? 's' : ''}`;
-
-            if (produtos.length === 0) {
-                vazio.style.display = 'flex';
-                grid.innerHTML = '';
-                return;
-            }
-
-            vazio.style.display = 'none';
-
-            grid.innerHTML = produtos.map(p => {
-                const precoFmt   = (p.preco).toLocaleString('pt-MZ', { style: 'currency', currency: 'MZN' });
-                const stockClass = p.stock > 0 ? 'ok' : 'zero';
-                const stockLabel = p.stock > 0 ? `${p.stock} un.` : 'Sem stock';
-
-                const imgHtml = p.foto
-                    ? `<img src="${p.foto}" alt="${p.nome}">`
-                    : `<div class="card-reg-img-vazia"><h1 style="color:red">sem foto</h1></div>`;
-
-                let catHtml = '';
-                if (p.catLabel) {
-                    catHtml = `<div class="card-reg-cat">
-                        <span class="card-reg-cat-tag cat">${p.catLabel}</span>
-                        ${p.sub   ? `<span class="card-reg-sep">›</span><span class="card-reg-cat-tag sub">${p.sub}</span>` : ''}
-                        ${p.marca ? `<span class="card-reg-sep">›</span><span class="card-reg-cat-tag marca">${p.marca}</span>` : ''}
-                    </div>`;
-                }
-
-                return `
-                    <div class="card-reg" id="card-${p.id}">
-                        <div class="card-reg-img">${imgHtml}</div>
-                        <div class="card-reg-corpo">
-                            <p class="card-reg-nome">${p.nome}</p>
-                            ${catHtml}
-                            ${p.desc ? `<p class="card-reg-desc">${p.desc}</p>` : ''}
-                            <div class="card-reg-meta">
-                                <span class="card-reg-preco">${precoFmt}</span>
-                                <span class="card-reg-stock ${stockClass}">${stockLabel}</span>
-                            </div>
-                            <button class="btn-remover-card" onclick="removerProduto(${p.id})">Remover</button>
-                        </div>
-                    </div>`;
-            }).join('');
-        }
-
-        function limparForm() {
-            q('inp-nome').value  = '';
-            q('inp-preco').value = '';
-            q('inp-stock').value = '';
-            q('inp-desc').value  = '';
-            q('input-foto').value = '';
-            fotoDataUrl = null;
-            q('sel-cat').value   = '';
-            q('sel-sub').innerHTML   = '';
-            q('sel-marca').innerHTML = '';
-            hide('wrap-sub');
-            hide('wrap-marca');
-            q('caminho-filtro').innerHTML = '';
-            const zona = q('zona-foto');
-            zona.classList.remove('tem-foto');
-            q('preview-img').src = '';
-            q('aviso-sem-foto').style.display   = 'none';
-            q('placeholder-foto').style.display  = 'flex';
-        }
-
-        function mostrarToast() {
-            const t = q('toast');
-            t.classList.add('visivel');
-            setTimeout(() => t.classList.remove('visivel'), 2200);
-        }
-    </script>
+    <script src="admin.js"></script>
 </body>
 </html>

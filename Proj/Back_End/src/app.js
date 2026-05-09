@@ -29,7 +29,9 @@ app.use(express.static(path.join(__dirname, '../../Front_End')));
 
 // SPA fallback
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../Front_End/index.html'));
+  res.sendFile(
+    path.join(__dirname, '../../Front_End/Telas/TelaPrincipal/index.html')
+  );
 });
 
 // erro global
