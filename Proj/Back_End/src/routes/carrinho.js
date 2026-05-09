@@ -65,12 +65,20 @@ router.post('/adicionar', autenticar, validarQuantidade, (req, res) => {
     carrinho = criarCarrinho(userId);
   }
 
+  // Verificar se produto existe e tem stock
   const produto = db.prepare(
-    'SELECT id, stock FROM produtos WHERE id = ?'
+    'SELECT id, stock, nome FROM produtos WHERE id = ?'
   ).get(produto_id);
 
   if (!produto) {
     return res.status(404).json({ erro: 'Produto não encontrado.' });
+  }
+
+  // Verificar stock disponível
+  if (produto.stock < quantidade) {
+    return res.status(400).json({ 
+      erro: `Stock insuficiente. Disponível: ${produto.stock} unidades.` 
+    });
   }
 
   const existente = db.prepare(`
@@ -78,6 +86,14 @@ router.post('/adicionar', autenticar, validarQuantidade, (req, res) => {
     FROM carrinho_itens 
     WHERE carrinho_id = ? AND produto_id = ?
   `).get(carrinho.id, produto_id);
+
+  // Verificar stock total (existente + nova quantidade)
+  const novaQuantidade = (existente?.quantidade || 0) + quantidade;
+  if (produto.stock < novaQuantidade) {
+    return res.status(400).json({ 
+      erro: `Stock insuficiente. Disponível: ${produto.stock} unidades.` 
+    });
+  }
 
   if (existente) {
     db.prepare(`
@@ -106,12 +122,28 @@ router.put('/atualizar', autenticar, validarQuantidade, (req, res) => {
     return res.status(404).json({ erro: 'Carrinho não encontrado.' });
   }
 
+  // Verificar produto e stock
+  const produto = db.prepare(
+    'SELECT id, stock FROM produtos WHERE id = ?'
+  ).get(produto_id);
+
+  if (!produto) {
+    return res.status(404).json({ erro: 'Produto não encontrado.' });
+  }
+
   if (quantidade === 0) {
     db.prepare(`
       DELETE FROM carrinho_itens
       WHERE carrinho_id = ? AND produto_id = ?
     `).run(carrinho.id, produto_id);
-    return res.json({ mensagem: 'Produto removido.' });
+    return res.json({ mensagem: 'Produto removido do carrinho.' });
+  }
+
+  // Verificar stock disponível
+  if (produto.stock < quantidade) {
+    return res.status(400).json({ 
+      erro: `Stock insuficiente. Disponível: ${produto.stock} unidades.` 
+    });
   }
 
   db.prepare(`
@@ -138,7 +170,7 @@ router.delete('/limpar', autenticar, (req, res) => {
     WHERE carrinho_id = ?
   `).run(carrinho.id);
 
-  res.json({ mensagem: 'Carrinho limpo.' });
+  res.json({ mensagem: 'Carrinho limpo com sucesso.' });
 });
 
 module.exports = router;

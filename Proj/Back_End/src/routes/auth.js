@@ -2,21 +2,80 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/database');
-const { 
-  autenticar, 
-  verificarTentativasLogin, 
-  registrarTentativaFalha, 
-  limparTentativasSucesso 
-} = require('../middleware/auth');
+const { autenticar } = require('../middleware/auth');
 const { validarRegisto, validarLogin } = require('../middleware/validacao');
 
 const router = express.Router();
+
+// ==================== FUNÇÕES DE TENTATIVAS (USANDO BANCO) ====================
+
+function verificarTentativasLogin(username) {
+  try {
+    const user = db.prepare(`
+      SELECT tentativas_login, bloqueado_ate 
+      FROM utilizadores 
+      WHERE username = ?
+    `).get(username);
+
+    if (!user) return { blocked: false };
+
+    if (user.bloqueado_ate && new Date() < new Date(user.bloqueado_ate)) {
+      const remainingTime = Math.ceil((new Date(user.bloqueado_ate) - new Date()) / 1000 / 60);
+      return { blocked: true, remainingTime };
+    }
+
+    return { blocked: false };
+  } catch (err) {
+    console.error('Erro ao verificar tentativas:', err);
+    return { blocked: false };
+  }
+}
+
+function registrarTentativaFalha(username) {
+  try {
+    const user = db.prepare(`
+      SELECT id, tentativas_login, bloqueado_ate 
+      FROM utilizadores 
+      WHERE username = ?
+    `).get(username);
+
+    if (!user) return;
+
+    let novasTentativas = (user.tentativas_login || 0) + 1;
+    let bloqueadoAte = user.bloqueado_ate;
+
+    if (novasTentativas >= 5) {
+      bloqueadoAte = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+      novasTentativas = 0;
+    }
+
+    db.prepare(`
+      UPDATE utilizadores 
+      SET tentativas_login = ?, bloqueado_ate = ?
+      WHERE id = ?
+    `).run(novasTentativas, bloqueadoAte, user.id);
+
+  } catch (err) {
+    console.error('Erro ao registrar tentativa falha:', err);
+  }
+}
+
+function limparTentativasSucesso(username) {
+  try {
+    db.prepare(`
+      UPDATE utilizadores 
+      SET tentativas_login = 0, bloqueado_ate = NULL
+      WHERE username = ?
+    `).run(username);
+  } catch (err) {
+    console.error('Erro ao limpar tentativas:', err);
+  }
+}
 
 // ==================== LOGIN ====================
 router.post('/login', validarLogin, async (req, res) => {
   const { username, password } = req.body;
 
-  // Verificar tentativas de login
   const tentativaCheck = verificarTentativasLogin(username);
   if (tentativaCheck.blocked) {
     return res.status(429).json({ 
@@ -43,7 +102,6 @@ router.post('/login', validarLogin, async (req, res) => {
       return res.status(401).json({ erro: 'Credenciais inválidas.' });
     }
 
-    // Login bem-sucedido - limpar tentativas
     limparTentativasSucesso(username);
 
     const token = jwt.sign(
@@ -86,8 +144,8 @@ router.post('/register', validarRegisto, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = db.prepare(`
-      INSERT INTO utilizadores (username, email, password, role, creditos)
-      VALUES (?, ?, ?, 'cliente', 0)
+      INSERT INTO utilizadores (username, email, password, role, creditos, tentativas_login, bloqueado_ate)
+      VALUES (?, ?, ?, 'cliente', 0, 0, NULL)
     `).run(username, email, hashedPassword);
 
     return res.status(201).json({
@@ -101,7 +159,7 @@ router.post('/register', validarRegisto, async (req, res) => {
   }
 });
 
-// ==================== CRÉDITOS COM HISTÓRICO ====================
+// ==================== CRÉDITOS ====================
 router.get('/creditos', autenticar, (req, res) => {
   try {
     const user = db.prepare(`SELECT creditos FROM utilizadores WHERE id = ?`).get(req.utilizador.id);
@@ -111,7 +169,6 @@ router.get('/creditos', autenticar, (req, res) => {
   }
 });
 
-// OBTER CRÉDITOS E HISTÓRICO
 router.get('/creditos/historico', autenticar, (req, res) => {
   try {
     const userId = req.utilizador.id;
@@ -137,7 +194,6 @@ router.get('/creditos/historico', autenticar, (req, res) => {
   }
 });
 
-// ADICIONAR CRÉDITOS COM REGISTRO
 router.post('/creditos/adicionar', autenticar, (req, res) => {
   const { valor, descricao } = req.body;
   const userId = req.utilizador.id;

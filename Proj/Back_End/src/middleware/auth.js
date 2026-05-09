@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const db = require('../config/database');
 
 function autenticar(req, res, next) {
   const header = req.headers.authorization;
@@ -41,46 +42,75 @@ function somenteAdmin(req, res, next) {
   return next();
 }
 
-// ==================== CONTROLE DE TENTATIVAS DE LOGIN ====================
-const tentativasLogin = new Map();
+// ==================== CONTROLE DE TENTATIVAS DE LOGIN (COM BANCO) ====================
 
 function verificarTentativasLogin(username) {
-  const tentativas = tentativasLogin.get(username) || { count: 0, blockedUntil: null };
-  
-  if (tentativas.blockedUntil && new Date() < tentativas.blockedUntil) {
-    return { 
-      blocked: true, 
-      remainingTime: Math.ceil((tentativas.blockedUntil - new Date()) / 1000 / 60) 
-    };
+  try {
+    const user = db.prepare(`
+      SELECT tentativas_login, bloqueado_ate 
+      FROM utilizadores 
+      WHERE username = ?
+    `).get(username);
+
+    if (!user) return { blocked: false };
+
+    // Verificar se está bloqueado
+    if (user.bloqueado_ate && new Date() < new Date(user.bloqueado_ate)) {
+      const remainingTime = Math.ceil((new Date(user.bloqueado_ate) - new Date()) / 1000 / 60);
+      return { blocked: true, remainingTime };
+    }
+
+    return { blocked: false };
+  } catch (err) {
+    console.error('Erro ao verificar tentativas:', err);
+    return { blocked: false };
   }
-  
-  return { blocked: false };
 }
 
 function registrarTentativaFalha(username) {
-  const tentativas = tentativasLogin.get(username) || { count: 0, blockedUntil: null };
-  
-  tentativas.count++;
-  
-  if (tentativas.count >= 5) {
-    tentativas.blockedUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
-  }
-  
-  tentativasLogin.set(username, tentativas);
-  
-  // Limpar após 30 minutos se não houver mais tentativas
-  setTimeout(() => {
-    if (tentativasLogin.has(username) && tentativasLogin.get(username).count >= 5) {
-      tentativasLogin.delete(username);
+  try {
+    // Buscar utilizador
+    const user = db.prepare(`
+      SELECT id, tentativas_login, bloqueado_ate 
+      FROM utilizadores 
+      WHERE username = ?
+    `).get(username);
+
+    if (!user) return;
+
+    let novasTentativas = (user.tentativas_login || 0) + 1;
+    let bloqueadoAte = user.bloqueado_ate;
+
+    // Se atingiu 5 tentativas, bloquear por 15 minutos
+    if (novasTentativas >= 5) {
+      bloqueadoAte = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+      novasTentativas = 0; // Reset após bloqueio
     }
-  }, 30 * 60 * 1000);
+
+    // Atualizar no banco
+    db.prepare(`
+      UPDATE utilizadores 
+      SET tentativas_login = ?, bloqueado_ate = ?
+      WHERE id = ?
+    `).run(novasTentativas, bloqueadoAte, user.id);
+
+  } catch (err) {
+    console.error('Erro ao registrar tentativa falha:', err);
+  }
 }
 
 function limparTentativasSucesso(username) {
-  tentativasLogin.delete(username);
+  try {
+    db.prepare(`
+      UPDATE utilizadores 
+      SET tentativas_login = 0, bloqueado_ate = NULL
+      WHERE username = ?
+    `).run(username);
+  } catch (err) {
+    console.error('Erro ao limpar tentativas:', err);
+  }
 }
 
-// Exportar tudo
 module.exports = { 
   autenticar, 
   somenteAdmin, 

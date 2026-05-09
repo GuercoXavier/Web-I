@@ -8,6 +8,29 @@ const { validarProduto, validarId, limitarDescricao } = require('../middleware/v
 
 const router = express.Router();
 
+// ==================== CACHE ====================
+const cache = new Map();
+const CACHE_TTL = 30 * 1000;
+
+function setCache(key, data) {
+  cache.set(key, { data, expire: Date.now() + CACHE_TTL });
+}
+
+function getCache(key) {
+  const cached = cache.get(key);
+  if (!cached) return null;
+  if (cached.expire < Date.now()) {
+    cache.delete(key);
+    return null;
+  }
+  return cached.data;
+}
+
+function clearCache() {
+  cache.clear();
+  console.log('🗑️ Cache de produtos limpo');
+}
+
 // ==================== CONFIGURAR MULTER (UPLOAD DE IMAGENS) ====================
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -28,27 +51,9 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
     if (allowed.includes(file.mimetype)) cb(null, true);
-    else cb(new Error('Formato inválido'), false);
+    else cb(new Error('Formato inválido. Use JPG, PNG ou WEBP.'), false);
   }
 });
-
-// ==================== CACHE ====================
-const cache = new Map();
-const CACHE_TTL = 30 * 1000;
-
-function setCache(key, data) {
-  cache.set(key, { data, expire: Date.now() + CACHE_TTL });
-}
-
-function getCache(key) {
-  const cached = cache.get(key);
-  if (!cached) return null;
-  if (cached.expire < Date.now()) {
-    cache.delete(key);
-    return null;
-  }
-  return cached.data;
-}
 
 // ==================== GET ALL PRODUTOS ====================
 router.get('/', (req, res) => {
@@ -70,17 +75,17 @@ router.get('/', (req, res) => {
     const params = [];
 
     if (categoria) {
-      query += ' AND c.nome = ?';
+      query += ' AND LOWER(c.nome) = LOWER(?)';
       params.push(categoria);
     }
 
     if (subcategoria) {
-      query += ' AND s.nome = ?';
+      query += ' AND LOWER(s.nome) = LOWER(?)';
       params.push(subcategoria);
     }
 
     if (marca) {
-      query += ' AND p.marca = ?';
+      query += ' AND LOWER(p.marca) = LOWER(?)';
       params.push(marca);
     }
 
@@ -129,8 +134,8 @@ router.get('/', (req, res) => {
     return res.json(result);
 
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ erro: 'Erro interno.' });
+    console.error('Erro ao buscar produtos:', err);
+    return res.status(500).json({ erro: 'Erro interno ao carregar produtos.' });
   }
 });
 
@@ -153,11 +158,12 @@ router.get('/:id', validarId, (req, res) => {
     return res.json(produto);
 
   } catch (err) {
-    return res.status(500).json({ erro: 'Erro interno.' });
+    console.error('Erro ao buscar produto:', err);
+    return res.status(500).json({ erro: 'Erro interno ao carregar produto.' });
   }
 });
 
-// ==================== CREATE PRODUTO (COM UPLOAD DE IMAGEM) ====================
+// ==================== CREATE PRODUTO ====================
 router.post('/', autenticar, somenteAdmin, upload.single('imagem'), validarProduto, limitarDescricao, (req, res) => {
   try {
     const {
@@ -173,10 +179,30 @@ router.post('/', autenticar, somenteAdmin, upload.single('imagem'), validarProdu
 
     const imagem = req.file ? `/uploads/produtos/${req.file.filename}` : '';
 
+    // Validar se categoria existe
+    if (categoria_id) {
+      const categoria = db.prepare('SELECT id FROM categorias WHERE id = ?').get(categoria_id);
+      if (!categoria) {
+        return res.status(400).json({ erro: 'Categoria inválida.' });
+      }
+    }
+
+    // Validar se subcategoria existe
+    if (subcategoria_id) {
+      const subcategoria = db.prepare('SELECT id FROM subcategorias WHERE id = ? AND categoria_id = ?')
+        .get(subcategoria_id, categoria_id);
+      if (!subcategoria) {
+        return res.status(400).json({ erro: 'Subcategoria inválida ou não pertence à categoria.' });
+      }
+    }
+
     const result = db.prepare(`
       INSERT INTO produtos (nome, descricao, preco, stock, marca, imagem, categoria_id, subcategoria_id, em_destaque)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(nome, descricao, preco, stock, marca, imagem, categoria_id, subcategoria_id, em_destaque ? 1 : 0);
+    `).run(nome, descricao, preco, stock, marca, imagem, categoria_id || null, subcategoria_id || null, em_destaque ? 1 : 0);
+
+    // Limpar cache após alteração
+    clearCache();
 
     return res.status(201).json({
       mensagem: 'Produto adicionado com sucesso.',
@@ -185,8 +211,8 @@ router.post('/', autenticar, somenteAdmin, upload.single('imagem'), validarProdu
     });
 
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ erro: 'Erro interno.' });
+    console.error('Erro ao criar produto:', err);
+    return res.status(500).json({ erro: 'Erro interno ao criar produto.' });
   }
 });
 
@@ -212,26 +238,35 @@ router.put('/:id', autenticar, somenteAdmin, validarId, validarProduto, limitarD
       em_destaque = produto.em_destaque
     } = req.body;
 
+    // Validar stock não negativo
+    if (stock < 0) {
+      return res.status(400).json({ erro: 'Stock não pode ser negativo.' });
+    }
+
     db.prepare(`
       UPDATE produtos
       SET nome=?, descricao=?, preco=?, stock=?, marca=?, imagem=?,
           categoria_id=?, subcategoria_id=?, em_destaque=?
       WHERE id=?
-    `).run(nome, descricao, preco, stock, marca, imagem, categoria_id, subcategoria_id, em_destaque, id);
+    `).run(nome, descricao, preco, stock, marca, imagem, categoria_id || null, subcategoria_id || null, em_destaque ? 1 : 0, id);
+
+    // Limpar cache após alteração
+    clearCache();
 
     return res.json({ mensagem: 'Produto atualizado com sucesso.' });
 
   } catch (err) {
-    return res.status(500).json({ erro: 'Erro interno.' });
+    console.error('Erro ao atualizar produto:', err);
+    return res.status(500).json({ erro: 'Erro interno ao atualizar produto.' });
   }
 });
 
-// ==================== DELETE PRODUTO (COM LIMPEZA DE DEPENDÊNCIAS) ====================
+// ==================== DELETE PRODUTO ====================
 router.delete('/:id', autenticar, somenteAdmin, validarId, (req, res) => {
   try {
     const { id } = req.params;
     
-    const produto = db.prepare('SELECT id FROM produtos WHERE id = ?').get(id);
+    const produto = db.prepare('SELECT id, nome FROM produtos WHERE id = ?').get(id);
     
     if (!produto) {
       return res.status(404).json({ erro: 'Produto não encontrado.' });
@@ -247,11 +282,18 @@ router.delete('/:id', autenticar, somenteAdmin, validarId, (req, res) => {
       return res.status(404).json({ erro: 'Produto não encontrado.' });
     }
     
-    return res.json({ mensagem: 'Produto removido com sucesso.' });
+    // Limpar cache após alteração
+    clearCache();
+    
+    return res.json({ 
+      mensagem: 'Produto removido com sucesso.',
+      produto_id: id,
+      produto_nome: produto.nome
+    });
     
   } catch (err) {
     console.error('Erro ao remover produto:', err.message);
-    return res.status(500).json({ erro: 'Erro interno: ' + err.message });
+    return res.status(500).json({ erro: 'Erro interno ao remover produto.' });
   }
 });
 

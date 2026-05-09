@@ -15,6 +15,23 @@ if (registerBtn && loginBtn && container) {
     });
 }
 
+// ==================== FUNÇÃO PARA MOSTRAR MENSAGENS ====================
+function mostrarMensagem(msg, tipo, elemento) {
+    if (elemento) {
+        elemento.textContent = msg;
+        elemento.className = `mensagem ${tipo}`;
+        setTimeout(() => {
+            elemento.className = 'mensagem';
+        }, 5000);
+    }
+}
+
+// ==================== VALIDAÇÃO DE EMAIL ====================
+function validarEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+}
+
 // ==================== LOGIN ====================
 const loginForm = document.querySelector('.form-box.login form');
 
@@ -22,12 +39,12 @@ if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const inputs = loginForm.querySelectorAll('input');
-        const username = inputs[0].value.trim();
-        const password = inputs[1].value;
+        // Usando IDs específicos
+        const username = document.getElementById('loginUsername')?.value.trim();
+        const password = document.getElementById('loginPassword')?.value;
 
         if (!username || !password) {
-            alert('Preencha todos os campos');
+            alert('❌ Preencha todos os campos');
             return;
         }
 
@@ -41,20 +58,22 @@ if (loginForm) {
             const data = await res.json();
 
             if (!res.ok) {
-                alert(data.erro || 'Erro no login');
+                alert(data.erro || '❌ Erro no login');
                 return;
             }
 
             localStorage.setItem('token', data.token);
             localStorage.setItem('utilizador', JSON.stringify(data.utilizador));
 
+            // Verificar se havia carrinho anónimo
             const carrinhoLocal = localStorage.getItem('carrinho_local');
             if (carrinhoLocal) {
                 localStorage.setItem('carrinho_para_sincronizar', carrinhoLocal);
             }
 
-            alert('Login bem-sucedido!');
+            alert(`✅ Login bem-sucedido! Bem-vindo, ${data.utilizador.username}`);
 
+            // Redirecionar conforme role
             if (data.utilizador.role === 'admin') {
                 window.location.href = '../TelaRegistro/registroAdm.html';
             } else {
@@ -63,7 +82,7 @@ if (loginForm) {
 
         } catch (err) {
             console.error(err);
-            alert('Erro ao ligar ao servidor');
+            alert('❌ Erro ao ligar ao servidor. Verifique se o backend está rodando.');
         }
     });
 }
@@ -75,18 +94,28 @@ if (registerForm) {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const inputs = registerForm.querySelectorAll('input');
-        const username = inputs[0].value.trim();
-        const email = inputs[1].value.trim();
-        const password = inputs[2].value;
+        // Usando IDs específicos
+        const username = document.getElementById('registerUsername')?.value.trim();
+        const email = document.getElementById('registerEmail')?.value.trim();
+        const password = document.getElementById('registerPassword')?.value;
 
         if (!username || !email || !password) {
-            alert('Preencha todos os campos');
+            alert('❌ Preencha todos os campos');
+            return;
+        }
+
+        if (username.length < 3) {
+            alert('❌ Username deve ter pelo menos 3 caracteres');
+            return;
+        }
+
+        if (!validarEmail(email)) {
+            alert('❌ Email inválido');
             return;
         }
 
         if (password.length < 6) {
-            alert('Password deve ter no mínimo 6 caracteres');
+            alert('❌ Password deve ter no mínimo 6 caracteres');
             return;
         }
 
@@ -100,22 +129,22 @@ if (registerForm) {
             const data = await res.json();
 
             if (!res.ok) {
-                alert(data.erro || 'Erro no registo');
+                alert(data.erro || '❌ Erro no registo');
                 return;
             }
 
-            alert('Conta criada com sucesso! Faça login.');
+            alert('✅ Conta criada com sucesso! Faça login.');
             registerForm.reset();
             container.classList.remove('active');
 
         } catch (err) {
             console.error(err);
-            alert('Erro ao ligar ao servidor');
+            alert('❌ Erro ao ligar ao servidor');
         }
     });
 }
 
-// ==================== REDEFINIR SENHA (para página redefinir_senha.html) ====================
+// ==================== REDEFINIR SENHA ====================
 const btnRedefinir = document.getElementById('btnRedefinir');
 
 if (btnRedefinir) {
@@ -128,22 +157,22 @@ if (btnRedefinir) {
         const token = urlParams.get('token') || localStorage.getItem('resetToken');
 
         if (!token) {
-            mostrarMensagem('Token inválido. Faça a solicitação novamente.', 'erro', mensagemDiv);
+            mostrarMensagem('❌ Token inválido. Faça a solicitação novamente.', 'erro', mensagemDiv);
             return;
         }
 
         if (!novaSenha || !confirmarSenha) {
-            mostrarMensagem('Preencha todos os campos', 'erro', mensagemDiv);
+            mostrarMensagem('❌ Preencha todos os campos', 'erro', mensagemDiv);
             return;
         }
 
         if (novaSenha !== confirmarSenha) {
-            mostrarMensagem('As senhas não coincidem', 'erro', mensagemDiv);
+            mostrarMensagem('❌ As senhas não coincidem', 'erro', mensagemDiv);
             return;
         }
 
         if (novaSenha.length < 6) {
-            mostrarMensagem('A senha deve ter no mínimo 6 caracteres', 'erro', mensagemDiv);
+            mostrarMensagem('❌ A senha deve ter no mínimo 6 caracteres', 'erro', mensagemDiv);
             return;
         }
 
@@ -157,27 +186,17 @@ if (btnRedefinir) {
             const data = await res.json();
 
             if (res.ok) {
-                mostrarMensagem('Senha redefinida com sucesso! Redirecionando...', 'sucesso', mensagemDiv);
+                mostrarMensagem('✅ Senha redefinida com sucesso! Redirecionando...', 'sucesso', mensagemDiv);
                 localStorage.removeItem('resetToken');
                 setTimeout(() => {
                     window.location.href = 'tela_login.html';
                 }, 2000);
             } else {
-                mostrarMensagem(data.erro || 'Erro ao redefinir senha', 'erro', mensagemDiv);
+                mostrarMensagem(data.erro || '❌ Erro ao redefinir senha', 'erro', mensagemDiv);
             }
         } catch (err) {
-            mostrarMensagem('Erro ao conectar ao servidor', 'erro', mensagemDiv);
+            console.error(err);
+            mostrarMensagem('❌ Erro ao conectar ao servidor', 'erro', mensagemDiv);
         }
     });
-}
-
-// Função auxiliar para mostrar mensagem
-function mostrarMensagem(msg, tipo, elemento) {
-    if (elemento) {
-        elemento.textContent = msg;
-        elemento.className = `mensagem ${tipo}`;
-        setTimeout(() => {
-            elemento.className = 'mensagem';
-        }, 5000);
-    }
 }

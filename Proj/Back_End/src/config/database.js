@@ -24,6 +24,8 @@ function createTables() {
       password TEXT NOT NULL,
       role TEXT NOT NULL DEFAULT 'cliente',
       creditos INTEGER DEFAULT 0,
+      tentativas_login INTEGER DEFAULT 0,
+      bloqueado_ate TEXT,
       reset_token TEXT,
       reset_token_expires TEXT,
       criado_em TEXT DEFAULT (datetime('now'))
@@ -235,10 +237,9 @@ async function seedDatabase() {
   console.log('📁 SUBCATEGORIAS CRIADAS:');
   console.log('   Computadores: Laptop, Monitor, Desktop');
   console.log('   Celulares: Smartphone, Tablet, Acessórios Celular');
-  console.log('   Acessórios: 25+ subcategorias (Áudio, Periféricos, Componentes, etc.)');
+  console.log('   Acessórios: 25+ subcategorias');
   console.log('========================================');
   console.log('💡 Adicione os produtos manualmente pelo painel admin!');
-  console.log('   URL: http://localhost:3000/Telas/TelaRegistro/registroAdm.html');
   console.log('========================================');
 }
 

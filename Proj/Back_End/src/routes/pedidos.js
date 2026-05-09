@@ -35,7 +35,7 @@ router.post('/checkout', autenticar, (req, res) => {
   for (const item of itens) {
     if (item.quantidade > item.stock) {
       return res.status(400).json({
-        erro: `Stock insuficiente para ${item.nome}`
+        erro: `Stock insuficiente para ${item.nome}. Disponível: ${item.stock}`
       });
     }
   }
@@ -53,41 +53,28 @@ router.post('/checkout', autenticar, (req, res) => {
   const pedidoId = pedido.lastInsertRowid;
 
   const insertItem = db.prepare(`
-    INSERT INTO pedido_itens
-    (pedido_id, produto_id, quantidade, preco_unit)
+    INSERT INTO pedido_itens (pedido_id, produto_id, quantidade, preco_unit)
     VALUES (?, ?, ?, ?)
   `);
 
   const updateStock = db.prepare(`
-    UPDATE produtos
-    SET stock = stock - ?
-    WHERE id = ?
+    UPDATE produtos SET stock = stock - ? WHERE id = ?
   `);
 
   const transaction = db.transaction(() => {
     for (const item of itens) {
-      insertItem.run(
-        pedidoId,
-        item.produto_id,
-        item.quantidade,
-        item.preco
-      );
-
+      insertItem.run(pedidoId, item.produto_id, item.quantidade, item.preco);
       updateStock.run(item.quantidade, item.produto_id);
     }
-
-    db.prepare(`
-      DELETE FROM carrinho_itens
-      WHERE carrinho_id = ?
-    `).run(carrinho.id);
+    db.prepare(`DELETE FROM carrinho_itens WHERE carrinho_id = ?`).run(carrinho.id);
   });
 
   transaction();
 
   res.json({
-    mensagem: 'Pedido realizado com sucesso.',
+    mensagem: 'Pedido realizado com sucesso!',
     pedido_id: pedidoId,
-    total
+    total: total
   });
 });
 
@@ -115,7 +102,9 @@ router.post('/checkout-com-creditos', autenticar, (req, res) => {
 
   for (const item of itens) {
     if (item.quantidade > item.stock) {
-      return res.status(400).json({ erro: `Stock insuficiente para ${item.nome}` });
+      return res.status(400).json({ 
+        erro: `Stock insuficiente para ${item.nome}. Disponível: ${item.stock}` 
+      });
     }
   }
 
@@ -125,16 +114,26 @@ router.post('/checkout-com-creditos', autenticar, (req, res) => {
 
   if (usar_creditos && valor_creditos > 0) {
     const user = db.prepare('SELECT creditos FROM utilizadores WHERE id = ?').get(userId);
+    
+    // VERIFICAÇÃO DE CRÉDITOS
+    if (!user || user.creditos <= 0) {
+      return res.status(400).json({ erro: 'Você não tem créditos disponíveis.' });
+    }
+    
     creditosUsados = Math.min(valor_creditos, user.creditos, total);
+    
+    if (creditosUsados <= 0) {
+      return res.status(400).json({ erro: 'Créditos insuficientes para esta compra.' });
+    }
+    
     totalPago = total - creditosUsados;
 
     db.prepare('UPDATE utilizadores SET creditos = creditos - ? WHERE id = ?').run(creditosUsados, userId);
     
-    // Registrar transação
     db.prepare(`
-      INSERT INTO transacoes_creditos (utilizador_id, valor, tipo, descricao)
-      VALUES (?, ?, 'usar', 'Créditos usados na compra')
-    `).run(userId, creditosUsados);
+      INSERT INTO transacoes_creditos (utilizador_id, valor, tipo, descricao, referencia)
+      VALUES (?, ?, 'usar', 'Créditos usados na compra', ?)
+    `).run(userId, creditosUsados, `pedido_${Date.now()}`);
   }
 
   const pedido = db.prepare(`
@@ -162,10 +161,11 @@ router.post('/checkout-com-creditos', autenticar, (req, res) => {
   transaction();
 
   res.json({
-    mensagem: 'Pedido realizado com sucesso.',
+    mensagem: 'Pedido realizado com sucesso!',
     pedido_id: pedidoId,
     total_pago: totalPago,
-    creditos_usados: creditosUsados
+    creditos_usados: creditosUsados,
+    total_original: total
   });
 });
 
@@ -174,7 +174,7 @@ router.get('/', autenticar, (req, res) => {
   const userId = req.utilizador.id;
 
   const pedidos = db.prepare(`
-    SELECT *
+    SELECT id, total, estado, criado_em
     FROM pedidos
     WHERE utilizador_id = ?
     ORDER BY id DESC
@@ -189,7 +189,7 @@ router.get('/:id', autenticar, validarId, (req, res) => {
   const { id } = req.params;
 
   const pedido = db.prepare(`
-    SELECT *
+    SELECT id, total, estado, criado_em
     FROM pedidos
     WHERE id = ? AND utilizador_id = ?
   `).get(id, userId);
@@ -200,8 +200,10 @@ router.get('/:id', autenticar, validarId, (req, res) => {
 
   const itens = db.prepare(`
     SELECT 
-      pi.*, 
-      p.nome
+      pi.quantidade,
+      pi.preco_unit,
+      p.nome,
+      p.imagem
     FROM pedido_itens pi
     JOIN produtos p ON p.id = pi.produto_id
     WHERE pi.pedido_id = ?
@@ -213,10 +215,10 @@ router.get('/:id', autenticar, validarId, (req, res) => {
   });
 });
 
-// ==================== RELATÓRIO ADMIN (APENAS UMA VEZ) ====================
+// ==================== RELATÓRIO ADMIN ====================
 router.get('/admin/relatorio', autenticar, (req, res) => {
   if (req.utilizador.role !== 'admin') {
-    return res.status(403).json({ erro: 'Acesso negado.' });
+    return res.status(403).json({ erro: 'Acesso negado. Apenas administradores.' });
   }
 
   try {
@@ -253,7 +255,7 @@ router.get('/admin/relatorio', autenticar, (req, res) => {
     
     const totalVendas = pedidos.length;
     const faturacaoTotal = pedidos.reduce((sum, p) => sum + p.total, 0);
-    const totalClientes = db.prepare('SELECT COUNT(*) as total FROM utilizadores WHERE role = "cliente"').get().total;
+    const totalClientes = db.prepare('SELECT COUNT(*) as total FROM utilizadores WHERE role = "cliente"').get().total || 0;
     
     const topProdutos = db.prepare(`
       SELECT 
@@ -278,7 +280,7 @@ router.get('/admin/relatorio', autenticar, (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error('Erro ao gerar relatório:', err);
     res.status(500).json({ erro: 'Erro ao gerar relatório.' });
   }
 });

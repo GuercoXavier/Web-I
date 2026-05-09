@@ -1,5 +1,5 @@
 // src/middleware/validacao.js
-const db = require('../config/database');
+// Removida a linha não utilizada: const db = require('../config/database');
 
 // Validar email
 function validarEmail(email) {
@@ -101,6 +101,10 @@ function validarProduto(req, res, next) {
     erros.push('Descrição muito longa (máx 1000 caracteres)');
   }
 
+  if (marca && marca.length > 100) {
+    erros.push('Marca muito longa (máx 100 caracteres)');
+  }
+
   if (erros.length > 0) {
     return res.status(400).json({ erro: erros.join(', ') });
   }
@@ -134,6 +138,11 @@ function validarQuantidade(req, res, next) {
 
   if (!quantidade || quantidade <= 0) {
     return res.status(400).json({ erro: 'Quantidade inválida' });
+  }
+
+  // Limitar quantidade máxima (evita abuso)
+  if (quantidade > 999) {
+    return res.status(400).json({ erro: 'Quantidade máxima é 999 unidades' });
   }
 
   next();
