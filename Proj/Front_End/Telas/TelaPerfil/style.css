@@ -593,3 +593,134 @@ header{
     }
 
 }
+
+/* ===================== TOAST NOTIFICATION (moderno) ===================== */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.toast {
+    min-width: 260px;
+    max-width: 380px;
+    background: rgba(20, 24, 30, 0.95);
+    backdrop-filter: blur(12px);
+    border-left: 4px solid;
+    border-radius: 12px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    animation: slideInRight 0.2s ease;
+    pointer-events: auto;
+    color: #fff;
+}
+
+.toast-sucesso { border-left-color: #22c55e; }
+.toast-erro    { border-left-color: #ef4444; }
+.toast-info    { border-left-color: #3b82f6; }
+
+.toast-icon { font-size: 1.3rem; flex-shrink: 0; }
+.toast-mensagem { flex: 1; font-size: 0.85rem; line-height: 1.4; }
+.toast-fechar {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0 4px;
+    transition: color 0.2s;
+}
+.toast-fechar:hover { color: #fff; }
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOutRight {
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* ===================== MODAL DE CONFIRMAÇÃO ===================== */
+.modal-confirmacao {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+.modal-confirmacao.aberto { display: flex; animation: fadeInModal 0.2s ease; }
+
+.modal-confirmacao-conteudo {
+    background: var(--bg-panel);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    padding: 32px 28px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal-confirmacao-icone { font-size: 3rem; margin-bottom: 16px; }
+.modal-confirmacao-mensagem {
+    font-size: 1rem;
+    color: var(--branco);
+    margin-bottom: 28px;
+    line-height: 1.5;
+}
+.modal-confirmacao-botoes { display: flex; gap: 16px; justify-content: center; }
+.btn-confirmar {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--borda);
+    border-radius: 40px;
+    padding: 10px 32px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--texto);
+}
+.btn-confirmar:first-child:hover {
+    background: var(--azul);
+    border-color: var(--azul);
+    color: white;
+}
+.btn-confirmar:last-child:hover {
+    background: rgba(239,68,68,0.2);
+    border-color: var(--vermelho);
+    color: var(--vermelho);
+}
+@keyframes fadeInModal {
+    from { opacity: 0; transform: scale(0.96); }
+    to   { opacity: 1; transform: scale(1); }
+}
+/* Ícones dentro de toasts */
+.toast-icon img {
+    width: 30px;
+    height: 30px;
+    filter: brightness(0) invert(1);
+    display: block;
+}
+
+/* Ícone do modal de confirmação */
+.modal-confirmacao-icone img {
+    width: 40px;
+    height: 40px;
+    filter: brightness(0) invert(1);
+    display: block;
+    margin: 0 auto;
+}

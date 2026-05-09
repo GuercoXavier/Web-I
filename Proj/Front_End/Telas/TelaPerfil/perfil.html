@@ -1,254 +1,176 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BASGAM — Perfil</title>
-    <link rel="icon" type="image/jpg" href="../../imagens/logo.jpg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/jpg" href="../../imagens/logo.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
-
+  <body>
     <!-- HEADER -->
 
     <header>
+      <div class="header-esq">
+        <div class="logo-badge">B</div>
 
-        <div class="header-esq">
+        <span class="header-titulo"> BASGAM <span>/ Perfil</span> </span>
+      </div>
 
-            <div class="logo-badge">
-                B
-            </div>
+      <div class="header-dir">
+        <button class="btn-header" onclick="irPara('home')">Início</button>
 
-            <span class="header-titulo">
-                BASGAM <span>/ Perfil</span>
-            </span>
-
-        </div>
-
-        <div class="header-dir">
-
-            <button class="btn-header" onclick="irPara('home')">
-                 Início
-            </button>
-
-            <button class="btn-header danger" onclick="confirmarSair()">
-                 Sair
-            </button>
-
-        </div>
-
+        <button class="btn-header danger" onclick="confirmarSair()">
+          Sair
+        </button>
+      </div>
     </header>
 
     <div class="layout">
+      <!-- SIDEBAR -->
 
-        <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="avatar-bloco">
+          <div class="avatar-wrap">
+            <div class="avatar-iniciais" id="avatarVisual">👤</div>
 
-        <aside class="sidebar">
-
-            <div class="avatar-bloco">
-
-                <div class="avatar-wrap">
-
-                    <div class="avatar-iniciais" id="avatarVisual">
-                        👤
-                    </div>
-
-                    <div class="avatar-edit-btn"
-                    onclick="document.getElementById('avatarInput').click()">
-
-                        ✎
-
-                    </div>
-
-                    <input
-                    type="file"
-                    id="avatarInput"
-                    accept="image/*"
-                    style="display:none"
-                    onchange="trocarAvatar(this)">
-
-                </div>
-
-                <div class="avatar-nome" id="sidebar-nome">
-                    Utilizador
-                </div>
-
+            <div
+              class="avatar-edit-btn"
+              onclick="document.getElementById('avatarInput').click()"
+            >
+              ✎
             </div>
 
-            <nav class="sidebar-nav">
+            <input
+              type="file"
+              id="avatarInput"
+              accept="image/*"
+              style="display: none"
+              onchange="trocarAvatar(this)"
+            />
+          </div>
 
-                <span class="nav-section-label">
-                    Minha Conta
-                </span>
+          <div class="avatar-nome" id="sidebar-nome">Utilizador</div>
+        </div>
 
-                <div class="nav-item ativo"
-                onclick="mostrarSecao('visao-geral', this)">
+        <nav class="sidebar-nav">
+          <span class="nav-section-label"> Minha Conta </span>
 
-                     Visão Geral
+          <div
+            class="nav-item ativo"
+            onclick="mostrarSecao('visao-geral', this)"
+          >
+            Visão Geral
+          </div>
 
+          <div class="nav-item" onclick="mostrarSecao('pedidos', this)">
+            Meus Pedidos
+          </div>
+        </nav>
+      </aside>
+
+      <!-- CONTEÚDO -->
+
+      <main class="conteudo">
+        <!-- VISÃO GERAL -->
+
+        <section id="visao-geral" class="secao ativa">
+          <h1 class="secao-titulo">Visão Geral</h1>
+
+          <p class="secao-sub">Resumo da sua conta e actividade.</p>
+
+          <div class="cards-stats">
+            <div class="card-stat">
+              <div class="stat-label">Pedidos Totais</div>
+
+              <div class="stat-valor" id="stat-pedidos">0</div>
+
+              <div class="stat-desc">histórico completo</div>
+            </div>
+
+            <div class="card-stat">
+              <div class="stat-label">Créditos</div>
+
+              <div class="stat-valor" id="stat-creditos">0</div>
+
+              <div class="stat-desc">em MZN</div>
+            </div>
+          </div>
+
+          <div class="painel-edicao">
+            <div class="painel-header">
+              <div class="painel-header-titulo">Adicionar Crédito</div>
+
+              <div class="painel-header-sub">
+                Insira o valor a carregar na sua conta
+              </div>
+            </div>
+
+            <div class="painel-corpo">
+              <div class="credito-wrap">
+                <div class="credito-campo">
+                  <label> Valor (MZN) </label>
+
+                  <div class="credito-input-wrap">
+                    <span class="credito-prefix"> MZN </span>
+
+                    <input type="number" id="inp-credito" placeholder="0" />
+                  </div>
                 </div>
 
-                <div class="nav-item"
-                onclick="mostrarSecao('pedidos', this)">
+                <button
+                  class="btn-adicionar-credito"
+                  onclick="adicionarCredito()"
+                >
+                  + Adicionar
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
 
-                     Meus Pedidos
+        <!-- PEDIDOS -->
 
-                </div>
+        <section id="pedidos" class="secao">
+          <h1 class="secao-titulo">Meus Pedidos</h1>
 
-            </nav>
+          <p class="secao-sub">Histórico de compras e estado das encomendas.</p>
 
-        </aside>
+          <div class="lista-pedidos">
+            <div class="estado-vazio-pedidos">
+              <div class="icone">📦</div>
 
-        <!-- CONTEÚDO -->
-
-        <main class="conteudo">
-
-            <!-- VISÃO GERAL -->
-
-            <section id="visao-geral" class="secao ativa">
-
-                <h1 class="secao-titulo">
-                    Visão Geral
-                </h1>
-
-                <p class="secao-sub">
-                    Resumo da sua conta e actividade.
-                </p>
-
-                <div class="cards-stats">
-
-                    <div class="card-stat">
-
-                        <div class="stat-label">
-                            Pedidos Totais
-                        </div>
-
-                        <div class="stat-valor" id="stat-pedidos">
-                            0
-                        </div>
-
-                        <div class="stat-desc">
-                            histórico completo
-                        </div>
-
-                    </div>
-
-                    <div class="card-stat">
-
-                        <div class="stat-label">
-                            Créditos
-                        </div>
-
-                        <div class="stat-valor" id="stat-creditos">
-                            0
-                        </div>
-
-                        <div class="stat-desc">
-                            em MZN
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="painel-edicao">
-
-                    <div class="painel-header">
-
-                        <div class="painel-header-titulo">
-                            Adicionar Crédito
-                        </div>
-
-                        <div class="painel-header-sub">
-                            Insira o valor a carregar na sua conta
-                        </div>
-
-                    </div>
-
-                    <div class="painel-corpo">
-
-                        <div class="credito-wrap">
-
-                            <div class="credito-campo">
-
-                                <label>
-                                    Valor (MZN)
-                                </label>
-
-                                <div class="credito-input-wrap">
-
-                                    <span class="credito-prefix">
-                                        MZN
-                                    </span>
-
-                                    <input
-                                    type="number"
-                                    id="inp-credito"
-                                    placeholder="0">
-
-                                </div>
-
-                            </div>
-
-                            <button class="btn-adicionar-credito"
-                            onclick="adicionarCredito()">
-
-                                + Adicionar
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- PEDIDOS -->
-
-            <section id="pedidos" class="secao">
-
-                <h1 class="secao-titulo">
-                    Meus Pedidos
-                </h1>
-
-                <p class="secao-sub">
-                    Histórico de compras e estado das encomendas.
-                </p>
-
-                <div class="lista-pedidos">
-
-                    <div class="estado-vazio-pedidos">
-
-                        <div class="icone">
-                            📦
-                        </div>
-
-                        <p>
-                            Nenhum pedido ainda.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-        </main>
-
+              <p>Nenhum pedido ainda.</p>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
 
-    <!-- TOAST -->
-
-    <div id="toast">
-        ✔ Feito!
+    <!-- Modal de Confirmação Personalizado -->
+    <div id="modalConfirmacao" class="modal-confirmacao">
+      <div class="modal-confirmacao-conteudo">
+        <div class="modal-confirmacao-icone"> <img src="../../imagens/icon/question-circle-fill.svg"></div>
+        <div class="modal-confirmacao-mensagem" id="confirmacaoMensagem">
+          Tem certeza?
+        </div>
+        <div class="modal-confirmacao-botoes">
+          <button class="btn-confirmar" id="btnConfirmarSim">Sim</button>
+          <button class="btn-confirmar" id="btnConfirmarNao">Não</button>
+        </div>
+      </div>
     </div>
+
+    <!-- Container para toasts (melhorado) -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <script src="perfil.js"></script>
-</body>
+  </body>
 </html>
