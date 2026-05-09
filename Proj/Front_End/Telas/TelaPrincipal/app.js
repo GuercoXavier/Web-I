@@ -41,7 +41,7 @@ function mostrarBotaoLogin() {
         userContainer.innerHTML = `
             <a href="../TelaLogin/tela_login.html" class="btn-login-header">
                 <img src="../../imagens/icon/person-circle.svg" alt="Login" />
-                <span>Entrar</span>
+                <span>Entrar / Registrar</span>                
             </a>
         `;
     }

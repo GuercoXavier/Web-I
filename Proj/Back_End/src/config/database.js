@@ -94,7 +94,6 @@ function createTables() {
       FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE
     );
 
-    -- NOVA TABELA: Histórico de transações de créditos
     CREATE TABLE IF NOT EXISTS transacoes_creditos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       utilizador_id INTEGER NOT NULL,
@@ -123,7 +122,7 @@ function createIndexes() {
 }
 
 // =====================
-// SEED (Apenas Admin e Categorias)
+// SEED COMPLETO (Todas as categorias e subcategorias)
 // =====================
 async function seedDatabase() {
   const adminExiste = db.prepare(
@@ -134,32 +133,79 @@ async function seedDatabase() {
 
   console.log('🌱 A criar dados iniciais...');
 
-  // Criar categorias
+  // ==================== CATEGORIAS ====================
   const insertCategoria = db.prepare('INSERT INTO categorias (nome) VALUES (?)');
   
   const celId = insertCategoria.run('celulares').lastInsertRowid;
   const compId = insertCategoria.run('computadores').lastInsertRowid;
   const acId = insertCategoria.run('acessórios').lastInsertRowid;
 
-  // Criar subcategorias
+  // ==================== SUBCATEGORIAS ====================
   const insertSub = db.prepare('INSERT INTO subcategorias (nome, categoria_id) VALUES (?, ?)');
   
-  // Subcategorias para Computadores
+  // --- Computadores ---
   const lapId = insertSub.run('Laptop', compId).lastInsertRowid;
   const monId = insertSub.run('Monitor', compId).lastInsertRowid;
+  const pcId = insertSub.run('Desktop', compId).lastInsertRowid;
   
-  // Subcategorias para Acessórios
-  insertSub.run('Fone', acId);
-  insertSub.run('Teclado', acId);
-  insertSub.run('Mouse', acId);
-  insertSub.run('GPU', acId);
-  insertSub.run('CPU', acId);
-  insertSub.run('Relógio Digital', acId);
+  // --- Celulares ---
+  insertSub.run('Smartphone', celId);
+  insertSub.run('Tablet', celId);
+  insertSub.run('Acessórios Celular', celId);
+  
+  // --- Acessórios completos ---
+  // Áudio
+  insertSub.run('Fones de Ouvido', acId);
+  insertSub.run('Caixas de Som', acId);
+  insertSub.run('Microfones', acId);
+  
+  // Periféricos
+  insertSub.run('Teclados', acId);
+  insertSub.run('Mouses', acId);
+  insertSub.run('Tapetes de Mouse', acId);
+  
+  // Componentes PC
+  insertSub.run('Placas de Vídeo (GPU)', acId);
+  insertSub.run('Processadores (CPU)', acId);
   insertSub.run('Memória RAM', acId);
-  insertSub.run('Cooler', acId);
-  insertSub.run('Placa-mãe', acId);
+  insertSub.run('Placas-mãe', acId);
+  insertSub.run('Armazenamento (SSD/HDD)', acId);
+  insertSub.run('Fontes de Alimentação', acId);
+  insertSub.run('Coolers e Ventoinhas', acId);
+  insertSub.run('Gabinetes', acId);
+  
+  // Wearables
+  insertSub.run('Smartwatches', acId);
+  insertSub.run('Pulseiras Fitness', acId);
+  
+  // Rede e Conectividade
+  insertSub.run('Routers e Switches', acId);
+  insertSub.run('Cabos e Adaptadores', acId);
+  
+  // Gaming
+  insertSub.run('Cadeiras Gamer', acId);
+  insertSub.run('Volantes e Joysticks', acId);
+  
+  // Iluminação
+  insertSub.run('LEDs e Iluminação', acId);
+  
+  // Carregadores
+  insertSub.run('Carregadores', acId);
+  insertSub.run('Power Banks', acId);
+  insertSub.run('Bases de Carregamento', acId);
+  
+  // Suportes
+  insertSub.run('Suportes para Monitor', acId);
+  insertSub.run('Suportes para Notebook', acId);
+  
+  // Limpeza
+  insertSub.run('Kits de Limpeza', acId);
+  
+  // Mochilas e Pastas
+  insertSub.run('Mochilas para Notebook', acId);
+  insertSub.run('Pastas e Cases', acId);
 
-  // Criar Admin
+  // ==================== CRIAR ADMIN ====================
   const hash = await bcrypt.hash(
     process.env.ADMIN_PASSWORD || 'AdminAnik',
     10
@@ -174,11 +220,26 @@ async function seedDatabase() {
     hash
   );
 
+  console.log('========================================');
   console.log('✔ Base de dados inicializada com sucesso!');
-  console.log('   - Admin criado: Admin / AdminAnik');
-  console.log('   - Categorias: celulares, computadores, acessórios');
-  console.log('   - Subcategorias: Laptop, Monitor, Fone, Teclado...');
-  console.log('   - Adicione os produtos manualmente pelo painel admin!');
+  console.log('========================================');
+  console.log('📋 ADMIN:');
+  console.log('   - Username: Admin');
+  console.log('   - Password: AdminAnik');
+  console.log('');
+  console.log('📂 CATEGORIAS CRIADAS:');
+  console.log('   1. Celulares');
+  console.log('   2. Computadores');
+  console.log('   3. Acessórios');
+  console.log('');
+  console.log('📁 SUBCATEGORIAS CRIADAS:');
+  console.log('   Computadores: Laptop, Monitor, Desktop');
+  console.log('   Celulares: Smartphone, Tablet, Acessórios Celular');
+  console.log('   Acessórios: 25+ subcategorias (Áudio, Periféricos, Componentes, etc.)');
+  console.log('========================================');
+  console.log('💡 Adicione os produtos manualmente pelo painel admin!');
+  console.log('   URL: http://localhost:3000/Telas/TelaRegistro/registroAdm.html');
+  console.log('========================================');
 }
 
 // =====================

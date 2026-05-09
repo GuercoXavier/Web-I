@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - BASGAM Tech</title>
+  <title>Login</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
+  <!--botao de Voltar-->
+    <a href="../../Telas/TelaPrincipal/index.html" class="btn-voltar">
+      <img src="../../imagens/icon/login-voltar.svg" alt="Voltar">
+    </a>
 <div class="scene">
   <div class="sphere s4"></div>
   <div class="sphere s1"></div>
@@ -19,65 +22,63 @@
   <div class="sphere s6"></div>
 </div>
 
-<div class="container" id="container">
+  <div class="container" id="container">
 
-  <!-- Login -->
-  <div class="form-box login">
-    <form action="#">
-      <h1>Login</h1>
-      <div class="input-box">
-        <input type="text" placeholder="Username" required>
-        <i class='bx bxs-user'></i>
-      </div>
-      <div class="input-box">
-        <input type="password" placeholder="Password" required>
-        <i class='bx bxs-lock-alt'></i>
-      </div>
-      <div class="forget-link">
-        <a href="esqueci_senha.html">Esqueceu a senha?</a>
-      </div>
-      <button type="submit" class="btn">Entrar</button>
-      <p>Ou entre com redes sociais</p>
-    </form>
-  </div>
-
-  <!-- Register -->
-  <div class="form-box register">
-    <form action="#">
-      <h1>Registro</h1>
-      <div class="input-box">
-        <input type="text" placeholder="Username" required>
-        <i class='bx bxs-user'></i>
-      </div>
-      <div class="input-box">
-        <input type="email" placeholder="Email" required>
-        <i class='bx bxs-envelope'></i>
-      </div>
-      <div class="input-box">
-        <input type="password" placeholder="Password" required>
-        <i class='bx bxs-lock-alt'></i>
-      </div>
-      <button type="submit" class="btn">Registar</button>
-      <p>Ou registre com redes sociais</p>
-    </form>
-  </div>
-
-  <!-- Toggle -->
-  <div class="toggle-box">
-    <div class="toggle-panel toggle-left">
-      <h1>Olá, bem-vindo!</h1>
-      <p>Ainda não tem uma conta?</p>
-      <button class="btn register-btn">Registar</button>
-    </div>
-    <div class="toggle-panel toggle-right">
-      <h1>Bem-vindo de volta!</h1>
-      <p>Já tem uma conta?</p>
-      <button class="btn login-btn">Login</button>
-    </div>
-  </div>
-
+    <!-- Login -->
+    <div class="form-box login">
+      <form action="#">
+        <h1>Login</h1>
+        <div class="input-box">
+          <input type="text" placeholder="Username" required>
+          <i class='bx bxs-user'></i>
+        </div>
+        <div class="input-box">
+          <input type="password" placeholder="Password" required>
+          <i class='bx bxs-lock-alt'></i>
+        </div>
+        <div class="forget-link">
+    <a href="esqueci_senha.html">Esqueceu a senha?</a>
 </div>
+        <button type="submit" class="btn">Entrar</button>
+      </form>
+    </div>
 
+    <!-- Register -->
+    <div class="form-box register">
+      <form action="#">
+        <h1>Registro</h1>
+        <div class="input-box">
+          <input type="text" placeholder="Username" required>
+          <i class='bx bxs-user'></i>
+        </div>
+        <div class="input-box">
+          <input type="email" placeholder="Email" required>
+          <i class='bx bxs-envelope'></i>
+        </div>
+        <div class="input-box">
+          <input type="password" placeholder="Password" required>
+          <i class='bx bxs-lock-alt'></i>
+        </div>
+        <button type="submit" class="btn">Registar</button>
+      </form>
+    </div>
+
+    <!-- Toggle -->
+    <div class="toggle-box">
+      <div class="toggle-panel toggle-left">
+        <h1>Olá, bem-vindo!</h1>
+        <p>Ainda não tem uma conta?</p>
+        <button class="btn register-btn">Registar</button>
+      </div>
+      <div class="toggle-panel toggle-right">
+        <h1>Bem-vindo de volta!</h1>
+        <p>Já tem uma conta?</p>
+        <button class="btn login-btn">Login</button>
+      </div>
+    </div>
+
+  </div>
+  <script src="../../app.js"></script>
 <script src="login.js"></script>
 </body>
 </html>
