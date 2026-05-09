@@ -181,5 +181,146 @@ router.get('/admin/relatorio', autenticar, (req, res) => {
     vendasPorDia
   });
 });
+// CHECKOUT COM CRÉDITOS
+router.post('/checkout-com-creditos', autenticar, (req, res) => {
+    const userId = req.utilizador.id;
+    const { usar_creditos, valor_creditos } = req.body;
 
+    const carrinho = db.prepare('SELECT * FROM carrinhos WHERE utilizador_id = ?').get(userId);
+
+    if (!carrinho) {
+        return res.status(400).json({ erro: 'Carrinho não encontrado.' });
+    }
+
+    const itens = db.prepare(`
+        SELECT ci.*, p.preco, p.stock, p.nome
+        FROM carrinho_itens ci
+        JOIN produtos p ON p.id = ci.produto_id
+        WHERE ci.carrinho_id = ?
+    `).all(carrinho.id);
+
+    if (!itens.length) {
+        return res.status(400).json({ erro: 'Carrinho vazio.' });
+    }
+
+    for (const item of itens) {
+        if (item.quantidade > item.stock) {
+            return res.status(400).json({ erro: `Stock insuficiente para ${item.nome}` });
+        }
+    }
+
+    let total = itens.reduce((sum, item) => sum + item.preco * item.quantidade, 0);
+    let creditosUsados = 0;
+    let totalPago = total;
+
+    if (usar_creditos && valor_creditos > 0) {
+        const user = db.prepare('SELECT creditos FROM utilizadores WHERE id = ?').get(userId);
+        creditosUsados = Math.min(valor_creditos, user.creditos, total);
+        totalPago = total - creditosUsados;
+
+        db.prepare('UPDATE utilizadores SET creditos = creditos - ? WHERE id = ?').run(creditosUsados, userId);
+    }
+
+    const pedido = db.prepare(`
+        INSERT INTO pedidos (utilizador_id, total, estado)
+        VALUES (?, ?, 'pendente')
+    `).run(userId, totalPago);
+
+    const pedidoId = pedido.lastInsertRowid;
+
+    const insertItem = db.prepare(`
+        INSERT INTO pedido_itens (pedido_id, produto_id, quantidade, preco_unit)
+        VALUES (?, ?, ?, ?)
+    `);
+
+    const updateStock = db.prepare(`UPDATE produtos SET stock = stock - ? WHERE id = ?`);
+
+    const transaction = db.transaction(() => {
+        for (const item of itens) {
+            insertItem.run(pedidoId, item.produto_id, item.quantidade, item.preco);
+            updateStock.run(item.quantidade, item.produto_id);
+        }
+        db.prepare(`DELETE FROM carrinho_itens WHERE carrinho_id = ?`).run(carrinho.id);
+    });
+
+    transaction();
+
+    res.json({
+        mensagem: 'Pedido realizado com sucesso.',
+        pedido_id: pedidoId,
+        total_pago: totalPago,
+        creditos_usados: creditosUsados
+    });
+});
+// RELATÓRIO DE VENDAS (ADMIN)
+router.get('/admin/relatorio', autenticar, (req, res) => {
+  if (req.utilizador.role !== 'admin') {
+    return res.status(403).json({ erro: 'Acesso negado.' });
+  }
+
+  try {
+    const { data_inicio, data_fim } = req.query;
+    
+    let query = `
+      SELECT 
+        p.id AS pedido_id,
+        p.total,
+        p.estado,
+        p.criado_em,
+        u.username,
+        u.email
+      FROM pedidos p
+      LEFT JOIN utilizadores u ON u.id = p.utilizador_id
+      WHERE 1=1
+    `;
+    
+    const params = [];
+    
+    if (data_inicio) {
+      query += ' AND date(p.criado_em) >= date(?)';
+      params.push(data_inicio);
+    }
+    
+    if (data_fim) {
+      query += ' AND date(p.criado_em) <= date(?)';
+      params.push(data_fim);
+    }
+    
+    query += ' ORDER BY p.id DESC';
+    
+    const pedidos = db.prepare(query).all(...params);
+    
+    // Estatísticas
+    const totalVendas = pedidos.length;
+    const faturacaoTotal = pedidos.reduce((sum, p) => sum + p.total, 0);
+    const totalClientes = db.prepare('SELECT COUNT(*) as total FROM utilizadores WHERE role = "cliente"').get().total;
+    
+    // Top produtos
+    const topProdutos = db.prepare(`
+      SELECT 
+        pr.nome,
+        SUM(pi.quantidade) as vendidos,
+        SUM(pi.quantidade * pi.preco_unit) as receita
+      FROM pedido_itens pi
+      JOIN produtos pr ON pr.id = pi.produto_id
+      GROUP BY pr.id
+      ORDER BY vendidos DESC
+      LIMIT 5
+    `).all();
+
+    res.json({
+      resumo: {
+        total_vendas: totalVendas,
+        faturacao_total: faturacaoTotal,
+        total_clientes: totalClientes
+      },
+      pedidos: pedidos,
+      top_produtos: topProdutos
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao gerar relatório.' });
+  }
+});
 module.exports = router;

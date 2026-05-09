@@ -55,43 +55,41 @@
         </div>
 
         <div class="direita-header">
-          <div class="search-wrapper">
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="Buscar produtos..."
-              onkeyup="buscarProdutos(event)"
-            />
-            <span class="search-icon" onclick="buscarProdutosPorTexto()"
-              ><img src="../../imagens/icon/search.svg" alt=""
-            /></span>
-          </div>
-          <button class="btn-carrinho" onclick="ir('carrinho')">
-            <img
-              src="../../imagens/icon/cart_icon.svg"
-              title="Carrinho"
-              alt="Carrinho"
-            />
-            <span id="badge" class="badge oculto">0</span>
-          </button>
+    <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="Buscar produtos..." onkeyup="buscarProdutos(event)" />
+        <span class="search-icon" onclick="buscarProdutosPorTexto()">
+            <img src="../../imagens/icon/search.svg" alt="" />
+        </span>
+    </div>
+    
+    <button class="btn-carrinho" onclick="ir('carrinho')">
+        <img src="../../imagens/icon/cart_icon.svg" title="Carrinho" alt="Carrinho" />
+        <span id="badge" class="badge oculto">0</span>
+    </button>
 
-          <a
-            href="../TelaLogin/tela_login.html"
-            class="btn-login"
-            target="_blank"
-          >
-            <img
-              src="../../imagens/icon/person-circle.svg"
-              title="Login"
-              alt="Login"
-            />
-          </a>
-
-          <button class="btn-menu" onclick="toggleMenu()">
-            <img src="../../imagens/icon/list.svg" alt="Menu" />
-          </button>
+    <!-- NOVO MENU DO USUÁRIO -->
+    <div class="user-menu-container">
+        <button class="btn-user" id="userBtn" onclick="toggleUserMenu()">
+            <img src="../../imagens/icon/person-circle.svg" title="Utilizador" alt="Utilizador" />
+            <span id="userNameDisplay" class="user-name"></span>
+            <span class="user-arrow">▼</span>
+        </button>
+        <div id="userMenu" class="user-dropdown">
+            <a href="../TelaPerfil/perfil.html" class="dropdown-item">
+                <img src="../../imagens/icon/person-fill.svg" alt="" />
+                Meu Perfil
+            </a>
+            <button onclick="logout()" class="dropdown-item logout">
+                <img src="../../imagens/icon/box-arrow-right.svg" alt="" />
+                Sair
+            </button>
         </div>
-      </div>
+    </div>
+
+    <button class="btn-menu" onclick="toggleMenu()">
+        <img src="../../imagens/icon/list.svg" alt="Menu" />
+    </button>
+</div>
     </header>
 
     <!-- ========== CONTEÚDO PRINCIPAL ========== -->

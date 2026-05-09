@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página não encontrada - BASGAM Tech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4d4d4;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+        }
+
+        .codigo {
+            font-size: 120px;
+            font-weight: 800;
+            font-family: 'Syne', sans-serif;
+            color: #3b82f6;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(59,130,246,0.3);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        p {
+            color: #6b7280;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 28px;
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin: 0 8px;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateY(-2px);
+        }
+
+        .icone {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="codigo">404</div>
+        <div class="icone">🔍</div>
+        <h1>Página não encontrada</h1>
+        <p>O endereço que você tentou aceder não existe ou foi removido.</p>
+        <a href="../TelaPrincipal/index.html" class="btn">← Voltar à loja</a>
+        <a href="../TelaLogin/tela_login.html" class="btn btn-outline">Fazer login</a>
+    </div>
+</body>
+</html>

@@ -1,16 +1,17 @@
-// admin.js - Versão Final (já está correta)
+// admin.js - Versão Final
+// Local: Front_End/Telas/TelaRegistro/admin.js
 
 const API_URL = 'http://localhost:3000/api';
 let authToken = localStorage.getItem('token');
 let fotoDataUrl = null;
 let produtos = [];
 
+// VERIFICAR AUTENTICAÇÃO
 if (!authToken) {
     alert('Faça login primeiro!');
-    window.location.href = '../TelaLogin/login.html';
+    window.location.href = '../TelaLogin/tela_login.html';
 }
 
-// Verificar se é admin (opcional, mas recomendado)
 const user = JSON.parse(localStorage.getItem('utilizador') || '{}');
 if (user.role !== 'admin') {
     alert('Acesso negado! Apenas administradores podem acessar esta página.');
@@ -24,7 +25,7 @@ function show(id) { const el = q(id); if(el) el.style.display = ''; }
 function mostrarToast(msg, erro = false) {
     const toast = q('toast');
     if (!toast) return;
-    toast.textContent = erro ? `❌ ${msg}` : `✓ ${msg}`;
+    toast.textContent = erro ? `✗ ${msg}` : `✓ ${msg}`;
     toast.classList.add('visivel');
     setTimeout(() => toast.classList.remove('visivel'), 3000);
 }
@@ -68,6 +69,7 @@ async function carregarCategorias() {
         }
     } catch (err) {
         console.error('Erro categorias:', err);
+        mostrarToast('Erro ao carregar categorias', true);
     }
 }
 
@@ -75,10 +77,12 @@ async function carregarCategorias() {
 async function listarProdutos() {
     try {
         const response = await fetch(`${API_URL}/produtos`);
+        if (!response.ok) throw new Error('Erro ao buscar produtos');
         produtos = await response.json();
         renderizarLista();
     } catch (err) {
         console.error('Erro produtos:', err);
+        mostrarToast('Erro ao carregar produtos', true);
     }
 }
 
@@ -93,7 +97,13 @@ async function adicionarProduto() {
     const marca = q('sel-marca').value;
     
     if (!nome) {
-        mostrarToast('Preencha o nome', true);
+        mostrarToast('Preencha o nome do produto', true);
+        q('inp-nome').focus();
+        return;
+    }
+    
+    if (isNaN(preco) || preco < 0) {
+        mostrarToast('Preço inválido', true);
         return;
     }
     
@@ -101,21 +111,31 @@ async function adicionarProduto() {
     let subcategoria_id = null;
     
     if (catNome) {
-        const catResponse = await fetch(`${API_URL}/categorias`);
-        const categorias = await catResponse.json();
-        const cat = categorias.find(c => c.nome.toLowerCase() === catNome);
-        categoria_id = cat ? cat.id : null;
-        
-        if (subNome && cat && cat.subcategorias) {
-            const sub = cat.subcategorias.find(s => s.nome === subNome);
-            subcategoria_id = sub ? sub.id : null;
+        try {
+            const catResponse = await fetch(`${API_URL}/categorias`);
+            const categorias = await catResponse.json();
+            const cat = categorias.find(c => c.nome.toLowerCase() === catNome);
+            categoria_id = cat ? cat.id : null;
+            
+            if (subNome && cat && cat.subcategorias) {
+                const sub = cat.subcategorias.find(s => s.nome === subNome);
+                subcategoria_id = sub ? sub.id : null;
+            }
+        } catch (err) {
+            console.error('Erro ao buscar IDs:', err);
         }
     }
     
     const produto = {
-        nome, preco, stock, descricao: descricao || '',
-        marca: marca || '', imagem: fotoDataUrl || '',
-        categoria_id, subcategoria_id, em_destaque: 0
+        nome: nome,
+        descricao: descricao || '',
+        preco: preco || 0,
+        stock: stock || 0,
+        marca: marca || '',
+        imagem: fotoDataUrl || '',
+        categoria_id: categoria_id,
+        subcategoria_id: subcategoria_id,
+        em_destaque: 0
     };
     
     try {
@@ -125,21 +145,24 @@ async function adicionarProduto() {
             body: JSON.stringify(produto)
         });
         
+        const data = await response.json();
+        
         if (response.ok) {
-            mostrarToast('Produto adicionado!');
+            mostrarToast('Produto adicionado com sucesso!');
             limparForm();
-            listarProdutos();
+            await listarProdutos();
         } else {
-            mostrarToast('Erro ao adicionar', true);
+            mostrarToast(data.erro || 'Erro ao adicionar produto', true);
         }
     } catch (err) {
-        mostrarToast('Erro de conexão', true);
+        console.error('Erro:', err);
+        mostrarToast('Erro de conexão com o servidor', true);
     }
 }
 
-// ===================== REMOVER PRODUTO =====================
+// ===================== REMOVER PRODUTO (CARD) =====================
 async function removerProduto(id) {
-    if (!confirm('Remover este produto?')) return;
+    if (!confirm('Remover este produto permanentemente?')) return;
     
     try {
         const response = await fetch(`${API_URL}/produtos/${id}`, {
@@ -147,14 +170,19 @@ async function removerProduto(id) {
             headers: getHeaders()
         });
         
+        const data = await response.json();
+        
         if (response.ok) {
-            mostrarToast('Produto removido!');
-            listarProdutos();
+            mostrarToast('Produto removido com sucesso!');
+            await listarProdutos();
+        } else if (response.status === 404) {
+            mostrarToast('Produto não encontrado', true);
         } else {
-            mostrarToast('Erro ao remover', true);
+            mostrarToast(data.erro || 'Erro ao remover produto', true);
         }
     } catch (err) {
-        mostrarToast('Erro de conexão', true);
+        console.error('Erro:', err);
+        mostrarToast('Erro de conexão com o servidor', true);
     }
 }
 
@@ -162,11 +190,11 @@ async function removerProduto(id) {
 async function removerProdutoPorId() {
     const id = q('inp-id-produto').value.trim();
     if (!id) {
-        mostrarToast('Digite o ID', true);
+        mostrarToast('Digite o ID do produto', true);
         return;
     }
     
-    if (!confirm(`Remover produto ID ${id}?`)) return;
+    if (!confirm(`Remover produto ID ${id} permanentemente?`)) return;
     
     try {
         const response = await fetch(`${API_URL}/produtos/${id}`, {
@@ -174,18 +202,21 @@ async function removerProdutoPorId() {
             headers: getHeaders()
         });
         
+        const data = await response.json();
+        
         if (response.ok) {
-            mostrarToast(`Produto ${id} removido!`);
+            mostrarToast(`Produto ${id} removido com sucesso!`);
             q('inp-id-produto').value = '';
             q('inp-nome-busca-produto').value = '';
-            listarProdutos();
+            await listarProdutos();
         } else if (response.status === 404) {
             mostrarToast('Produto não encontrado', true);
         } else {
-            mostrarToast('Erro ao remover', true);
+            mostrarToast(data.erro || 'Erro ao remover produto', true);
         }
     } catch (err) {
-        mostrarToast('Erro de conexão', true);
+        console.error('Erro:', err);
+        mostrarToast('Erro de conexão com o servidor', true);
     }
 }
 
@@ -195,19 +226,26 @@ async function removerPerfil() {
     const email = q('inp-email-perfil').value.trim();
     
     if (!nome && !email) {
-        mostrarToast('Digite nome ou email', true);
+        mostrarToast('Digite nome ou email do perfil', true);
         return;
     }
     
     try {
-        // CORRIGIDO: usar /users em vez de /utilizadores
         const response = await fetch(`${API_URL}/users`, {
             headers: getHeaders()
         });
         
         if (!response.ok) {
-            if (response.status === 401 || response.status === 403) {
-                mostrarToast('Sessão expirada ou sem permissão de admin.', true);
+            if (response.status === 401) {
+                mostrarToast('Sessão expirada. Faça login novamente.', true);
+                localStorage.removeItem('token');
+                setTimeout(() => {
+                    window.location.href = '../TelaLogin/tela_login.html';
+                }, 2000);
+                return;
+            }
+            if (response.status === 403) {
+                mostrarToast('Acesso negado. Apenas administradores.', true);
                 return;
             }
             mostrarToast('Erro ao buscar usuários', true);
@@ -215,7 +253,6 @@ async function removerPerfil() {
         }
         
         const usuarios = await response.json();
-        console.log('Usuários:', usuarios);
         
         let usuario = null;
         
@@ -235,33 +272,33 @@ async function removerPerfil() {
         const logado = JSON.parse(localStorage.getItem('utilizador') || '{}');
         
         if (usuario.role === 'admin') {
-            mostrarToast('Não pode remover um administrador', true);
+            mostrarToast('Não é possível remover um administrador', true);
             return;
         }
         
         if (usuario.id === logado.id) {
-            mostrarToast('Não pode remover seu próprio perfil', true);
+            mostrarToast('Você não pode remover seu próprio perfil', true);
             return;
         }
         
-        if (!confirm(`Remover "${usuario.username}" (${usuario.email})?`)) return;
+        if (!confirm(`Remover permanentemente o perfil "${usuario.username}" (${usuario.email})?`)) return;
         
-        // CORRIGIDO: usar /users em vez de /utilizadores
         const deleteResponse = await fetch(`${API_URL}/users/${usuario.id}`, {
             method: 'DELETE',
             headers: getHeaders()
         });
         
         if (deleteResponse.ok) {
-            mostrarToast(`Perfil "${usuario.username}" removido!`);
+            mostrarToast(`Perfil "${usuario.username}" removido com sucesso!`);
             q('inp-nome-perfil').value = '';
             q('inp-email-perfil').value = '';
+            await listarProdutos();
         } else {
             const erro = await deleteResponse.json();
-            mostrarToast(erro.erro || 'Erro ao remover', true);
+            mostrarToast(erro.erro || 'Erro ao remover perfil', true);
         }
     } catch (err) {
-        console.error(err);
+        console.error('Erro detalhado:', err);
         mostrarToast('Erro de conexão com o servidor', true);
     }
 }
@@ -290,7 +327,7 @@ function renderizarLista() {
         const stockLabel = (p.stock || 0) > 0 ? `${p.stock} un.` : 'Sem stock';
         
         const imgHtml = p.imagem && p.imagem !== ''
-            ? `<img src="${p.imagem}" alt="${p.nome}">`
+            ? `<img src="${p.imagem}" alt="${p.nome}" style="width:100%; height:100%; object-fit:cover;">`
             : `<div class="card-reg-img-vazia"><span style="color:#666;">sem foto</span></div>`;
         
         let catHtml = '';
@@ -333,6 +370,12 @@ function escapeHtml(str) {
 function fotoSelecionada(input) {
     const file = input.files[0];
     if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        mostrarToast('Por favor, selecione uma imagem válida', true);
+        return;
+    }
+    
     const reader = new FileReader();
     reader.onload = e => aplicarFoto(e.target.result);
     reader.readAsDataURL(file);
@@ -346,8 +389,16 @@ function aplicarFoto(src) {
     if (zona) zona.classList.add('tem-foto');
 }
 
-function dragOver(e) { e.preventDefault(); const zona = q('zona-foto'); if(zona) zona.classList.add('drag-over'); }
-function dragLeave(e) { const zona = q('zona-foto'); if(zona) zona.classList.remove('drag-over'); }
+function dragOver(e) { 
+    e.preventDefault(); 
+    const zona = q('zona-foto'); 
+    if(zona) zona.classList.add('drag-over'); 
+}
+
+function dragLeave(e) { 
+    const zona = q('zona-foto'); 
+    if(zona) zona.classList.remove('drag-over'); 
+}
 
 function drop(e) {
     e.preventDefault();
@@ -360,7 +411,7 @@ function drop(e) {
     reader.readAsDataURL(file);
 }
 
-// ===================== LIMPAR FORM =====================
+// ===================== LIMPAR FORMULÁRIO =====================
 function limparForm() {
     q('inp-nome').value = '';
     q('inp-preco').value = '';
@@ -387,7 +438,7 @@ function onCategoria() {
     q('sel-marca').innerHTML = '';
     atualizarCaminho();
     
-    if (!cat || !window.CATEGORIAS[cat]) return;
+    if (!cat || !window.CATEGORIAS || !window.CATEGORIAS[cat]) return;
     
     const dados = window.CATEGORIAS[cat];
     if (dados.subcategorias && Object.keys(dados.subcategorias).length > 0) {
@@ -409,7 +460,7 @@ function onSubcategoria() {
     hide('wrap-marca');
     atualizarCaminho();
     
-    if (!sub || !window.CATEGORIAS[cat] || !window.CATEGORIAS[cat].subcategorias[sub]) return;
+    if (!sub || !window.CATEGORIAS || !window.CATEGORIAS[cat] || !window.CATEGORIAS[cat].subcategorias[sub]) return;
     
     const marcas = window.CATEGORIAS[cat].subcategorias[sub];
     if (marcas && marcas.length > 0) {
@@ -425,7 +476,9 @@ function onSubcategoria() {
     }
 }
 
-function onMarca() { atualizarCaminho(); }
+function onMarca() { 
+    atualizarCaminho(); 
+}
 
 function atualizarCaminho() {
     const cat = q('sel-cat').value;
@@ -434,9 +487,12 @@ function atualizarCaminho() {
     const wrap = q('caminho-filtro');
     
     if (!wrap) return;
-    if (!cat) { wrap.innerHTML = ''; return; }
+    if (!cat) { 
+        wrap.innerHTML = ''; 
+        return; 
+    }
     
-    const catLabel = window.CATEGORIAS[cat]?.label || cat;
+    const catLabel = window.CATEGORIAS && window.CATEGORIAS[cat] ? window.CATEGORIAS[cat].label : cat;
     let html = `<span class="caminho-pilula cat">${catLabel}</span>`;
     if (sub) html += `<span class="caminho-sep">›</span><span class="caminho-pilula">${sub}</span>`;
     if (marca) html += `<span class="caminho-sep">›</span><span class="caminho-pilula marca">${marca}</span>`;

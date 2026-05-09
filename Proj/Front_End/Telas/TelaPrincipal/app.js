@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = window.location.origin + '/Telas/TelaLogin/tela_login.html';
         return;
     }
-
+    // Atualizar nome do usuário no header
+    atualizarUserDisplay();
     await carregarProdutos();
     await carregarCarrinho();
     atualizarBadge();
@@ -42,8 +43,11 @@ function getAuthHeaders() {
 }
 
 function logout() {
-    localStorage.removeItem('token');
-    window.location.href = window.location.origin + '/Telas/TelaLogin/tela_login.html';
+    if (confirm('Tem certeza que deseja sair?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('utilizador');
+        window.location.href = '../TelaLogin/tela_login.html';
+    }
 }
 
 function getMarcasSelecionadas() {
@@ -413,6 +417,26 @@ async function finalizar() {
         return;
     }
 
+    // Verificar créditos do utilizador
+    try {
+        const credResponse = await fetch(`${API}/auth/creditos`, {
+            headers: getAuthHeaders()
+        });
+        const credData = await credResponse.json();
+        const creditosAtuais = credData.creditos || 0;
+
+        if (creditosAtuais > 0) {
+            const usarCreditos = confirm(`Você tem ${fmt(creditosAtuais)} em créditos. Deseja usá-los nesta compra?`);
+            if (usarCreditos) {
+                await usarCreditosNaCompra(creditosAtuais);
+                return;
+            }
+        }
+    } catch (err) {
+        console.error('Erro ao verificar créditos:', err);
+    }
+
+    // Checkout normal
     try {
         const res = await fetch(`${API}/pedidos/checkout`, {
             method: 'POST',
@@ -423,7 +447,30 @@ async function finalizar() {
 
         if (!res.ok) throw new Error(data.erro || 'Erro ao finalizar');
 
-        alert(`Pedido ${data.pedido_id} realizado com sucesso! Total: ${fmt(data.total)}`);
+        alert(`Pedido ${data.pedido_id} realizado! Total: ${fmt(data.total)}`);
+        
+        await carregarCarrinho();
+        ir('produtos');
+
+    } catch (err) {
+        console.error('Erro:', err);
+        alert(err.message);
+    }
+}
+
+async function usarCreditosNaCompra(valorCreditos) {
+    try {
+        const res = await fetch(`${API}/pedidos/checkout-com-creditos`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ usar_creditos: true, valor_creditos: valorCreditos })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.erro || 'Erro ao finalizar');
+
+        alert(`Pedido ${data.pedido_id} realizado! Total pago: ${fmt(data.total_pago)} | Créditos usados: ${fmt(data.creditos_usados)}`);
         
         await carregarCarrinho();
         ir('produtos');
@@ -549,9 +596,73 @@ function iniciarSlider() {
     });
 }
 
+function iniciarSlider() {
+    const track = document.querySelector('.track');
+    const container = document.getElementById('scroll-container');
+    
+    if (!track || !container) return;
+
+    let index = 0;
+    const slides = document.querySelectorAll('.track > *');
+    const total = slides.length;
+
+    if (total === 0) return;
+
+    const slideWidth = () => container.offsetWidth;
+
+    const nextBtn = document.getElementById('next');
+    const prevBtn = document.getElementById('prev');
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            index = Math.min(index + 1, total - 1);
+            track.style.transform = `translateX(-${index * slideWidth()}px)`;
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            index = Math.max(index - 1, 0);
+            track.style.transform = `translateX(-${index * slideWidth()}px)`;
+        });
+    }
+
+    window.addEventListener('resize', () => {
+        track.style.transform = `translateX(-${index * slideWidth()}px)`;
+    });
+}
+
 function toggleMenu() {
     const menu = document.getElementById('menu');
     if (menu) {
         menu.classList.toggle('aberto');
+    }
+}
+
+// ===================== USER MENU =====================
+function toggleUserMenu() {
+    const menu = document.getElementById('userMenu');
+    if (menu) {
+        menu.classList.toggle('show');
+    }
+}
+
+// Fechar menu ao clicar fora
+document.addEventListener('click', function(e) {
+    const container = document.querySelector('.user-menu-container');
+    const menu = document.getElementById('userMenu');
+    if (container && menu && !container.contains(e.target)) {
+        menu.classList.remove('show');
+    }
+});
+
+function atualizarUserDisplay() {
+    const utilizador = JSON.parse(localStorage.getItem('utilizador') || '{}');
+    const userNameSpan = document.getElementById('userNameDisplay');
+    
+    if (utilizador.username && userNameSpan) {
+        userNameSpan.textContent = utilizador.username.length > 15 
+            ? utilizador.username.substring(0, 12) + '...' 
+            : utilizador.username;
     }
 }

@@ -39,5 +39,5 @@ app.use((err, req, res, next) => {
   console.error(err.message || err);
   res.status(500).json({ erro: 'Erro interno do servidor' });
 });
-
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 module.exports = app;

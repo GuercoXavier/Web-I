@@ -23,6 +23,7 @@ function createTables() {
       email TEXT NOT NULL UNIQUE,
       password TEXT NOT NULL,
       role TEXT NOT NULL DEFAULT 'cliente',
+      creditos INTEGER DEFAULT 0,
       criado_em TEXT DEFAULT (datetime('now'))
     );
 
@@ -51,8 +52,8 @@ function createTables() {
       subcategoria_id INTEGER,
       em_destaque INTEGER NOT NULL DEFAULT 0,
       criado_em TEXT DEFAULT (datetime('now')),
-      FOREIGN KEY (categoria_id) REFERENCES categorias(id),
-      FOREIGN KEY (subcategoria_id) REFERENCES subcategorias(id)
+      FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE CASCADE,
+      FOREIGN KEY (subcategoria_id) REFERENCES subcategorias(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS carrinhos (
@@ -78,7 +79,7 @@ function createTables() {
       total INTEGER NOT NULL,
       estado TEXT NOT NULL DEFAULT 'pendente',
       criado_em TEXT DEFAULT (datetime('now')),
-      FOREIGN KEY (utilizador_id) REFERENCES utilizadores(id)
+      FOREIGN KEY (utilizador_id) REFERENCES utilizadores(id) ON DELETE SET NULL
     );
 
     CREATE TABLE IF NOT EXISTS pedido_itens (
@@ -88,7 +89,7 @@ function createTables() {
       quantidade INTEGER NOT NULL,
       preco_unit INTEGER NOT NULL,
       FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
-      FOREIGN KEY (produto_id) REFERENCES produtos(id)
+      FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE
     );
   `);
 }
@@ -106,7 +107,7 @@ function createIndexes() {
 }
 
 // =====================
-// SEED SEGURO
+// SEED (Apenas Admin e Categorias)
 // =====================
 async function seedDatabase() {
   const adminExiste = db.prepare(
@@ -115,51 +116,53 @@ async function seedDatabase() {
 
   if (adminExiste) return;
 
-  const insertCategoria = db.prepare('INSERT INTO categorias (nome) VALUES (?)');
+  console.log('🌱 A criar dados iniciais...');
 
+  // Criar categorias
+  const insertCategoria = db.prepare('INSERT INTO categorias (nome) VALUES (?)');
+  
   const celId = insertCategoria.run('celulares').lastInsertRowid;
   const compId = insertCategoria.run('computadores').lastInsertRowid;
   const acId = insertCategoria.run('acessórios').lastInsertRowid;
 
-  const insertSub = db.prepare(
-    'INSERT INTO subcategorias (nome, categoria_id) VALUES (?, ?)'
-  );
-
+  // Criar subcategorias
+  const insertSub = db.prepare('INSERT INTO subcategorias (nome, categoria_id) VALUES (?, ?)');
+  
+  // Subcategorias para Computadores
   const lapId = insertSub.run('Laptop', compId).lastInsertRowid;
   const monId = insertSub.run('Monitor', compId).lastInsertRowid;
+  
+  // Subcategorias para Acessórios
+  insertSub.run('Fone', acId);
+  insertSub.run('Teclado', acId);
+  insertSub.run('Mouse', acId);
+  insertSub.run('GPU', acId);
+  insertSub.run('CPU', acId);
+  insertSub.run('Relógio Digital', acId);
+  insertSub.run('Memória RAM', acId);
+  insertSub.run('Cooler', acId);
+  insertSub.run('Placa-mãe', acId);
 
-  ['Fone', 'Teclado', 'Mouse', 'GPU', 'CPU'].forEach(nome => {
-    insertSub.run(nome, acId);
-  });
-
-  // 🔥 MELHORIA: bcrypt async (não bloqueia servidor)
+  // Criar Admin
   const hash = await bcrypt.hash(
     process.env.ADMIN_PASSWORD || 'AdminAnik',
     10
   );
 
   db.prepare(`
-    INSERT INTO utilizadores (username, email, password, role)
-    VALUES (?, ?, ?, 'admin')
+    INSERT INTO utilizadores (username, email, password, role, creditos)
+    VALUES (?, ?, ?, 'admin', 0)
   `).run(
     process.env.ADMIN_USERNAME || 'Admin',
     process.env.ADMIN_EMAIL || 'admin@basgam.com',
     hash
   );
 
-  const insertProd = db.prepare(`
-    INSERT INTO produtos
-    (nome, descricao, preco, stock, marca, categoria_id, subcategoria_id, em_destaque)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  insertProd.run('iPhone 15 Pro', 'Chip A17 Pro, câmera 48MP, titânio.', 85000, 10, 'Apple', celId, null, 1);
-  insertProd.run('Samsung Galaxy S24', 'Display Dynamic AMOLED, 200MP.', 72000, 8, 'Samsung', celId, null, 1);
-  insertProd.run('MacBook Air M3', '15.3", 8GB RAM, 256GB SSD.', 145000, 5, 'Apple', compId, lapId, 1);
-  insertProd.run('ASUS ROG Zephyrus', 'Ryzen 9, RTX 4070, 16GB RAM.', 180000, 3, 'Asus', compId, lapId, 0);
-  insertProd.run('Dell UltraSharp 27"', '4K IPS, 60Hz, USB-C.', 65000, 6, 'Dell', compId, monId, 0);
-
-  console.log('✔ Base de dados inicializada com sucesso.');
+  console.log('✔ Base de dados inicializada com sucesso!');
+  console.log('   - Admin criado: Admin / AdminAnik');
+  console.log('   - Categorias: celulares, computadores, acessórios');
+  console.log('   - Subcategorias: Laptop, Monitor, Fone, Teclado...');
+  console.log('   - Adicione os produtos manualmente pelo painel admin!');
 }
 
 // =====================
