@@ -1550,7 +1550,7 @@
           <div class="footer-newsletter">
             <div class="newsletter-input">
               <input type="email" placeholder="Seu e-mail" id="footerEmail" />
-              <button onclick="alert('Obrigado por se inscrever!')">OK</button>
+              <button onclick="mostrarMensagem('Obrigado por se inscrever!', 'sucesso')">OK</button>
             </div>
           </div>
         </div>
@@ -1564,28 +1564,30 @@
         </div>
       </div>
     </footer>
-    <script src="app.js"></script>
-    <script src="../../posters/posters.js" defer></script>
 
      <!-- trocar alert -->
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Modal de Confirmação Centralizado -->
     <div id="modalConfirmacao" class="modal-confirmacao" style="display: none;">
-    <div class="modal-confirmacao-content">
-        <div class="modal-confirmacao-header">
-            <span class="toast-icon"> <img src="../../imagens/icon/question-circle-fill.svg"></span>
-            <h3>Confirmação</h3>
-        </div>
-        <div class="modal-confirmacao-body">
-            <p id="modalConfirmacaoMensagem">Tem certeza?</p>
-        </div>
-        <div class="modal-confirmacao-footer">
-            <button id="modalConfirmacaoBtnSim" class="btn-modal-sim">Sim</button>
-            <button id="modalConfirmacaoBtnNao" class="btn-modal-nao">Não</button>
-        </div>
+      <div class="modal-confirmacao-content">
+          <div class="modal-confirmacao-header">
+              <span class="toast-icon"><img src="../../imagens/icon/question-circle-fill.svg"></span>
+              <h3>Confirmação</h3>
+          </div>
+          <div class="modal-confirmacao-body">
+              <p id="modalConfirmacaoMensagem">Tem certeza?</p>
+          </div>
+          <div class="modal-confirmacao-footer">
+              <button id="modalConfirmacaoBtnSim" class="btn-modal-sim">Sim</button>
+              <button id="modalConfirmacaoBtnNao" class="btn-modal-nao">Não</button>
+          </div>
+      </div>
     </div>
-    </div>
+
+    
+    <script src="app.js"></script>
+    <script src="../../posters/posters.js" defer></script>
 
   </body>
 </html>
