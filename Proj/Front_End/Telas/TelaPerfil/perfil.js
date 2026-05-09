@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await carregarUtilizador();
     await carregarPedidos();
+    await carregarCreditos(); // NOVO: carregar créditos do backend
     preencherDadosPerfil();
-    atualizarStats();
     carregarAvatarSalvo();
 });
 
@@ -45,6 +45,22 @@ async function carregarUtilizador() {
     }
 }
 
+async function carregarCreditos() {
+    try {
+        const response = await fetch(`${API}/auth/creditos`, {
+            headers: getAuthHeaders()
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const statCreditos = document.getElementById('stat-creditos');
+            if (statCreditos) statCreditos.textContent = data.creditos || 0;
+        }
+    } catch (err) {
+        console.error('Erro ao carregar créditos:', err);
+    }
+}
+
 async function carregarPedidos() {
     try {
         const response = await fetch(`${API}/pedidos`, {
@@ -57,6 +73,10 @@ async function carregarPedidos() {
         
         pedidosUsuario = await response.json();
         renderizarPedidos();
+        
+        // Atualizar contador de pedidos
+        const statPedidos = document.getElementById('stat-pedidos');
+        if (statPedidos) statPedidos.textContent = pedidosUsuario.length;
         
     } catch (err) {
         console.error('Erro:', err);
@@ -172,7 +192,7 @@ function mostrarModalDetalhe(pedido) {
         
         itensHtml += `
             <div class="modal-item">
-                <div class="modal-item-nome">${item.nome || 'Produto'}</div>
+                <div class="modal-item-nome">${escapeHtml(item.nome || 'Produto')}</div>
                 <div class="modal-item-qtd">x${quantidade}</div>
                 <div class="modal-item-preco">${formatarMoeda(precoUnit)}</div>
                 <div class="modal-item-subtotal">${formatarMoeda(subtotal)}</div>
@@ -217,7 +237,7 @@ function mostrarModalDetalhe(pedido) {
             </div>
             <div class="modal-footer">
                 <button class="btn-modal-fechar" onclick="this.closest('.modal-overlay').remove()">Fechar</button>
-                <button class="btn-modal-imprimir" onclick="window.print()">Imprimir Recibo</button>
+                <button class="btn-modal-imprimir" onclick="imprimirRecibo(${pedidoInfo.id})">Imprimir Recibo</button>
             </div>
         </div>
     `;
@@ -229,53 +249,49 @@ function mostrarModalDetalhe(pedido) {
     });
 }
 
-async function atualizarStats() {
-    try {
-        const response = await fetch(`${API}/pedidos`, {
-            headers: getAuthHeaders()
-        });
-        
-        if (response.ok) {
-            const pedidos = await response.json();
-            const totalPedidos = pedidos.length;
-            
-            const statPedidos = document.getElementById('stat-pedidos');
-            if (statPedidos) statPedidos.textContent = totalPedidos;
-        }
-        
-        const creditosSalvos = localStorage.getItem('creditos');
-        const creditos = creditosSalvos ? parseInt(creditosSalvos) : 0;
-        
-        const statCreditos = document.getElementById('stat-creditos');
-        if (statCreditos) statCreditos.textContent = creditos;
-        
-    } catch (err) {
-        console.error('Erro ao atualizar stats:', err);
-    }
+function imprimirRecibo(pedidoId) {
+    window.open(`../TelaRecibo/Recibo.html?id=${pedidoId}`, '_blank');
 }
 
-function adicionarCredito() {
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+async function adicionarCredito() {
     const input = document.getElementById('inp-credito');
     const valor = parseInt(input.value);
     
     if (!valor || valor <= 0) {
-        input.style.borderColor = 'var(--vermelho)';
-        setTimeout(() => {
-            input.style.borderColor = '';
-        }, 1500);
         mostrarToast('Valor inválido');
         return;
     }
     
-    const statCreditos = document.getElementById('stat-creditos');
-    const creditosAtuais = parseInt(statCreditos.textContent) || 0;
-    const novoTotal = creditosAtuais + valor;
-    
-    statCreditos.textContent = novoTotal;
-    localStorage.setItem('creditos', novoTotal);
-    
-    input.value = '';
-    mostrarToast(`${formatarMoeda(valor)} adicionado com sucesso`);
+    try {
+        const response = await fetch(`${API}/auth/creditos/adicionar`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ valor, descricao: 'Adicionado pelo perfil' })
+        });
+        
+        if (!response.ok) {
+            const erro = await response.json();
+            throw new Error(erro.erro || 'Erro ao adicionar créditos');
+        }
+        
+        await carregarCreditos();
+        input.value = '';
+        mostrarToast(`${formatarMoeda(valor)} adicionado com sucesso!`);
+        
+    } catch (err) {
+        console.error('Erro:', err);
+        mostrarToast(err.message || 'Erro ao adicionar créditos');
+    }
 }
 
 function preencherDadosPerfil() {
@@ -287,7 +303,7 @@ function preencherDadosPerfil() {
         if (nomeSpan) nomeSpan.textContent = nome;
         
         const inicial = nome.charAt(0).toUpperCase();
-        if (avatarDiv) {
+        if (avatarDiv && !localStorage.getItem('avatar')) {
             avatarDiv.innerHTML = inicial;
             avatarDiv.style.display = 'flex';
             avatarDiv.style.alignItems = 'center';
@@ -311,6 +327,7 @@ function trocarAvatar(input) {
             avatarDiv.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
         }
         localStorage.setItem('avatar', e.target.result);
+        mostrarToast('Avatar atualizado!');
     };
     leitor.readAsDataURL(file);
 }
@@ -344,7 +361,7 @@ function mostrarToast(msg) {
         toast.classList.add('visivel');
         setTimeout(() => {
             toast.classList.remove('visivel');
-        }, 2400);
+        }, 3000);
     }
 }
 
@@ -352,6 +369,8 @@ function confirmarSair() {
     if (confirm('Tem certeza que deseja sair?')) {
         localStorage.removeItem('token');
         localStorage.removeItem('utilizador');
+        localStorage.removeItem('avatar');
+        localStorage.removeItem('creditos');
         window.location.href = '../TelaLogin/tela_login.html';
     }
 }

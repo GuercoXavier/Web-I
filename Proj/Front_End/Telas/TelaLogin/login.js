@@ -1,10 +1,10 @@
 const API_URL = 'http://localhost:3000/api';
 
+// ==================== TOGGLE LOGIN/REGISTRO ====================
 const container = document.getElementById('container');
 const registerBtn = document.querySelector('.register-btn');
 const loginBtn = document.querySelector('.login-btn');
 
-// Toggle entre login e registro
 if (registerBtn && loginBtn && container) {
     registerBtn.addEventListener('click', () => {
         container.classList.add('active');
@@ -47,6 +47,11 @@ if (loginForm) {
 
             localStorage.setItem('token', data.token);
             localStorage.setItem('utilizador', JSON.stringify(data.utilizador));
+
+            const carrinhoLocal = localStorage.getItem('carrinho_local');
+            if (carrinhoLocal) {
+                localStorage.setItem('carrinho_para_sincronizar', carrinhoLocal);
+            }
 
             alert('Login bem-sucedido!');
 
@@ -100,8 +105,6 @@ if (registerForm) {
             }
 
             alert('Conta criada com sucesso! Faça login.');
-
-            // Limpar formulário e voltar para login
             registerForm.reset();
             container.classList.remove('active');
 
@@ -110,4 +113,71 @@ if (registerForm) {
             alert('Erro ao ligar ao servidor');
         }
     });
+}
+
+// ==================== REDEFINIR SENHA (para página redefinir_senha.html) ====================
+const btnRedefinir = document.getElementById('btnRedefinir');
+
+if (btnRedefinir) {
+    btnRedefinir.addEventListener('click', async () => {
+        const novaSenha = document.getElementById('novaSenha')?.value;
+        const confirmarSenha = document.getElementById('confirmarSenha')?.value;
+        const mensagemDiv = document.getElementById('mensagem');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token') || localStorage.getItem('resetToken');
+
+        if (!token) {
+            mostrarMensagem('Token inválido. Faça a solicitação novamente.', 'erro', mensagemDiv);
+            return;
+        }
+
+        if (!novaSenha || !confirmarSenha) {
+            mostrarMensagem('Preencha todos os campos', 'erro', mensagemDiv);
+            return;
+        }
+
+        if (novaSenha !== confirmarSenha) {
+            mostrarMensagem('As senhas não coincidem', 'erro', mensagemDiv);
+            return;
+        }
+
+        if (novaSenha.length < 6) {
+            mostrarMensagem('A senha deve ter no mínimo 6 caracteres', 'erro', mensagemDiv);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/auth/redefinir-senha`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, nova_senha: novaSenha })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                mostrarMensagem('Senha redefinida com sucesso! Redirecionando...', 'sucesso', mensagemDiv);
+                localStorage.removeItem('resetToken');
+                setTimeout(() => {
+                    window.location.href = 'tela_login.html';
+                }, 2000);
+            } else {
+                mostrarMensagem(data.erro || 'Erro ao redefinir senha', 'erro', mensagemDiv);
+            }
+        } catch (err) {
+            mostrarMensagem('Erro ao conectar ao servidor', 'erro', mensagemDiv);
+        }
+    });
+}
+
+// Função auxiliar para mostrar mensagem
+function mostrarMensagem(msg, tipo, elemento) {
+    if (elemento) {
+        elemento.textContent = msg;
+        elemento.className = `mensagem ${tipo}`;
+        setTimeout(() => {
+            elemento.className = 'mensagem';
+        }, 5000);
+    }
 }
