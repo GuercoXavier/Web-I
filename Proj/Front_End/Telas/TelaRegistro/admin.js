@@ -7,7 +7,7 @@ let fotoDataUrl = null;
 let produtos = [];
 
 // VERIFICAR AUTENTICAÇÃO
-if (!authToken) {
+/*if (!authToken) {
     alert('Faça login primeiro!');
     window.location.href = '../TelaLogin/tela_login.html';
 }
@@ -36,7 +36,79 @@ function getHeaders() {
         'Authorization': `Bearer ${authToken}`
     };
 }
-
+*/
+function criarModalCSS() {
+    if (document.getElementById('modal-sistema-style')) return;
+    const style = document.createElement('style');
+    style.id = 'modal-sistema-style';
+    style.textContent = `
+        #modal-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        #modal-overlay.visivel {
+            opacity: 1; pointer-events: all;
+        }
+        #modal-caixa {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 28px 32px 24px;
+            min-width: 320px; max-width: 420px; width: 90%;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+            transform: translateY(10px) scale(0.97);
+            transition: transform 0.22s ease, opacity 0.2s ease;
+            opacity: 0;
+        }
+        #modal-overlay.visivel #modal-caixa {
+            transform: translateY(0) scale(1); opacity: 1;
+        }
+        #modal-icone {
+            font-size: 2rem; margin-bottom: 10px; display: block;
+        }
+        #modal-titulo {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 1rem; font-weight: 600;
+            color: #f0f0f0; margin: 0 0 8px;
+        }
+        #modal-mensagem {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.88rem; color: #aaa;
+            line-height: 1.5; margin: 0 0 22px;
+        }
+        #modal-acoes {
+            display: flex; gap: 10px; justify-content: flex-end;
+        }
+        .modal-btn {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.85rem; font-weight: 500;
+            padding: 8px 20px; border-radius: 7px;
+            border: none; cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .modal-btn:hover { opacity: 0.85; }
+        .modal-btn:active { transform: scale(0.97); }
+        .modal-btn-cancelar {
+            background: #2e2e2e; color: #ccc;
+            border: 1px solid #444;
+        }
+        .modal-btn-confirmar {
+            background: #e53e3e; color: #fff;
+        }
+        .modal-btn-confirmar.seguro {
+            background: #2563eb;
+        }
+        .modal-btn-ok {
+            background: #2e2e2e; color: #f0f0f0;
+            border: 1px solid #444; min-width: 80px;
+        }
+    `;
+    document.head.appendChild(style);
+}
 // ===================== CARREGAR CATEGORIAS =====================
 async function carregarCategorias() {
     try {
