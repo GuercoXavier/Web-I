@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     await carregarProdutos();
-    await carregarCarrinho(); // Carrinho anónimo funciona sem login
+    await carregarCarrinho();
     atualizarBadge();
     iniciarSlider();
     renderDestaque();
@@ -278,9 +278,8 @@ async function renderDestaque() {
     }
 }
 
-// ==================== CARRINHO (Funciona sem login) ====================
+// ==================== CARRINHO ====================
 async function carregarCarrinho() {
-    // Carrinho local para utilizadores não logados
     const carrinhoLocal = localStorage.getItem('carrinho_local');
     if (carrinhoLocal && !getToken()) {
         carrinhoAtual = JSON.parse(carrinhoLocal);
@@ -289,7 +288,6 @@ async function carregarCarrinho() {
         return;
     }
 
-    // Se estiver logado, buscar do backend
     if (getToken()) {
         try {
             const res = await fetch(`${API}/carrinho`, {
@@ -312,7 +310,6 @@ async function addCarrinho(produtoId) {
     const produto = produtos.find(p => p.id === produtoId);
     if (!produto) return;
 
-    // Se não estiver logado, guardar no localStorage
     if (!getToken()) {
         const carrinhoLocal = JSON.parse(localStorage.getItem('carrinho_local') || '{"itens":[], "total":0}');
         const itemExistente = carrinhoLocal.itens.find(i => i.produto_id === produtoId);
@@ -339,7 +336,6 @@ async function addCarrinho(produtoId) {
         return;
     }
 
-    // Se estiver logado, usar API
     try {
         const res = await fetch(`${API}/carrinho/adicionar`, {
             method: 'POST',
@@ -367,7 +363,6 @@ async function addCarrinho(produtoId) {
 async function atualizarQuantidade(produtoId, quantidade) {
     if (quantidade < 0) return;
 
-    // Se não estiver logado, atualizar localStorage
     if (!getToken()) {
         const carrinhoLocal = JSON.parse(localStorage.getItem('carrinho_local') || '{"itens":[]}');
         const item = carrinhoLocal.itens.find(i => i.produto_id === produtoId);
@@ -389,7 +384,6 @@ async function atualizarQuantidade(produtoId, quantidade) {
         return;
     }
 
-    // Se estiver logado, usar API
     try {
         const res = await fetch(`${API}/carrinho/atualizar`, {
             method: 'PUT',
@@ -504,53 +498,112 @@ function atualizarBadge() {
     }
 }
 
-// ==================== FINALIZAR COMPRA (Exige Login) ====================
+// ==================== FINALIZAR COMPRA (CRÉDITOS OBRIGATÓRIOS) ====================
 async function finalizar() {
     // Verificar se está logado
     if (!getToken()) {
         const confirmar = confirm('Para finalizar a compra, precisa fazer login. Deseja ir para a página de login?');
         if (confirmar) {
-            // Guardar carrinho atual antes de redirecionar
-            if (!getToken()) {
-                localStorage.setItem('carrinho_local', JSON.stringify(carrinhoAtual));
-            }
+            localStorage.setItem('carrinho_local', JSON.stringify(carrinhoAtual));
             window.location.href = '../TelaLogin/tela_login.html';
         }
         return;
     }
 
-    // Se estiver logado, verificar carrinho
+    // Verificar carrinho vazio
     if (!carrinhoAtual.itens || carrinhoAtual.itens.length === 0) {
-        alert('Carrinho vazio');
+        alert('❌ Carrinho vazio');
         return;
     }
 
-    // Verificar se há carrinho local para sincronizar
+    // Sincronizar carrinho local
     const carrinhoLocal = localStorage.getItem('carrinho_local');
     if (carrinhoLocal) {
         await sincronizarCarrinhoLocal();
+        await carregarCarrinho(); // Recarregar após sincronização
     }
 
+    // OBTER CRÉDITOS DO UTILIZADOR
+    let creditosAtuais = 0;
     try {
-        const res = await fetch(`${API}/pedidos/checkout`, {
-            method: 'POST',
+        const credResponse = await fetch(`${API}/auth/creditos`, {
             headers: getAuthHeaders()
+        });
+        if (credResponse.ok) {
+            const credData = await credResponse.json();
+            creditosAtuais = credData.creditos || 0;
+        }
+    } catch (err) {
+        console.error('Erro ao verificar créditos:', err);
+    }
+
+    const totalCompra = carrinhoAtual.total;
+
+    // VALIDAÇÃO OBRIGATÓRIA: Saldo deve ser suficiente
+    if (creditosAtuais <= 0) {
+        alert(`❌ SALDO INSUFICIENTE!\n\n💰 Total da compra: ${fmt(totalCompra)}\n💳 Seu saldo: ${fmt(0)}\n\nAdicione créditos no seu perfil antes de continuar.`);
+        
+        const irPerfil = confirm('Deseja ir para o seu perfil para adicionar créditos?');
+        if (irPerfil) {
+            window.location.href = '../TelaPerfil/perfil.html';
+        }
+        return;
+    }
+
+    if (creditosAtuais < totalCompra) {
+        alert(`❌ SALDO INSUFICIENTE!\n\n💰 Total da compra: ${fmt(totalCompra)}\n💳 Seu saldo: ${fmt(creditosAtuais)}\n💸 Faltam: ${fmt(totalCompra - creditosAtuais)}\n\nAdicione mais créditos no seu perfil.`);
+        
+        const irPerfil = confirm('Deseja ir para o seu perfil para adicionar créditos?');
+        if (irPerfil) {
+            window.location.href = '../TelaPerfil/perfil.html';
+        }
+        return;
+    }
+
+    // Saldo suficiente, confirmar compra
+    const confirmarCompra = confirm(
+        `✅ COMPRA COM CRÉDITOS\n\n` +
+        `💰 Total da compra: ${fmt(totalCompra)}\n` +
+        `💳 Saldo atual: ${fmt(creditosAtuais)}\n` +
+        `💵 Saldo após compra: ${fmt(creditosAtuais - totalCompra)}\n\n` +
+        `Confirmar compra?`
+    );
+
+    if (!confirmarCompra) return;
+
+    // REALIZAR COMPRA
+    try {
+        const res = await fetch(`${API}/pedidos/checkout-com-creditos`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                usar_creditos: true,
+                valor_creditos: totalCompra
+            })
         });
 
         const data = await res.json();
 
-        if (!res.ok) throw new Error(data.erro || 'Erro ao finalizar');
+        if (!res.ok) {
+            throw new Error(data.erro || 'Erro ao finalizar compra');
+        }
 
-        alert(`Pedido ${data.pedido_id} realizado! Total: ${fmt(data.total)}`);
+        alert(`✅ COMPRA REALIZADA COM SUCESSO!\n\n` +
+              `📦 Pedido #${data.pedido_id}\n` +
+              `💰 Total: ${fmt(data.total_pago)}\n` +
+              `💳 Créditos usados: ${fmt(data.creditos_usados)}\n\n` +
+              `💵 Saldo restante: ${fmt(creditosAtuais - totalCompra)}`);
         
-        // Limpar carrinho local após compra
+        // Limpar carrinho após compra
         localStorage.removeItem('carrinho_local');
         await carregarCarrinho();
-        ir('produtos');
+        
+        // Redirecionar para página de pedidos
+        ir('perfil');
 
     } catch (err) {
         console.error('Erro:', err);
-        alert(err.message);
+        alert('❌ Erro ao processar compra: ' + err.message);
     }
 }
 
@@ -586,6 +639,7 @@ function ir(pagina, id = null) {
     else if (pagina === 'carrinho') viewId = 'view-carrinho';
     else if (pagina === 'sobre') viewId = 'view-sobre';
     else if (pagina === 'contato') viewId = 'view-contato';
+    else if (pagina === 'perfil') viewId = 'view-perfil';
 
     const view = document.getElementById(viewId);
     if (view) view.classList.remove('oculta');

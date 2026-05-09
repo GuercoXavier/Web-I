@@ -1,4 +1,4 @@
-// admin.js - Versão Final
+// admin.js - Versão Final com Edição de Stock
 // Local: Front_End/Telas/TelaRegistro/admin.js
 
 const API_URL = 'http://localhost:3000/api';
@@ -86,11 +86,64 @@ async function listarProdutos() {
     }
 }
 
-// ===================== ADICIONAR PRODUTO =====================
+// ===================== CARREGAR PRODUTO PARA EDIÇÃO =====================
+async function carregarProdutoParaEdicao(id) {
+    try {
+        const produto = produtos.find(p => p.id === id);
+        if (!produto) return;
+        
+        // Preencher formulário
+        q('inp-nome').value = produto.nome;
+        q('inp-preco').value = produto.preco;
+        q('inp-stock').value = 0; // Stock começa a 0 para reabastecer
+        q('inp-desc').value = produto.descricao || '';
+        
+        // Limpar foto anterior
+        fotoDataUrl = null;
+        q('zona-foto').classList.remove('tem-foto');
+        q('preview-img').src = '';
+        
+        // Selecionar categoria
+        if (produto.categoria_nome) {
+            const catNome = produto.categoria_nome.toLowerCase();
+            q('sel-cat').value = catNome;
+            onCategoria();
+            
+            setTimeout(async () => {
+                if (produto.subcategoria_nome) {
+                    q('sel-sub').value = produto.subcategoria_nome;
+                    onSubcategoria();
+                    
+                    setTimeout(() => {
+                        if (produto.marca) {
+                            q('sel-marca').value = produto.marca;
+                            onMarca();
+                        }
+                    }, 100);
+                }
+            }, 100);
+        }
+        
+        // Marcar que está em modo de edição
+        window.produtoEditandoId = produto.id;
+        
+        // Feedback visual
+        mostrarToast(`📦 "${produto.nome}" carregado. Stock atual: ${produto.stock}. Adicione quantidade para reabastecer.`);
+        
+        // Rolar para o topo do formulário
+        q('painel-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+    } catch (err) {
+        console.error(err);
+        mostrarToast('Erro ao carregar produto', true);
+    }
+}
+
+// ===================== ADICIONAR OU ATUALIZAR PRODUTO =====================
 async function adicionarProduto() {
     const nome = q('inp-nome').value.trim();
     const preco = parseFloat(q('inp-preco').value);
-    const stock = parseInt(q('inp-stock').value);
+    const quantidadeAdicionar = parseInt(q('inp-stock').value);
     const descricao = q('inp-desc').value.trim();
     const catNome = q('sel-cat').value;
     const subNome = q('sel-sub').value;
@@ -104,6 +157,75 @@ async function adicionarProduto() {
     
     if (isNaN(preco) || preco < 0) {
         mostrarToast('Preço inválido', true);
+        return;
+    }
+    
+    if (isNaN(quantidadeAdicionar) || quantidadeAdicionar < 0) {
+        mostrarToast('Stock inválido', true);
+        return;
+    }
+    
+    // VERIFICAR SE PRODUTO JÁ EXISTE (pelo nome)
+    const produtoExistente = produtos.find(p => p.nome.toLowerCase() === nome.toLowerCase());
+    
+    if (produtoExistente) {
+        // MODO ATUALIZAÇÃO: Adicionar stock ao existente
+        const novoStock = produtoExistente.stock + quantidadeAdicionar;
+        
+        if (quantidadeAdicionar === 0) {
+            mostrarToast('Digite a quantidade a adicionar ao stock', true);
+            q('inp-stock').focus();
+            return;
+        }
+        
+        const confirmar = confirm(
+            `🔄 ATUALIZAR STOCK\n\n` +
+            `Produto: ${produtoExistente.nome}\n` +
+            `Stock atual: ${produtoExistente.stock}\n` +
+            `Adicionar: +${quantidadeAdicionar}\n` +
+            `Novo stock: ${novoStock}\n\n` +
+            `Confirmar atualização?`
+        );
+        
+        if (!confirmar) return;
+        
+        try {
+            const response = await fetch(`${API_URL}/produtos/${produtoExistente.id}`, {
+                method: 'PUT',
+                headers: getHeaders(),
+                body: JSON.stringify({
+                    nome: produtoExistente.nome,
+                    descricao: descricao || produtoExistente.descricao,
+                    preco: preco,
+                    stock: novoStock,
+                    marca: marca || produtoExistente.marca,
+                    imagem: fotoDataUrl || produtoExistente.imagem,
+                    categoria_id: produtoExistente.categoria_id,
+                    subcategoria_id: produtoExistente.subcategoria_id,
+                    em_destaque: produtoExistente.em_destaque || 0
+                })
+            });
+            
+            if (response.ok) {
+                mostrarToast(`✅ Stock atualizado! +${quantidadeAdicionar} unidades. Novo stock: ${novoStock}`);
+                limparForm();
+                window.produtoEditandoId = null;
+                await listarProdutos();
+            } else {
+                const data = await response.json();
+                mostrarToast(data.erro || 'Erro ao atualizar produto', true);
+            }
+        } catch (err) {
+            console.error('Erro:', err);
+            mostrarToast('Erro de conexão com o servidor', true);
+        }
+        return;
+    }
+    
+    // MODO CRIAÇÃO: Produto não existe, criar novo
+    if (quantidadeAdicionar === 0) {
+        mostrarToast('Digite o stock inicial do produto', true);
+        q('inp-stock').focus();
         return;
     }
     
@@ -129,8 +251,8 @@ async function adicionarProduto() {
     const produto = {
         nome: nome,
         descricao: descricao || '',
-        preco: preco || 0,
-        stock: stock || 0,
+        preco: preco,
+        stock: quantidadeAdicionar,
         marca: marca || '',
         imagem: fotoDataUrl || '',
         categoria_id: categoria_id,
@@ -145,13 +267,12 @@ async function adicionarProduto() {
             body: JSON.stringify(produto)
         });
         
-        const data = await response.json();
-        
         if (response.ok) {
-            mostrarToast('Produto adicionado com sucesso!');
+            mostrarToast(`✅ Produto "${nome}" adicionado com sucesso!`);
             limparForm();
             await listarProdutos();
         } else {
+            const data = await response.json();
             mostrarToast(data.erro || 'Erro ao adicionar produto', true);
         }
     } catch (err) {
@@ -162,7 +283,7 @@ async function adicionarProduto() {
 
 // ===================== REMOVER PRODUTO (CARD) =====================
 async function removerProduto(id) {
-    if (!confirm('Remover este produto permanentemente?')) return;
+    if (!confirm('⚠️ Remover este produto permanentemente?\nEsta ação não pode ser desfeita!')) return;
     
     try {
         const response = await fetch(`${API_URL}/produtos/${id}`, {
@@ -194,7 +315,7 @@ async function removerProdutoPorId() {
         return;
     }
     
-    if (!confirm(`Remover produto ID ${id} permanentemente?`)) return;
+    if (!confirm(`⚠️ Remover produto ID ${id} permanentemente?`)) return;
     
     try {
         const response = await fetch(`${API_URL}/produtos/${id}`, {
@@ -340,7 +461,7 @@ function renderizarLista() {
         }
         
         return `
-            <div class="card-reg">
+            <div class="card-reg" onclick="carregarProdutoParaEdicao(${p.id})" style="cursor: pointer;">
                 <div class="card-reg-img">${imgHtml}</div>
                 <div class="card-reg-corpo">
                     <p class="card-reg-nome">${escapeHtml(p.nome)}</p>
@@ -350,7 +471,7 @@ function renderizarLista() {
                         <span class="card-reg-preco">${precoFmt}</span>
                         <span class="card-reg-stock ${stockClass}">${stockLabel}</span>
                     </div>
-                    <button class="btn-remover-card" onclick="removerProduto(${p.id})">Remover</button>
+                    <button class="btn-remover-card" onclick="event.stopPropagation(); removerProduto(${p.id})">🗑️ Remover</button>
                 </div>
             </div>`;
     }).join('');
@@ -427,6 +548,7 @@ function limparForm() {
     q('caminho-filtro').innerHTML = '';
     q('zona-foto').classList.remove('tem-foto');
     q('preview-img').src = '';
+    window.produtoEditandoId = null;
 }
 
 // ===================== FUNÇÕES DE CATEGORIA =====================

@@ -370,6 +370,7 @@
             background: var(--bg-panel); border: 1px solid var(--borda);
             border-radius: var(--raio); overflow: hidden;
             transition: border-color var(--trans);
+            cursor: pointer;
         }
 
         .card-reg:hover { border-color: var(--borda-hl); }
@@ -468,15 +469,15 @@
             <span class="tag-adm">PAINEL</span>
         </div>
         <div style="display: flex; gap: 16px; align-items: center;">
-    <a href="relatorios.html" style="font-size:0.82rem;color:var(--muted);transition:color .2s; text-decoration:none;"
-       onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">
-        📊 Relatórios
-    </a>
-    <a href="index.html" style="font-size:0.82rem;color:var(--muted);transition:color .2s; text-decoration:none;"
-       onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">
-        ← Voltar à loja
-    </a>
-</div>
+            <a href="relatorios.html" style="font-size:0.82rem;color:var(--muted);transition:color .2s; text-decoration:none;"
+               onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">
+                📊 Relatórios
+            </a>
+            <a href="index.html" style="font-size:0.82rem;color:var(--muted);transition:color .2s; text-decoration:none;"
+               onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">
+                ← Voltar à loja
+            </a>
+        </div>
     </header>
 
     <nav class="nav-abas">
@@ -558,10 +559,40 @@
                             <option value="">— selecione —</option>
                         </select>
                     </div>
-                    <div class="campo" id="wrap-marca" style="display:none">
+                    <!-- MARCA - SELECT COM OPÇÕES PREDEFINIDAS -->
+                    <div class="campo">
                         <label for="sel-marca">Marca</label>
                         <select id="sel-marca" onchange="onMarca()">
                             <option value="">— selecione —</option>
+                            <option value="Apple">Apple</option>
+                            <option value="Samsung">Samsung</option>
+                            <option value="Xiaomi">Xiaomi</option>
+                            <option value="Tecno">Tecno</option>
+                            <option value="Google">Google</option>
+                            <option value="OnePlus">OnePlus</option>
+                            <option value="LG">LG</option>
+                            <option value="Sony">Sony</option>
+                            <option value="Nokia">Nokia</option>
+                            <option value="Asus">Asus</option>
+                            <option value="Dell">Dell</option>
+                            <option value="Lenovo">Lenovo</option>
+                            <option value="HP">HP</option>
+                            <option value="Acer">Acer</option>
+                            <option value="MSI">MSI</option>
+                            <option value="Razer">Razer</option>
+                            <option value="Logitech">Logitech</option>
+                            <option value="Corsair">Corsair</option>
+                            <option value="JBL">JBL</option>
+                            <option value="Bose">Bose</option>
+                            <option value="Sennheiser">Sennheiser</option>
+                            <option value="NVIDIA">NVIDIA</option>
+                            <option value="AMD">AMD</option>
+                            <option value="Intel">Intel</option>
+                            <option value="Kingston">Kingston</option>
+                            <option value="Crucial">Crucial</option>
+                            <option value="Cooler Master">Cooler Master</option>
+                            <option value="Noctua">Noctua</option>
+                            <option value="Gigabyte">Gigabyte</option>
                         </select>
                     </div>
                     <div class="caminho-filtro" id="caminho-filtro"></div>

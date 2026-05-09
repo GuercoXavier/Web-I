@@ -115,7 +115,6 @@ router.post('/checkout-com-creditos', autenticar, (req, res) => {
   if (usar_creditos && valor_creditos > 0) {
     const user = db.prepare('SELECT creditos FROM utilizadores WHERE id = ?').get(userId);
     
-    // VERIFICAÇÃO DE CRÉDITOS
     if (!user || user.creditos <= 0) {
       return res.status(400).json({ erro: 'Você não tem créditos disponíveis.' });
     }
@@ -255,7 +254,9 @@ router.get('/admin/relatorio', autenticar, (req, res) => {
     
     const totalVendas = pedidos.length;
     const faturacaoTotal = pedidos.reduce((sum, p) => sum + p.total, 0);
-    const totalClientes = db.prepare('SELECT COUNT(*) as total FROM utilizadores WHERE role = "cliente"').get().total || 0;
+    
+    // 🔧 CORREÇÃO AQUI - Usar aspas simples
+    const totalClientes = db.prepare("SELECT COUNT(*) as total FROM utilizadores WHERE role = 'cliente'").get().total || 0;
     
     const topProdutos = db.prepare(`
       SELECT 
@@ -281,7 +282,7 @@ router.get('/admin/relatorio', autenticar, (req, res) => {
 
   } catch (err) {
     console.error('Erro ao gerar relatório:', err);
-    res.status(500).json({ erro: 'Erro ao gerar relatório.' });
+    res.status(500).json({ erro: 'Erro ao gerar relatório: ' + err.message });
   }
 });
 
