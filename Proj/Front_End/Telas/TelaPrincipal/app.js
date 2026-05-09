@@ -608,6 +608,30 @@ function filtrar(categoria) {
     }, 100);
 }
 
+function filtrarMarca(marca) {
+    document.querySelectorAll('.pagina').forEach(el => el.classList.add('oculta'));
+    const view = document.getElementById('view-produtos');
+    if (view) view.classList.remove('oculta');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    setTimeout(() => {
+        document.querySelectorAll('.filtro-marca:checked').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.preco-min, .preco-max').forEach(input => input.value = '');
+
+        document.querySelectorAll(`.filtro-marca[value="${marca}"]`).forEach(cb => cb.checked = true);
+
+        document.querySelectorAll('.filtro-grupo').forEach(grupo => {
+            const titulo = grupo.querySelector('.filtro-grupo-titulo');
+            if (titulo && titulo.innerText.trim() === 'Celulares') {
+                grupo.setAttribute('open', '');
+            }
+        });
+
+        carregarProdutos();
+    }, 150);
+}
+
 async function renderDetalhe(id) {
     try {
         const res = await fetch(`${API}/produtos/${id}`);

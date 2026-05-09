@@ -371,7 +371,7 @@ header .container {
 #prev {
   position: absolute;
   left: 0px;
-  z-index: 1;
+  z-index: 10;
   height: 100vh;
 }
 
@@ -379,6 +379,7 @@ header .container {
   right: 0px;
   position: absolute;
   height: 100vh;
+  z-index: 10;
 }
 
 #prev > img,
@@ -1814,4 +1815,27 @@ footer .container {
     .btn-user {
         padding: 8px;
     }
+}
+
+
+.poster-wrapper {
+  flex: 0 0 100%;
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+}
+
+.poster-wrapper .poster-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  pointer-events: none;
+}
+
+.poster-overlay {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  z-index: 2;
+  cursor: pointer;
 }
