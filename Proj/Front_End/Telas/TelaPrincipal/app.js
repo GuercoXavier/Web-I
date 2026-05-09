@@ -508,16 +508,22 @@ function atualizarBadge() {
 async function finalizar() {
     // Verificar se está logado
     if (!getToken()) {
-        const confirmar = confirm('Para finalizar a compra, precisa fazer login. Deseja ir para a página de login?');
-        if (confirmar) {
-            // Guardar carrinho atual antes de redirecionar
+    mostrarConfirmacao(
+        'Para finalizar a compra, precisa fazer login. Deseja ir para a página de login?',
+        () => {
+            // Ao clicar em "Sim"
             if (!getToken()) {
                 localStorage.setItem('carrinho_local', JSON.stringify(carrinhoAtual));
             }
             window.location.href = '../TelaLogin/tela_login.html';
+        },
+        () => {
+            // Ao clicar em "Não" (ou fechar) – não faz nada, apenas fecha o toast
+            mostrarMensagem('Compra não finalizada. Continue comprando.', 'info');
         }
-        return;
-    }
+    );
+    return;
+}
 
     // Se estiver logado, verificar carrinho
     if (!carrinhoAtual.itens || carrinhoAtual.itens.length === 0) {
@@ -723,4 +729,74 @@ function atualizarUserDisplay() {
             ? utilizador.username.substring(0, 12) + '...' 
             : utilizador.username;
     }
+}
+
+//============ Trocar Alert ===========
+function mostrarMensagem(mensagem, tipo = 'info', duracao = 3000) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${tipo}`;
+
+  let icone = '<img src="../../imagens/icon/info-circle-fill.svg">';
+  if (tipo === 'sucesso') icone = '<img src="../../imagens/icon/check-circle-fill.svg">';
+  if (tipo === 'erro') icone = '<img src="../../imagens/icon/x-circle-fill.svg">';
+
+  toast.innerHTML = `
+    <div class="toast-icon">${icone}</div>
+    <div class="toast-message">${mensagem}</div>
+    <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = 'fadeOut 0.3s forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, duracao);
+}
+
+//============== Mesnagem de Confirmacao ==============
+function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar, duracao = 0) {
+    const modal = document.getElementById('modalConfirmacao');
+    if (!modal) return;
+
+    const msgEl = document.getElementById('modalConfirmacaoMensagem');
+    const btnSim = document.getElementById('modalConfirmacaoBtnSim');
+    const btnNao = document.getElementById('modalConfirmacaoBtnNao');
+
+    // Define a mensagem
+    msgEl.textContent = mensagem;
+
+    // Guarda os callbacks
+    const handleSim = () => {
+        fecharModal();
+        if (aoConfirmar) aoConfirmar();
+    };
+    const handleNao = () => {
+        fecharModal();
+        if (aoCancelar) aoCancelar();
+    };
+
+    // Remove listeners antigos e adiciona novos
+    btnSim.removeEventListener('click', handleSim);
+    btnNao.removeEventListener('click', handleNao);
+    btnSim.addEventListener('click', handleSim);
+    btnNao.addEventListener('click', handleNao);
+
+    // Fechar ao clicar no fundo (opcional)
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            fecharModal();
+            if (aoCancelar) aoCancelar();
+        }
+    }, { once: true });
+
+    function fecharModal() {
+        modal.style.display = 'none';
+    }
+
+    // Abrir modal
+    modal.style.display = 'flex';
 }
