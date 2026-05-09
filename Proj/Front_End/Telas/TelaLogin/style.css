@@ -121,6 +121,28 @@ body {
   50%  { transform: translateY(-20px) scale(1.03); }
   100% { transform: translateY(0px) scale(1); }
 }
+
+/*Botao voltar*/
+.btn-voltar {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
+    filter: brightness(0) invert(1);
+    opacity: 0.65;
+
+}
+
+.btn-voltar img {
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.btn-voltar img:hover {
+    transform: scale(1.1);
+}
 /* ===================== CONTAINER GLASS ===================== */
 
 .container {

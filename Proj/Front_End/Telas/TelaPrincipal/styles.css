@@ -239,7 +239,7 @@ header .container {
 }
 
 
-.btn-login {
+.btn-login-header {
   background: none;
   border: none;
   cursor: pointer;
@@ -249,7 +249,7 @@ header .container {
   transition: transform 0.2s ease;
 }
 
-.btn-login img {
+.btn-login-header img {
   width: 28px;
   height: 28px;
   filter: brightness(0.7);
@@ -257,16 +257,18 @@ header .container {
   transition: filter 0.2s, transform 0.2s;
 }
 
-.btn-login:hover img {
+.btn-login-header:hover img {
   filter: brightness(1);
   transform: scale(1.1);
 }
 
-.btn-login:hover img {
+.btn-login-header:hover img {
   filter: brightness(0) invert(1);
   transform: scale(1.1);
 }
-
+.btn-login-header span{
+  padding-left: 10px;
+}
 .btn-menu {
   display: none;
   font-size: 1.6rem;
