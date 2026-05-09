@@ -2,21 +2,26 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/database');
-const { autenticar } = require('../middleware/auth');
-const { validarRegisto, validarLogin } = require('../middleware/validacao');
-const router = express.Router();
 const { 
   autenticar, 
   verificarTentativasLogin, 
   registrarTentativaFalha, 
   limparTentativasSucesso 
 } = require('../middleware/auth');
+const { validarRegisto, validarLogin } = require('../middleware/validacao');
+
+const router = express.Router();
+
 // ==================== LOGIN ====================
-router.post('/login', async (req, res) => {
+router.post('/login', validarLogin, async (req, res) => {
   const { username, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ erro: 'Campos obrigatórios.' });
+  // Verificar tentativas de login
+  const tentativaCheck = verificarTentativasLogin(username);
+  if (tentativaCheck.blocked) {
+    return res.status(429).json({ 
+      erro: `Muitas tentativas. Tente novamente em ${tentativaCheck.remainingTime} minutos.` 
+    });
   }
 
   try {
@@ -27,14 +32,19 @@ router.post('/login', async (req, res) => {
     `).get(username);
 
     if (!user) {
+      registrarTentativaFalha(username);
       return res.status(401).json({ erro: 'Credenciais inválidas.' });
     }
 
     const valid = await bcrypt.compare(password, user.password);
 
     if (!valid) {
+      registrarTentativaFalha(username);
       return res.status(401).json({ erro: 'Credenciais inválidas.' });
     }
+
+    // Login bem-sucedido - limpar tentativas
+    limparTentativasSucesso(username);
 
     const token = jwt.sign(
       { id: user.id, username: user.username, role: user.role },
@@ -53,7 +63,7 @@ router.post('/login', async (req, res) => {
         creditos: user.creditos || 0
       }
     });
-router.post('/login', validarLogin, async (req, res) => { ... });
+
   } catch (err) {
     console.error(err);
     return res.status(500).json({ erro: 'Erro interno.' });
@@ -61,16 +71,8 @@ router.post('/login', validarLogin, async (req, res) => { ... });
 });
 
 // ==================== REGISTO ====================
-router.post('/register', async (req, res) => {
+router.post('/register', validarRegisto, async (req, res) => {
   const { username, email, password } = req.body;
-
-  if (!username || !email || !password) {
-    return res.status(400).json({ erro: 'Campos obrigatórios.' });
-  }
-
-  if (password.length < 6) {
-    return res.status(400).json({ erro: 'Password deve ter no mínimo 6 caracteres.' });
-  }
 
   try {
     const existingUser = db.prepare(
@@ -92,14 +94,14 @@ router.post('/register', async (req, res) => {
       mensagem: 'Conta criada com sucesso!',
       id: result.lastInsertRowid
     });
-router.post('/register', validarRegisto, async (req, res) => { ... });
+
   } catch (err) {
     console.error(err);
     return res.status(500).json({ erro: 'Erro interno.' });
   }
 });
 
-// ==================== CRÉDITOS ====================
+// ==================== CRÉDITOS COM HISTÓRICO ====================
 router.get('/creditos', autenticar, (req, res) => {
   try {
     const user = db.prepare(`SELECT creditos FROM utilizadores WHERE id = ?`).get(req.utilizador.id);
@@ -109,8 +111,35 @@ router.get('/creditos', autenticar, (req, res) => {
   }
 });
 
-router.post('/creditos', autenticar, (req, res) => {
-  const { valor } = req.body;
+// OBTER CRÉDITOS E HISTÓRICO
+router.get('/creditos/historico', autenticar, (req, res) => {
+  try {
+    const userId = req.utilizador.id;
+    
+    const creditos = db.prepare(`SELECT creditos FROM utilizadores WHERE id = ?`).get(userId);
+    
+    const historico = db.prepare(`
+      SELECT id, valor, tipo, descricao, referencia, criado_em
+      FROM transacoes_creditos
+      WHERE utilizador_id = ?
+      ORDER BY criado_em DESC
+      LIMIT 50
+    `).all(userId);
+    
+    res.json({
+      creditos: creditos?.creditos || 0,
+      historico: historico
+    });
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao buscar histórico' });
+  }
+});
+
+// ADICIONAR CRÉDITOS COM REGISTRO
+router.post('/creditos/adicionar', autenticar, (req, res) => {
+  const { valor, descricao } = req.body;
   const userId = req.utilizador.id;
 
   if (!valor || valor <= 0) {
@@ -119,7 +148,13 @@ router.post('/creditos', autenticar, (req, res) => {
 
   try {
     db.prepare(`UPDATE utilizadores SET creditos = creditos + ? WHERE id = ?`).run(valor, userId);
-    res.json({ mensagem: 'Créditos adicionados!', valor });
+    
+    db.prepare(`
+      INSERT INTO transacoes_creditos (utilizador_id, valor, tipo, descricao)
+      VALUES (?, ?, 'adicionar', ?)
+    `).run(userId, valor, descricao || 'Adição manual de créditos');
+
+    res.json({ mensagem: 'Créditos adicionados com sucesso!', valor });
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao adicionar créditos' });
   }

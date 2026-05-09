@@ -24,6 +24,8 @@ function createTables() {
       password TEXT NOT NULL,
       role TEXT NOT NULL DEFAULT 'cliente',
       creditos INTEGER DEFAULT 0,
+      reset_token TEXT,
+      reset_token_expires TEXT,
       criado_em TEXT DEFAULT (datetime('now'))
     );
 
@@ -91,6 +93,18 @@ function createTables() {
       FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
       FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE
     );
+
+    -- NOVA TABELA: Histórico de transações de créditos
+    CREATE TABLE IF NOT EXISTS transacoes_creditos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      utilizador_id INTEGER NOT NULL,
+      valor INTEGER NOT NULL,
+      tipo TEXT NOT NULL,
+      descricao TEXT,
+      referencia TEXT,
+      criado_em TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (utilizador_id) REFERENCES utilizadores(id) ON DELETE CASCADE
+    );
   `);
 }
 
@@ -103,6 +117,8 @@ function createIndexes() {
     CREATE INDEX IF NOT EXISTS idx_produtos_subcategoria ON produtos(subcategoria_id);
     CREATE INDEX IF NOT EXISTS idx_carrinho_itens_produto ON carrinho_itens(produto_id);
     CREATE INDEX IF NOT EXISTS idx_pedidos_utilizador ON pedidos(utilizador_id);
+    CREATE INDEX IF NOT EXISTS idx_transacoes_utilizador ON transacoes_creditos(utilizador_id);
+    CREATE INDEX IF NOT EXISTS idx_transacoes_data ON transacoes_creditos(criado_em);
   `);
 }
 

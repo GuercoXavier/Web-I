@@ -40,14 +40,18 @@ function somenteAdmin(req, res, next) {
 
   return next();
 }
-// Controle de tentativas de login (em memória)
+
+// ==================== CONTROLE DE TENTATIVAS DE LOGIN ====================
 const tentativasLogin = new Map();
 
 function verificarTentativasLogin(username) {
   const tentativas = tentativasLogin.get(username) || { count: 0, blockedUntil: null };
   
   if (tentativas.blockedUntil && new Date() < tentativas.blockedUntil) {
-    return { blocked: true, remainingTime: Math.ceil((tentativas.blockedUntil - new Date()) / 1000 / 60) };
+    return { 
+      blocked: true, 
+      remainingTime: Math.ceil((tentativas.blockedUntil - new Date()) / 1000 / 60) 
+    };
   }
   
   return { blocked: false };
@@ -76,5 +80,11 @@ function limparTentativasSucesso(username) {
   tentativasLogin.delete(username);
 }
 
-module.exports = { autenticar, somenteAdmin, verificarTentativasLogin, registrarTentativaFalha, limparTentativasSucesso };
-module.exports = { autenticar, somenteAdmin };
+// Exportar tudo
+module.exports = { 
+  autenticar, 
+  somenteAdmin, 
+  verificarTentativasLogin, 
+  registrarTentativaFalha, 
+  limparTentativasSucesso 
+};

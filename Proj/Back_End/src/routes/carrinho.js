@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('../config/database');
 const { autenticar } = require('../middleware/auth');
 const { validarId, validarQuantidade } = require('../middleware/validacao');
+
 const router = express.Router();
 
 function getCarrinho(utilizador_id) {
@@ -14,11 +15,10 @@ function criarCarrinho(utilizador_id) {
   const result = db.prepare(
     'INSERT INTO carrinhos (utilizador_id) VALUES (?)'
   ).run(utilizador_id);
-
   return { id: result.lastInsertRowid };
 }
 
-// GET carrinho atual
+// ==================== GET CARRINHO ATUAL ====================
 router.get('/', autenticar, (req, res) => {
   const userId = req.utilizador.id;
 
@@ -54,14 +54,10 @@ router.get('/', autenticar, (req, res) => {
   });
 });
 
-// ADICIONAR produto ao carrinho
-router.post('/adicionar', autenticar, (req, res) => {
+// ==================== ADICIONAR PRODUTO AO CARRINHO ====================
+router.post('/adicionar', autenticar, validarQuantidade, (req, res) => {
   const userId = req.utilizador.id;
   const { produto_id, quantidade } = req.body;
-
-  if (!produto_id || !quantidade || quantidade <= 0) {
-    return res.status(400).json({ erro: 'Dados inválidos.' });
-  }
 
   let carrinho = getCarrinho(userId);
 
@@ -95,18 +91,14 @@ router.post('/adicionar', autenticar, (req, res) => {
       VALUES (?, ?, ?)
     `).run(carrinho.id, produto_id, quantidade);
   }
-router.post('/adicionar', autenticar, validarQuantidade, async (req, res) => { ... });
+
   res.json({ mensagem: 'Produto adicionado ao carrinho.' });
 });
 
-// ATUALIZAR quantidade
-router.put('/atualizar', autenticar, (req, res) => {
+// ==================== ATUALIZAR QUANTIDADE ====================
+router.put('/atualizar', autenticar, validarQuantidade, (req, res) => {
   const userId = req.utilizador.id;
   const { produto_id, quantidade } = req.body;
-
-  if (!produto_id || quantidade < 0) {
-    return res.status(400).json({ erro: 'Dados inválidos.' });
-  }
 
   const carrinho = getCarrinho(userId);
 
@@ -119,7 +111,6 @@ router.put('/atualizar', autenticar, (req, res) => {
       DELETE FROM carrinho_itens
       WHERE carrinho_id = ? AND produto_id = ?
     `).run(carrinho.id, produto_id);
-
     return res.json({ mensagem: 'Produto removido.' });
   }
 
@@ -128,11 +119,11 @@ router.put('/atualizar', autenticar, (req, res) => {
     SET quantidade = ?
     WHERE carrinho_id = ? AND produto_id = ?
   `).run(quantidade, carrinho.id, produto_id);
-router.put('/atualizar', autenticar, validarQuantidade, async (req, res) => { ... });
+
   res.json({ mensagem: 'Carrinho atualizado.' });
 });
 
-// LIMPAR carrinho
+// ==================== LIMPAR CARRINHO ====================
 router.delete('/limpar', autenticar, (req, res) => {
   const userId = req.utilizador.id;
 
