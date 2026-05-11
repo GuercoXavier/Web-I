@@ -8,6 +8,7 @@
   --branco: #ffffff;
   --azul: #3b82f6;
   --azul-esc: #2563eb;
+  --bg-panel: rgba(51, 50, 50, 0.615);
 
   --fonte-titulo: "Syne", sans-serif;
   --fonte-corpo: "DM Sans", sans-serif;
@@ -369,7 +370,7 @@ header .container {
 #prev {
   position: absolute;
   left: 0px;
-  z-index: 1;
+  z-index: 10;
   height: 100vh;
 }
 
@@ -377,6 +378,7 @@ header .container {
   right: 0px;
   position: absolute;
   height: 100vh;
+  z-index: 10;
 }
 
 #prev > img,
@@ -1744,7 +1746,7 @@ footer .container {
 .user-dropdown {
     position: absolute;
     top: 100%;
-    right: 0;
+    right: -40px;
     margin-top: 8px;
     background-color: rgba(49, 49, 49, 0.777);
     border: 1px solid var(--borda);
@@ -1859,6 +1861,7 @@ footer .container {
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,0.7);
+    -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
     z-index: 10000;
     display: none;
@@ -2037,4 +2040,122 @@ footer .container {
     filter: brightness(0) invert(1);
     display: block;
     margin: 0 auto;
+}
+
+.poster-wrapper {
+  flex: 0 0 100%;
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+}
+
+.poster-wrapper .poster-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  pointer-events: none;
+}
+
+.poster-overlay {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  z-index: 2;
+  cursor: pointer;
+}
+
+/*add ao carrinho*/
+/* ── Detalhe Info ───────────────────────────────────────────── */
+.detalhe-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 24px;
+}
+
+.detalhe-info h1 {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    color: var(--branco);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+}
+
+.detalhe-preco {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--branco);
+    letter-spacing: -0.02em;
+}
+
+.detalhe-info p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.detalhe-info p strong {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-right: 6px;
+}
+
+.detalhe-info p strong + * ,
+.detalhe-info p {
+    color: #c9cdd4;
+}
+
+.detalhe-descricao {
+    font-size: 0.92rem !important;
+    color: var(--muted) !important;
+    line-height: 1.75 !important;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    margin-top: 4px !important;
+}
+
+/* ── Botão Adicionar ao Carrinho ────────────────────────────── */
+.btn-carrinho-grande {
+    margin-top: 8px;
+    width: 100%;
+    padding: 14px 24px;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--fonte-corpo);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: all 0.25s ease;
+
+    background: #ffffff;
+    color: #0a0a0a;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+}
+
+.btn-carrinho-grande:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.12);
+}
+
+.btn-carrinho-grande:active {
+    transform: translateY(0px);
+    box-shadow: none;
+}
+
+.btn-carrinho-grande.disabled {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--muted);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+    border: 1px solid var(--borda);
 }

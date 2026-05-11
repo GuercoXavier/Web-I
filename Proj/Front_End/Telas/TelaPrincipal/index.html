@@ -80,7 +80,7 @@
                 <img src="../../imagens/icon/user-check.svg" alt="" />
                 Meu Perfil
             </a>
-            <a href="../TelaRegistro/RegistroAdm.html" class="dropdown-item">
+            <a href="../TelaRegistro/RegistroAdm.html" class="dropdown-item" style="display: none">
                 <img src="../../imagens/icon/admin-icon.svg" alt="" />
                 Modo Administrador
             </a>
@@ -108,26 +108,22 @@
             </button>
             <div id="scroll-container">
               <div class="track">
-                <iframe
-                  src="../../posters/apple/appleSite.html"
-                  class="poster-frame"
-                  title="''"
-                ></iframe>
-                <iframe
-                  src="../../posters/samgung/samsungSite.html"
-                  class="poster-frame"
-                  title="''"
-                ></iframe>
-                <iframe
-                  src="../../posters/asus/Poster.html"
-                  class="poster-frame"
-                  title="''"
-                ></iframe>
-                <iframe
-                  src="../../posters/diversos/index.html"
-                  class="poster-frame"
-                  title="''"
-                ></iframe>
+                <div class="poster-wrapper" onclick="filtrarMarca('Apple')">
+                  <iframe src="../../posters/apple/appleSite.html" class="poster-frame" title="Apple"></iframe>
+                  <div class="poster-overlay"></div>
+                </div>
+                <div class="poster-wrapper" onclick="filtrarMarca('Samsung')">
+                  <iframe src="../../posters/samgung/samsungSite.html" class="poster-frame" title="Samsung"></iframe>
+                  <div class="poster-overlay"></div>
+                </div>
+                <div class="poster-wrapper" onclick="filtrarMarca('Asus')">
+                  <iframe src="../../posters/asus/Poster.html" class="poster-frame" title="Asus"></iframe>
+                  <div class="poster-overlay"></div>
+                </div>
+                <div class="poster-wrapper" onclick="filtrar('diversos')">
+                  <iframe src="../../posters/diversos/index.html" class="poster-frame" title="Diversos"></iframe>
+                  <div class="poster-overlay"></div>
+                </div>
               </div>
             </div>
             <button id="next">
@@ -1482,7 +1478,7 @@
               <a
                 href="javascript:void(0)"
                 onclick="
-                  filtrar('celulares');
+                  filtrar('Celulares');
                   ir('produtos');
                 "
                 >Celulares</a
@@ -1492,40 +1488,20 @@
               <a
                 href="javascript:void(0)"
                 onclick="
-                  filtrar('laptop');
+                  filtrar('Computadores');
                   ir('produtos');
                 "
-                >Laptops</a
+                >Computadores</a
               >
             </li>
             <li>
               <a
                 href="javascript:void(0)"
                 onclick="
-                  filtrar('monitor');
+                  filtrar('Acessórios');
                   ir('produtos');
                 "
-                >Monitores</a
-              >
-            </li>
-            <li>
-              <a
-                href="javascript:void(0)"
-                onclick="
-                  filtrar('gpu');
-                  ir('produtos');
-                "
-                >GPUs</a
-              >
-            </li>
-            <li>
-              <a
-                href="javascript:void(0)"
-                onclick="
-                  filtrar('cpu');
-                  ir('produtos');
-                "
-                >CPUs</a
+                >Acessorios</a
               >
             </li>
           </ul>

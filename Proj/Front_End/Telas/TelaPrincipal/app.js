@@ -1,5 +1,5 @@
 const API = 'http://localhost:3000/api';
-
+let categoriaAtiva = '';
 let produtos = [];
 let carrinhoAtual = { itens: [], total: 0 };
 let utilizadorLogado = null;
@@ -151,17 +151,7 @@ function getMarcasSelecionadas() {
 }
 
 function getCategoriaSelecionada() {
-    const grupos = document.querySelectorAll('.filtro-grupo');
-    for (let grupo of grupos) {
-        const titulo = grupo.querySelector('.filtro-grupo-titulo');
-        if (titulo && grupo.hasAttribute('open')) {
-            const texto = titulo.innerText;
-            if (texto === 'Celulares') return 'celulares';
-            if (texto === 'Computadores') return 'computadores';
-            if (texto === 'Acessórios') return 'acessorios';
-        }
-    }
-    return '';
+    return categoriaAtiva || '';
 }
 
 function getPrecoMin() {
@@ -245,8 +235,20 @@ async function carregarProdutos() {
 
 function aplicarFiltros() { carregarProdutos(); }
 function limparFiltros() {
-    document.querySelectorAll('.filtro-marca:checked, .filtro-stock:checked').forEach(cb => cb.checked = false);
-    document.querySelectorAll('.preco-min, .preco-max').forEach(input => input.value = '');
+    document.querySelectorAll('.filtro-marca:checked, .filtro-stock:checked')
+        .forEach(cb => cb.checked = false);
+
+    document.querySelectorAll('.preco-min, .preco-max')
+        .forEach(input => input.value = '');
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = '';
+
+    categoriaAtiva = '';
+
+    document.querySelectorAll('.filtro-grupo, .filtro-sub')
+        .forEach(el => el.removeAttribute('open'));
+
     carregarProdutos();
 }
 function buscarProdutosPorTexto() { carregarProdutos(); }
@@ -564,14 +566,42 @@ function ir(pagina, id = null) {
 }
 
 function filtrar(categoria) {
+    categoriaAtiva = categoria;
+
+    document.querySelectorAll('.pagina').forEach(el => el.classList.add('oculta'));
+
+    const view = document.getElementById('view-produtos');
+    if (view) view.classList.remove('oculta');
+
+    // limpar search
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = '';
+
+    carregarProdutos();
+}
+
+function filtrarMarca(marca) {
     document.querySelectorAll('.pagina').forEach(el => el.classList.add('oculta'));
     const view = document.getElementById('view-produtos');
     if (view) view.classList.remove('oculta');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     setTimeout(() => {
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) searchInput.value = categoria;
+        document.querySelectorAll('.filtro-marca:checked').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.preco-min, .preco-max').forEach(input => input.value = '');
+
+        document.querySelectorAll(`.filtro-marca[value="${marca}"]`).forEach(cb => cb.checked = true);
+
+        document.querySelectorAll('.filtro-grupo').forEach(grupo => {
+            const titulo = grupo.querySelector('.filtro-grupo-titulo');
+            if (titulo && titulo.innerText.trim() === 'Celulares') {
+                grupo.setAttribute('open', '');
+            }
+        });
+
         carregarProdutos();
-    }, 100);
+    }, 150);
 }
 
 async function renderDetalhe(id) {
@@ -658,7 +688,16 @@ document.addEventListener('click', function(e) {
 function atualizarUserDisplay() {
     const utilizador = JSON.parse(localStorage.getItem('utilizador') || '{}');
     const userNameSpan = document.getElementById('userNameDisplay');
+    
     if (utilizador.username && userNameSpan) {
-        userNameSpan.textContent = utilizador.username.length > 15 ? utilizador.username.substring(0, 12) + '...' : utilizador.username;
+        userNameSpan.textContent = utilizador.username.length > 15 
+            ? utilizador.username.substring(0, 12) + '...' 
+            : utilizador.username;
+    }
+
+    
+    if (utilizador.username === 'Admin') {
+        const btnAdmin = document.querySelector('.dropdown-item[href*="RegistroAdm"]');
+        if (btnAdmin) btnAdmin.style.display = 'flex';
     }
 }
