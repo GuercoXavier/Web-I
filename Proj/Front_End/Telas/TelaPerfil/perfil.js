@@ -141,11 +141,13 @@ function renderizarPedidos() {
     const container = document.querySelector('.lista-pedidos');
     if (!container) return;
     if (!pedidosUsuario || pedidosUsuario.length === 0) {
-        container.innerHTML = `
+         container.innerHTML = `
             <div class="estado-vazio-pedidos">
-                <div class="icone">📦</div>
-                <p>Nenhum pedido ainda.</p>
-                <button class="btn-ir-comprar" onclick="irPara('produtos')">Ir às Compras</button>
+                <div class="icone">
+                    <img src="../../imagens/icon/box-seam-fill.svg" style="width:70px; height:70px;" />
+                </div>
+                <p>Nenhum pedido!</p>
+                <button class="btn-ir-comprar" onclick="irPara('produtos')">Fazer Compras</button>
             </div>`;
         return;
     }
@@ -283,19 +285,23 @@ async function adicionarCredito() {
 function preencherDadosPerfil() {
     const nomeSpan = document.getElementById('sidebar-nome');
     const avatarDiv = document.getElementById('avatarVisual');
+    
     if (utilizadorAtual) {
         const nome = utilizadorAtual.username || 'Utilizador';
         if (nomeSpan) nomeSpan.textContent = nome;
-        const inicial = nome.charAt(0).toUpperCase();
-        if (avatarDiv && !localStorage.getItem('avatar')) {
-            avatarDiv.innerHTML = inicial;
-            avatarDiv.style.display = 'flex';
-            avatarDiv.style.alignItems = 'center';
-            avatarDiv.style.justifyContent = 'center';
-            avatarDiv.style.fontSize = '2rem';
-            avatarDiv.style.fontWeight = 'bold';
-            avatarDiv.style.color = 'white';
-            avatarDiv.style.backgroundColor = 'var(--azul)';
+        
+        const avatarSalvo = localStorage.getItem('avatar');
+        
+
+        if (avatarSalvo) {
+            avatarDiv.innerHTML = `<img src="${avatarSalvo}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            return;
+        }
+
+        const imagemExistente = avatarDiv.querySelector('img');
+        
+        if (!imagemExistente) {
+            // Se nao tiver imagem vai continuar com o placeholder original (imagem SVG)
         }
     }
 }
