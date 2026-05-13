@@ -4,13 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EcoSistema da Apple</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,900;1,700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
   <!--appleSite.html-->
   <style>
     *, *::before, *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: 'Bebas Neue', sans-serif;
     }
 
     html, body {
@@ -50,6 +53,7 @@
 
     .poster-content {
       position: relative;
+      top: 90px;
       z-index: 20;
       width: 100%;
       height: 100%;
@@ -66,7 +70,7 @@
     }
 
     .etiqueta {
-      font-family: 'Barlow', sans-serif;
+
       font-weight: 500;
       font-size: clamp(13px, 1.4vw, 20px);
       letter-spacing: 4px;
@@ -75,7 +79,7 @@
     }
 
     .titulo-principal {
-      font-family: 'Barlow Condensed', sans-serif;
+
       font-weight: 900;
       font-size: clamp(52px, 7.5vw, 112px);
       line-height: 0.92;
@@ -93,7 +97,6 @@
 
     .subtexto {
       margin-top: 20px;
-      font-family: 'Barlow', sans-serif;
       font-weight: 400;
       font-size: clamp(13px, 1.2vw, 18px);
       color: rgba(255,255,255,0.55);
@@ -102,28 +105,6 @@
       line-height: 1.6;
     }
 
-    .link-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 32px;
-      padding: 14px 32px;
-      background: #FF6B00;
-      color: #fff;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      font-size: clamp(14px, 1.2vw, 18px);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      border: none;
-      cursor: pointer;
-      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 100%, 0 100%);
-      transition: background 0.2s;
-      text-decoration: none;
-    }
-
-    .link-button:hover { background: #e05a00; }
-    .link-button .arrow { font-size: 20px; line-height: 1; }
 
     /* ── PRODUTOS ── */
     .produtos-area {
@@ -223,7 +204,6 @@
     }
 
     .badge-ecosistema .texto-badge {
-      font-family: 'Barlow', sans-serif;
       font-weight: 500;
       font-size: 10px;
       letter-spacing: 3px;
@@ -247,13 +227,6 @@
           <span class="titulo-destaque">Apple.</span>
           <span>Criado para</span>
           <span>você.</span>
-        </h1>
-        <p class="subtexto">
-          Dispositivos que se conectam, comunicam e evoluem juntos. Uma experiência sem fronteiras.
-        </p>
-        <a class="link-button" href="#produtos" target="_parent">
-          Descubra agora <span class="arrow">→</span>
-        </a>
       </div>
     </div>
 
