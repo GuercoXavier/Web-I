@@ -6,28 +6,42 @@ let authToken = localStorage.getItem('token');
 let fotoDataUrl = null;
 let produtos = [];
 
-// VERIFICAR AUTENTICAÇÃO
+// ==================== VERIFICAÇÃO DE AUTENTICAÇÃO ====================
 if (!authToken) {
-    alert('Faça login primeiro!');
-    window.location.href = '../TelaLogin/tela_login.html';
+    mostrarToast('Faca login primeiro!', 'erro');
+    setTimeout(() => {
+        window.location.href = '../TelaLogin/tela_login.html';
+    }, 1500);
 }
 
 const user = JSON.parse(localStorage.getItem('utilizador') || '{}');
 if (user.role !== 'admin') {
-    alert('Acesso negado! Apenas administradores podem acessar esta página.');
-    window.location.href = '../TelaPrincipal/index.html';
+    mostrarToast('Acesso negado! Apenas administradores podem acessar esta pagina.', 'erro');
+    setTimeout(() => {
+        window.location.href = '../TelaPrincipal/index.html';
+    }, 1500);
 }
 
 function q(id) { return document.getElementById(id); }
-function hide(id) { const el = q(id); if(el) el.style.display = 'none'; }
-function show(id) { const el = q(id); if(el) el.style.display = ''; }
+function hide(id) { const el = q(id); if (el) el.style.display = 'none'; }
+function show(id) { const el = q(id); if (el) el.style.display = ''; }
 
-function mostrarToast(msg, erro = false) {
+function mostrarToast(msg, tipo = 'sucesso', duracao = 3000) {
     const toast = q('toast');
     if (!toast) return;
-    toast.textContent = erro ? `✗ ${msg}` : `✓ ${msg}`;
-    toast.classList.add('visivel');
-    setTimeout(() => toast.classList.remove('visivel'), 3000);
+
+    // Define a cor baseada no tipo
+    const cores = {
+        sucesso: '#22c55e',
+        erro: '#ef4444',
+        info: '#3b82f6'
+    };
+    toast.style.borderLeftColor = cores[tipo] || '#3b82f6';
+
+    toast.innerHTML = tipo === 'erro'
+        ? `<img src="../../imagens/icon/x-circle-fill.svg" class="toast-icon" /> ${msg}`
+        : `<img src="../../imagens/icon/check-circle-fill.svg" class="toast-icon" /> ${msg}`; toast.classList.add('visivel');
+    setTimeout(() => toast.classList.remove('visivel'), duracao);
 }
 
 function getHeaders() {
@@ -37,12 +51,123 @@ function getHeaders() {
     };
 }
 
+// ==================== MODAL DE CONFIRMAÇÃO PERSONALIZADO ====================
+function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
+    // Criar o modal se não existir
+    let modal = document.getElementById('modalConfirmacao');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modalConfirmacao';
+        modal.className = 'modal-confirmacao';
+        modal.innerHTML = `
+            <div class="modal-confirmacao-conteudo">
+                <div class="modal-confirmacao-icone">
+                    <img src="../../imagens/icon/exclamation-circle-fill.svg" width="40" height="40"/>
+                </div>
+                <div class="modal-confirmacao-mensagem" id="confirmacaoMensagem">${mensagem}</div>
+                <div class="modal-confirmacao-botoes">
+                    <button class="btn-confirmar-sim" id="btnConfirmarSim">Sim</button>
+                    <button class="btn-confirmar-nao" id="btnConfirmarNao">Cancelar</button>
+                </div>
+            </div>
+        `;
+        // Injetar CSS básico para o modal
+        const style = document.createElement('style');
+        style.textContent = `
+            .modal-confirmacao {
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+            .modal-confirmacao.aberto { display: flex; }
+            .modal-confirmacao-conteudo {
+                background: white;
+                padding: 32px;
+                border-radius: 16px;
+                max-width: 400px;
+                text-align: center;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            }
+            .modal-confirmacao-icone { margin-bottom: 16px; }
+            .modal-confirmacao-mensagem {
+                font-size: 16px;
+                color: #1f2937;
+                margin-bottom: 24px;
+                font-weight: 500;
+            }
+            .modal-confirmacao-botoes {
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+            }
+            .btn-confirmar-sim {
+                background: #3b82f6;
+                color: white;
+                border: none;
+                padding: 10px 32px;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+            .btn-confirmar-sim:hover { background: #2563eb; }
+            .btn-confirmar-nao {
+                background: #e5e7eb;
+                color: #374151;
+                border: none;
+                padding: 10px 32px;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+            .btn-confirmar-nao:hover { background: #d1d5db; }
+        `;
+        document.head.appendChild(style);
+        document.body.appendChild(modal);
+    }
+
+    const msgSpan = document.getElementById('confirmacaoMensagem');
+    const btnSim = document.getElementById('btnConfirmarSim');
+    const btnNao = document.getElementById('btnConfirmarNao');
+
+    msgSpan.textContent = mensagem;
+    modal.classList.add('aberto');
+
+    // Remove listeners antigos clonando botões
+    const novoSim = btnSim.cloneNode(true);
+    const novoNao = btnNao.cloneNode(true);
+    btnSim.parentNode.replaceChild(novoSim, btnSim);
+    btnNao.parentNode.replaceChild(novoNao, btnNao);
+
+    novoSim.addEventListener('click', () => {
+        modal.classList.remove('aberto');
+        if (typeof aoConfirmar === 'function') aoConfirmar();
+    });
+    novoNao.addEventListener('click', () => {
+        modal.classList.remove('aberto');
+        if (typeof aoCancelar === 'function') aoCancelar();
+    });
+
+    // Fechar ao clicar fora do conteúdo
+    modal.addEventListener('click', function fecharFora(e) {
+        if (e.target === modal) {
+            modal.classList.remove('aberto');
+            if (typeof aoCancelar === 'function') aoCancelar();
+            modal.removeEventListener('click', fecharFora);
+        }
+    });
+}
+
 // ===================== CARREGAR CATEGORIAS =====================
 async function carregarCategorias() {
     try {
         const response = await fetch(`${API_URL}/categorias`);
         const categorias = await response.json();
-        
+
         window.CATEGORIAS = {};
         categorias.forEach(cat => {
             window.CATEGORIAS[cat.nome.toLowerCase()] = {
@@ -56,10 +181,10 @@ async function carregarCategorias() {
                 });
             }
         });
-        
+
         const selCat = q('sel-cat');
         if (selCat) {
-            selCat.innerHTML = '<option value="">— selecione —</option>';
+            selCat.innerHTML = '<option value="">- selecione -</option>';
             categorias.forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat.nome.toLowerCase();
@@ -69,7 +194,7 @@ async function carregarCategorias() {
         }
     } catch (err) {
         console.error('Erro categorias:', err);
-        mostrarToast('Erro ao carregar categorias', true);
+        mostrarToast('Erro ao carregar categorias', 'erro');
     }
 }
 
@@ -82,7 +207,7 @@ async function listarProdutos() {
         renderizarLista();
     } catch (err) {
         console.error('Erro produtos:', err);
-        mostrarToast('Erro ao carregar produtos', true);
+        mostrarToast('Erro ao carregar produtos', 'erro');
     }
 }
 
@@ -95,28 +220,28 @@ async function adicionarProduto() {
     const catNome = q('sel-cat').value;
     const subNome = q('sel-sub').value;
     const marca = q('sel-marca').value;
-    
+
     if (!nome) {
-        mostrarToast('Preencha o nome do produto', true);
+        mostrarToast('Preencha o nome do produto', 'erro');
         q('inp-nome').focus();
         return;
     }
-    
+
     if (isNaN(preco) || preco < 0) {
-        mostrarToast('Preço inválido', true);
+        mostrarToast('Preco invalido', 'erro');
         return;
     }
-    
+
     let categoria_id = null;
     let subcategoria_id = null;
-    
+
     if (catNome) {
         try {
             const catResponse = await fetch(`${API_URL}/categorias`);
             const categorias = await catResponse.json();
             const cat = categorias.find(c => c.nome.toLowerCase() === catNome);
             categoria_id = cat ? cat.id : null;
-            
+
             if (subNome && cat && cat.subcategorias) {
                 const sub = cat.subcategorias.find(s => s.nome === subNome);
                 subcategoria_id = sub ? sub.id : null;
@@ -125,7 +250,7 @@ async function adicionarProduto() {
             console.error('Erro ao buscar IDs:', err);
         }
     }
-    
+
     const produto = {
         nome: nome,
         descricao: descricao || '',
@@ -137,107 +262,119 @@ async function adicionarProduto() {
         subcategoria_id: subcategoria_id,
         em_destaque: 0
     };
-    
+
     try {
         const response = await fetch(`${API_URL}/produtos`, {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify(produto)
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             mostrarToast('Produto adicionado com sucesso!');
             limparForm();
             await listarProdutos();
         } else {
-            mostrarToast(data.erro || 'Erro ao adicionar produto', true);
+            mostrarToast(data.erro || 'Erro ao adicionar produto', 'erro');
         }
     } catch (err) {
         console.error('Erro:', err);
-        mostrarToast('Erro de conexão com o servidor', true);
+        mostrarToast('Erro de conexao com o servidor', 'erro');
     }
 }
 
 // ===================== REMOVER PRODUTO (CARD) =====================
 async function removerProduto(id) {
-    if (!confirm('Remover este produto permanentemente?')) return;
-    
-    try {
-        const response = await fetch(`${API_URL}/produtos/${id}`, {
-            method: 'DELETE',
-            headers: getHeaders()
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            mostrarToast('Produto removido com sucesso!');
-            await listarProdutos();
-        } else if (response.status === 404) {
-            mostrarToast('Produto não encontrado', true);
-        } else {
-            mostrarToast(data.erro || 'Erro ao remover produto', true);
+    mostrarConfirmacao(
+        'Remover este produto permanentemente?',
+        async () => {
+            try {
+                const response = await fetch(`${API_URL}/produtos/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    mostrarToast('Produto removido com sucesso!');
+                    await listarProdutos();
+                } else if (response.status === 404) {
+                    mostrarToast('Produto não encontrado', 'erro');
+                } else {
+                    mostrarToast(data.erro || 'Erro ao remover produto', 'erro');
+                }
+            } catch (err) {
+                console.error('Erro:', err);
+                mostrarToast('Erro de conexao com o servidor', 'erro');
+            }
+        },
+        () => {
+            mostrarToast('Remocao cancelada', 'info');
         }
-    } catch (err) {
-        console.error('Erro:', err);
-        mostrarToast('Erro de conexão com o servidor', true);
-    }
+    );
 }
 
 // ===================== REMOVER PRODUTO POR ID (ABA) =====================
 async function removerProdutoPorId() {
     const id = q('inp-id-produto').value.trim();
     if (!id) {
-        mostrarToast('Digite o ID do produto', true);
+        mostrarToast('Digite o ID do produto', 'erro');
         return;
     }
-    
-    if (!confirm(`Remover produto ID ${id} permanentemente?`)) return;
-    
-    try {
-        const response = await fetch(`${API_URL}/produtos/${id}`, {
-            method: 'DELETE',
-            headers: getHeaders()
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            mostrarToast(`Produto ${id} removido com sucesso!`);
-            q('inp-id-produto').value = '';
-            q('inp-nome-busca-produto').value = '';
-            await listarProdutos();
-        } else if (response.status === 404) {
-            mostrarToast('Produto não encontrado', true);
-        } else {
-            mostrarToast(data.erro || 'Erro ao remover produto', true);
+
+    mostrarConfirmacao(
+        `Remover produto ID ${id} permanentemente?`,
+        async () => {
+            try {
+                const response = await fetch(`${API_URL}/produtos/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    mostrarToast(`Produto ${id} removido com sucesso!`);
+                    q('inp-id-produto').value = '';
+                    q('inp-nome-busca-produto').value = '';
+                    await listarProdutos();
+                } else if (response.status === 404) {
+                    mostrarToast('Produto não encontrado', 'erro');
+                } else {
+                    mostrarToast(data.erro || 'Erro ao remover produto', 'erro');
+                }
+            } catch (err) {
+                console.error('Erro:', err);
+                mostrarToast('Erro de conexao com o servidor', 'erro');
+            }
+        },
+        () => {
+            mostrarToast('Remocao cancelada', 'info');
         }
-    } catch (err) {
-        console.error('Erro:', err);
-        mostrarToast('Erro de conexão com o servidor', true);
-    }
+    );
 }
 
 // ===================== REMOVER PERFIL =====================
 async function removerPerfil() {
     const nome = q('inp-nome-perfil').value.trim();
     const email = q('inp-email-perfil').value.trim();
-    
+
     if (!nome && !email) {
-        mostrarToast('Digite nome ou email do perfil', true);
+        mostrarToast('Digite nome ou email do perfil', 'erro');
         return;
     }
-    
+
     try {
         const response = await fetch(`${API_URL}/users`, {
             headers: getHeaders()
         });
-        
+
         if (!response.ok) {
             if (response.status === 401) {
-                mostrarToast('Sessão expirada. Faça login novamente.', true);
+                mostrarToast('Sessao expirada. Faça login novamente.', 'erro');
                 localStorage.removeItem('token');
                 setTimeout(() => {
                     window.location.href = '../TelaLogin/tela_login.html';
@@ -245,61 +382,72 @@ async function removerPerfil() {
                 return;
             }
             if (response.status === 403) {
-                mostrarToast('Acesso negado. Apenas administradores.', true);
+                mostrarToast('Acesso negado. Apenas administradores.', 'erro');
                 return;
             }
-            mostrarToast('Erro ao buscar usuários', true);
+            mostrarToast('Erro ao buscar usuarios', 'erro');
             return;
         }
-        
+
         const usuarios = await response.json();
-        
+
         let usuario = null;
-        
+
         if (nome) {
             usuario = usuarios.find(u => u.username.toLowerCase() === nome.toLowerCase());
         }
-        
+
         if (!usuario && email) {
             usuario = usuarios.find(u => u.email.toLowerCase() === email.toLowerCase());
         }
-        
+
         if (!usuario) {
-            mostrarToast(`Usuário "${nome || email}" não encontrado`, true);
+            mostrarToast(`Usuario "${nome || email}" não encontrado`, 'erro');
             return;
         }
-        
+
         const logado = JSON.parse(localStorage.getItem('utilizador') || '{}');
-        
+
         if (usuario.role === 'admin') {
-            mostrarToast('Não é possível remover um administrador', true);
+            mostrarToast('Não é possivel remover um administrador', 'erro');
             return;
         }
-        
+
         if (usuario.id === logado.id) {
-            mostrarToast('Você não pode remover seu próprio perfil', true);
+            mostrarToast('Você não pode remover seu proprio perfil', 'erro');
             return;
         }
-        
-        if (!confirm(`Remover permanentemente o perfil "${usuario.username}" (${usuario.email})?`)) return;
-        
-        const deleteResponse = await fetch(`${API_URL}/users/${usuario.id}`, {
-            method: 'DELETE',
-            headers: getHeaders()
-        });
-        
-        if (deleteResponse.ok) {
-            mostrarToast(`Perfil "${usuario.username}" removido com sucesso!`);
-            q('inp-nome-perfil').value = '';
-            q('inp-email-perfil').value = '';
-            await listarProdutos();
-        } else {
-            const erro = await deleteResponse.json();
-            mostrarToast(erro.erro || 'Erro ao remover perfil', true);
-        }
+
+        mostrarConfirmacao(
+            `Remover permanentemente o perfil "${usuario.username}" (${usuario.email})?`,
+            async () => {
+                try {
+                    const deleteResponse = await fetch(`${API_URL}/users/${usuario.id}`, {
+                        method: 'DELETE',
+                        headers: getHeaders()
+                    });
+
+                    if (deleteResponse.ok) {
+                        mostrarToast(`Perfil "${usuario.username}" removido com sucesso!`);
+                        q('inp-nome-perfil').value = '';
+                        q('inp-email-perfil').value = '';
+                        await listarProdutos();
+                    } else {
+                        const erro = await deleteResponse.json();
+                        mostrarToast(erro.erro || 'Erro ao remover perfil', 'erro');
+                    }
+                } catch (err) {
+                    console.error('Erro:', err);
+                    mostrarToast('Erro de conexao com o servidor', 'erro');
+                }
+            },
+            () => {
+                mostrarToast('Remocao cancelada', 'info');
+            }
+        );
     } catch (err) {
         console.error('Erro detalhado:', err);
-        mostrarToast('Erro de conexão com o servidor', true);
+        mostrarToast('Erro de conexao com o servidor', 'erro');
     }
 }
 
@@ -308,28 +456,28 @@ function renderizarLista() {
     const grid = q('grid-registados');
     const vazio = q('estado-vazio');
     const badge = q('badge-count');
-    
+
     if (!grid) return;
-    
+
     badge.textContent = `${produtos.length} produto${produtos.length !== 1 ? 's' : ''}`;
-    
+
     if (produtos.length === 0) {
         if (vazio) vazio.style.display = 'flex';
         grid.innerHTML = '';
         return;
     }
-    
+
     if (vazio) vazio.style.display = 'none';
-    
+
     grid.innerHTML = produtos.map(p => {
         const precoFmt = (p.preco || 0).toLocaleString('pt-MZ', { style: 'currency', currency: 'MZN' });
         const stockClass = (p.stock || 0) > 0 ? 'ok' : 'zero';
         const stockLabel = (p.stock || 0) > 0 ? `${p.stock} un.` : 'Sem stock';
-        
+
         const imgHtml = p.imagem && p.imagem !== ''
             ? `<img src="${p.imagem}" alt="${p.nome}" style="width:100%; height:100%; object-fit:cover;">`
             : `<div class="card-reg-img-vazia"><span style="color:#666;">sem foto</span></div>`;
-        
+
         let catHtml = '';
         if (p.categoria_nome) {
             catHtml = `<div class="card-reg-cat">
@@ -338,7 +486,7 @@ function renderizarLista() {
                 ${p.marca ? `<span class="card-reg-sep">›</span><span class="card-reg-cat-tag marca">${p.marca}</span>` : ''}
             </div>`;
         }
-        
+
         return `
             <div class="card-reg">
                 <div class="card-reg-img">${imgHtml}</div>
@@ -358,7 +506,7 @@ function renderizarLista() {
 
 function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
+    return str.replace(/[&<>]/g, function (m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
@@ -370,12 +518,12 @@ function escapeHtml(str) {
 function fotoSelecionada(input) {
     const file = input.files[0];
     if (!file) return;
-    
+
     if (!file.type.startsWith('image/')) {
-        mostrarToast('Por favor, selecione uma imagem válida', true);
+        mostrarToast('Por favor, selecione uma imagem', 'erro');
         return;
     }
-    
+
     const reader = new FileReader();
     reader.onload = e => aplicarFoto(e.target.result);
     reader.readAsDataURL(file);
@@ -389,15 +537,15 @@ function aplicarFoto(src) {
     if (zona) zona.classList.add('tem-foto');
 }
 
-function dragOver(e) { 
-    e.preventDefault(); 
-    const zona = q('zona-foto'); 
-    if(zona) zona.classList.add('drag-over'); 
+function dragOver(e) {
+    e.preventDefault();
+    const zona = q('zona-foto');
+    if (zona) zona.classList.add('drag-over');
 }
 
-function dragLeave(e) { 
-    const zona = q('zona-foto'); 
-    if(zona) zona.classList.remove('drag-over'); 
+function dragLeave(e) {
+    const zona = q('zona-foto');
+    if (zona) zona.classList.remove('drag-over');
 }
 
 function drop(e) {
@@ -437,13 +585,13 @@ function onCategoria() {
     q('sel-sub').innerHTML = '';
     q('sel-marca').innerHTML = '';
     atualizarCaminho();
-    
+
     if (!cat || !window.CATEGORIAS || !window.CATEGORIAS[cat]) return;
-    
+
     const dados = window.CATEGORIAS[cat];
     if (dados.subcategorias && Object.keys(dados.subcategorias).length > 0) {
         const subSelect = q('sel-sub');
-        subSelect.innerHTML = '<option value="">— selecione —</option>';
+        subSelect.innerHTML = '<option value="">- selecione -</option>';
         Object.keys(dados.subcategorias).forEach(sub => {
             const option = document.createElement('option');
             option.value = sub;
@@ -459,13 +607,13 @@ function onSubcategoria() {
     const sub = q('sel-sub').value;
     hide('wrap-marca');
     atualizarCaminho();
-    
+
     if (!sub || !window.CATEGORIAS || !window.CATEGORIAS[cat] || !window.CATEGORIAS[cat].subcategorias[sub]) return;
-    
+
     const marcas = window.CATEGORIAS[cat].subcategorias[sub];
     if (marcas && marcas.length > 0) {
         const marcaSelect = q('sel-marca');
-        marcaSelect.innerHTML = '<option value="">— selecione —</option>';
+        marcaSelect.innerHTML = '<option value="">- selecione -</option>';
         marcas.forEach(marca => {
             const option = document.createElement('option');
             option.value = marca;
@@ -476,8 +624,8 @@ function onSubcategoria() {
     }
 }
 
-function onMarca() { 
-    atualizarCaminho(); 
+function onMarca() {
+    atualizarCaminho();
 }
 
 function atualizarCaminho() {
@@ -485,13 +633,13 @@ function atualizarCaminho() {
     const sub = q('sel-sub').value;
     const marca = q('sel-marca').value;
     const wrap = q('caminho-filtro');
-    
+
     if (!wrap) return;
-    if (!cat) { 
-        wrap.innerHTML = ''; 
-        return; 
+    if (!cat) {
+        wrap.innerHTML = '';
+        return;
     }
-    
+
     const catLabel = window.CATEGORIAS && window.CATEGORIAS[cat] ? window.CATEGORIAS[cat].label : cat;
     let html = `<span class="caminho-pilula cat">${catLabel}</span>`;
     if (sub) html += `<span class="caminho-sep">›</span><span class="caminho-pilula">${sub}</span>`;
@@ -499,13 +647,47 @@ function atualizarCaminho() {
     wrap.innerHTML = html;
 }
 
-function mudarAba(aba) {
-    document.querySelectorAll('.nav-aba').forEach(b => b.classList.remove('ativa'));
-    document.querySelectorAll('.aba-conteudo').forEach(c => c.classList.remove('ativa'));
-    const botao = Array.from(document.querySelectorAll('.nav-aba')).find(b => b.getAttribute('onclick')?.includes(aba));
-    if (botao) botao.classList.add('ativa');
-    const conteudo = q(`aba-${aba}`);
-    if (conteudo) conteudo.classList.add('ativa');
+// ==================== NAVEGAÇÃO ENTRE ABAS (COM ANIMAÇÃO) ====================
+function mudarAba(id, elemento) {
+    // Esconde todas as abas
+    document.querySelectorAll('.aba-conteudo').forEach(aba => {
+        aba.classList.remove('ativa');
+    });
+
+    // Remove a classe 'ativo' de todos os itens da sidebar
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('ativo');
+    });
+
+    // Mostra a aba desejada
+    const abaAlvo = document.getElementById(`aba-${id}`);
+    if (abaAlvo) {
+        abaAlvo.classList.add('ativa');
+    }
+
+    // Marca o item da sidebar como ativo
+    if (elemento) {
+        elemento.classList.add('ativo');
+    }
+
+    // Se a aba for "relatorios", carrega os dados automaticamente
+    if (id === 'relatorios') {
+        carregarRelatorio();
+    }
+}
+
+function confirmarSair() {
+    mostrarConfirmacao(
+        'Tem certeza que deseja sair?',
+        () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('utilizador');
+            window.location.href = '../TelaLogin/tela_login.html';
+        },
+        () => {
+            mostrarToast('Operacao cancelada', 'info');
+        }
+    );
 }
 
 // ===================== INICIALIZAÇÃO =====================
@@ -513,11 +695,11 @@ async function init() {
     const btnAdicionar = q('btn-adicionar');
     const btnRemoverProduto = q('btn-remover-produto');
     const btnRemoverPerfil = q('btn-remover-perfil');
-    
+
     if (btnAdicionar) btnAdicionar.onclick = adicionarProduto;
     if (btnRemoverProduto) btnRemoverProduto.onclick = removerProdutoPorId;
     if (btnRemoverPerfil) btnRemoverPerfil.onclick = removerPerfil;
-    
+
     await carregarCategorias();
     await listarProdutos();
 }
