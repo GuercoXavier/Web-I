@@ -3,8 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Recibo da Compra - BASGAM Tech" />
     <title>BASGAM Tech — Recibo da Compra</title>
+    <link rel="icon" type="image/jpg" href="../../imagens/logo.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
@@ -52,6 +55,12 @@
         border-radius: var(--raio);
         box-shadow: var(--sombra);
         overflow: hidden;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
       .recibo-header {
@@ -114,12 +123,6 @@
         font-size: 0.75rem;
         color: var(--muted);
         margin-top: 4px;
-      }
-
-      .icone-header {
-        width: 24px;
-        height: 24px;
-        filter: brightness(0) invert(1);
       }
 
       .recibo-corpo {
@@ -185,6 +188,10 @@
         border-top: 1px solid var(--borda);
       }
 
+      .mensagem-agradecimento strong {
+        color: var(--azul);
+      }
+
       .acoes {
         padding: 20px 28px 28px;
         display: flex;
@@ -231,11 +238,32 @@
         border-color: rgba(255, 255, 255, 0.2);
       }
 
-      .btn-icon {
-        width: 18px;
-        height: 18px;
-        filter: brightness(0) invert(1);
+      /* Loading state */
+      .btn.loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.7;
       }
+
+      .btn.loading::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 50%;
+        right: 16px;
+        transform: translateY(-50%);
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: translateY(-50%) rotate(360deg); }
+      }
+
+      /* Print styles */
       @media print {
         body {
           background: white;
@@ -249,10 +277,6 @@
         .recibo-header {
           background: #f5f5f5;
           border-bottom: 1px solid #ccc;
-        }
-        .recibo-header h1 img,
-        .btn img {
-          filter: brightness(0);
         }
         .btn {
           display: none !important;
@@ -271,8 +295,12 @@
         .total-final {
           color: black;
         }
+        .mensagem-agradecimento strong {
+          color: #2563eb;
+        }
       }
 
+      /* Responsive */
       @media (max-width: 550px) {
         .recibo-header {
           flex-direction: column;
@@ -294,6 +322,31 @@
           padding-right: 20px;
         }
       }
+
+      /* Skeleton loading */
+      .skeleton {
+        background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 4px;
+      }
+
+      @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+
+      .skeleton-text {
+        height: 16px;
+        width: 100px;
+        margin: 4px 0;
+      }
+
+      .skeleton-line {
+        height: 1px;
+        width: 100%;
+        margin: 20px 0;
+      }
     </style>
   </head>
   <body>
@@ -307,70 +360,77 @@
         </div>
         <div class="titulo-recibo">
           <h1>
-            <img src="icons/receipt.svg" class="icone-header" alt="" />
+            <i class='bx bx-receipt' style="font-size: 24px; color: var(--azul);"></i>
             Recibo da Compra
           </h1>
           <p>Obrigado por escolher a BASGAM Tech!</p>
         </div>
       </div>
 
-      <div class="recibo-corpo">
-        <div class="info-linha">
-          <span><strong>ID do pedido</strong></span>
-          <span id="idPedido"> ---- </span>
-        </div>
-        <div class="info-linha">
-          <span><strong>ID da fatura</strong></span>
-          <span id="idFatura"> ---- </span>
-        </div>
-        <div class="info-linha">
-          <span><strong>Data</strong></span>
-          <span id="dataPedido"> ---- </span>
-        </div>
-        <div class="info-linha">
-          <span><strong>Cliente</strong></span>
-          <span id="clienteNome"> ---- </span>
-        </div>
-        <div class="info-linha">
-          <span><strong>E-mail</strong></span>
-          <span id="clienteEmail"> ---- </span>
+      <div class="recibo-corpo" id="reciboCorpo">
+        <!-- Skeleton loading -->
+        <div id="skeletonLoading">
+          <div class="skeleton skeleton-text" style="width: 150px;"></div>
+          <div class="skeleton skeleton-text" style="width: 120px; margin-top: 10px;"></div>
+          <div class="skeleton skeleton-text" style="width: 180px; margin-top: 10px;"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-text" style="width: 200px;"></div>
+          <div class="skeleton skeleton-text" style="width: 160px; margin-top: 10px;"></div>
+          <div class="skeleton skeleton-text" style="width: 140px; margin-top: 10px;"></div>
         </div>
 
-        <hr class="divisor" />
-
-        <div id="listaProdutos">
-          <div class="produto-item">
-            <span class="produto-nome"> ---- </span>
-            <span class="produto-preco"> ---- </span>
+        <!-- Conteúdo real (inicialmente oculto) -->
+        <div id="conteudoRecibo" style="display: none;">
+          <div class="info-linha">
+            <span><strong>ID do pedido</strong></span>
+            <span id="idPedido"> ---- </span>
           </div>
-          <div class="produto-item">
-            <span class="produto-nome"> ---- </span>
-            <span class="produto-preco"> ---- </span>
+          <div class="info-linha">
+            <span><strong>ID da fatura</strong></span>
+            <span id="idFatura"> ---- </span>
           </div>
-        </div>
+          <div class="info-linha">
+            <span><strong>Data</strong></span>
+            <span id="dataPedido"> ---- </span>
+          </div>
+          <div class="info-linha">
+            <span><strong>Cliente</strong></span>
+            <span id="clienteNome"> ---- </span>
+          </div>
+          <div class="info-linha">
+            <span><strong>E-mail</strong></span>
+            <span id="clienteEmail"> ---- </span>
+          </div>
 
-        <div class="total-final">
-          <span>Total</span>
-          <span id="totalCompra"> ---- </span>
-        </div>
+          <hr class="divisor" />
 
-        <div class="mensagem-agradecimento">
-          A sua compra foi registada com sucesso!<br />
-          <strong>BASGAM Tech — Tecnologia ao seu alcance</strong>
+          <div id="listaProdutos"></div>
+
+          <div class="total-final">
+            <span>Total</span>
+            <span id="totalCompra"> ---- </span>
+          </div>
+
+          <div class="mensagem-agradecimento">
+            <i class='bx bx-check-circle' style="font-size: 20px; vertical-align: middle;"></i>
+            A sua compra foi registada com sucesso!<br />
+            <strong>BASGAM Tech — Tecnologia ao seu alcance</strong>
+          </div>
         </div>
       </div>
 
       <div class="acoes">
         <a href="../TelaPrincipal/index.html" class="btn btn-secundario">
-          <img src="icons/arrow-left.svg" class="btn-icon" alt="" />
+          <i class='bx bx-arrow-back'></i>
           Voltar à loja
         </a>
-        <button class="btn btn-primario" onclick="window.print()">
-          <img src="icons/printer-fill.svg" class="btn-icon" alt="" />
+        <button class="btn btn-primario" id="btnImprimir" onclick="window.print()">
+          <i class='bx bx-printer'></i>
           Salvar Como PDF / Imprimir
         </button>
       </div>
     </div>
+
+    <script src="recibo.js"></script>
   </body>
-  <script src="recibo.js"></script>
 </html>

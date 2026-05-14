@@ -1,35 +1,143 @@
-const API_URL = 'http://localhost:3000/api';
+// ==================== CONFIGURAÇÃO ====================
+const API_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
 
+// ==================== TOGGLE LOGIN/REGISTO ====================
 const container = document.getElementById('container');
 const registerBtn = document.querySelector('.register-btn');
 const loginBtn = document.querySelector('.login-btn');
 
-// Toggle entre login e registro
 if (registerBtn && loginBtn && container) {
-    registerBtn.addEventListener('click', () => {
-        container.classList.add('active');
-    });
+    registerBtn.addEventListener('click', () => container.classList.add('active'));
+    loginBtn.addEventListener('click', () => container.classList.remove('active'));
+}
 
-    loginBtn.addEventListener('click', () => {
-        container.classList.remove('active');
-    });
+// ==================== SISTEMA DE TOAST ====================
+function mostrarToast(mensagem, tipo = 'info', duracao = 3000) {
+    const containerToast = document.getElementById('toastContainer');
+    if (!containerToast) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${tipo}`;
+    
+    let iconeHtml = '';
+    switch(tipo) {
+        case 'sucesso':
+            iconeHtml = '<i class="bx bx-check-circle" style="font-size: 20px; color: #22c55e;"></i>';
+            break;
+        case 'erro':
+            iconeHtml = '<i class="bx bx-x-circle" style="font-size: 20px; color: #ef4444;"></i>';
+            break;
+        default:
+            iconeHtml = '<i class="bx bx-info-circle" style="font-size: 20px; color: #3b82f6;"></i>';
+    }
+    
+    toast.innerHTML = `
+        <div class="toast-icon">${iconeHtml}</div>
+        <div class="toast-mensagem">${mensagem}</div>
+        <button class="toast-fechar" onclick="this.parentElement.remove()">✕</button>
+    `;
+    
+    containerToast.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast && toast.parentElement) {
+            toast.style.animation = 'fadeOutRight 0.2s forwards';
+            setTimeout(() => toast.remove(), 200);
+        }
+    }, duracao);
+}
+
+// ==================== VALIDAÇÕES ====================
+function validarEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function validarUsername(username) {
+    return /^[a-zA-Z0-9_]{3,30}$/.test(username);
+}
+
+function validarSenha(senha) {
+    return {
+        length: senha.length >= 6,
+        number: /[0-9]/.test(senha),
+        upper: /[A-Z]/.test(senha)
+    };
+}
+
+// ==================== MOSTRAR ERRO NO FORMULÁRIO ====================
+function mostrarErroCampo(inputId, mensagem) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    
+    const erroAnterior = input.parentElement?.querySelector('.erro-texto');
+    if (erroAnterior) erroAnterior.remove();
+    
+    input.style.borderColor = '#ef4444';
+    
+    const erroDiv = document.createElement('small');
+    erroDiv.className = 'erro-texto';
+    erroDiv.style.color = '#ef4444';
+    erroDiv.style.fontSize = '11px';
+    erroDiv.style.marginTop = '5px';
+    erroDiv.style.display = 'block';
+    erroDiv.textContent = mensagem;
+    
+    input.parentElement?.appendChild(erroDiv);
+    
+    setTimeout(() => {
+        input.style.borderColor = '';
+        if (erroDiv.parentElement) erroDiv.remove();
+    }, 3000);
+}
+
+function limparErroCampo(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    input.style.borderColor = '';
+    const erro = input.parentElement?.querySelector('.erro-texto');
+    if (erro) erro.remove();
+}
+
+// ==================== MOSTRAR/OCULTAR SENHA ====================
+function toggleSenha(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bx-show');
+        icon.classList.add('bx-hide');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('bx-hide');
+        icon.classList.add('bx-show');
+    }
 }
 
 // ==================== LOGIN ====================
 const loginForm = document.querySelector('.form-box.login form');
+const loginButton = loginForm?.querySelector('.btn');
 
-if (loginForm) {
+if (loginForm && loginButton) {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const inputs = loginForm.querySelectorAll('input');
-        const username = inputs[0].value.trim();
-        const password = inputs[1].value;
+        const username = document.getElementById('loginUsername')?.value.trim();
+        const password = document.getElementById('loginPassword')?.value;
 
-        if (!username || !password) {
-            alert('Preencha todos os campos');
-            return;
+        let temErro = false;
+        if (!username) {
+            mostrarErroCampo('loginUsername', 'Username é obrigatório');
+            temErro = true;
         }
+        if (!password) {
+            mostrarErroCampo('loginPassword', 'Password é obrigatória');
+            temErro = true;
+        }
+        if (temErro) return;
+
+        const textoOriginal = loginButton.textContent;
+        loginButton.textContent = 'A entrar...';
+        loginButton.disabled = true;
+        loginButton.classList.add('loading');
 
         try {
             const res = await fetch(`${API_URL}/auth/login`, {
@@ -37,53 +145,91 @@ if (loginForm) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
             });
-
+            
             const data = await res.json();
 
             if (!res.ok) {
-                alert(data.erro || 'Erro no login');
-                return;
+                throw new Error(data.erro || 'Credenciais inválidas');
             }
 
             localStorage.setItem('token', data.token);
             localStorage.setItem('utilizador', JSON.stringify(data.utilizador));
-
-            alert('Login bem-sucedido!');
-
-            if (data.utilizador.role === 'admin') {
-                window.location.href = '../TelaRegistro/registroAdm.html';
-            } else {
-                window.location.href = '../TelaPrincipal/index.html';
+            
+            const carrinhoLocal = localStorage.getItem('carrinho_local');
+            if (carrinhoLocal) {
+                localStorage.setItem('carrinho_para_sincronizar', carrinhoLocal);
             }
 
+            mostrarToast(`✅ Login bem-sucedido! Bem-vindo, ${data.utilizador.username}`, 'sucesso');
+
+            setTimeout(() => {
+                const destino = data.utilizador.role === 'admin'
+                    ? '../TelaRegistro/registroAdm.html'
+                    : '../TelaPrincipal/index.html';
+                window.location.href = destino;
+            }, 800);
+            
         } catch (err) {
-            console.error(err);
-            alert('Erro ao ligar ao servidor');
+            let msg = err.message;
+            if (msg.includes('Failed to fetch') || msg.includes('fetch')) {
+                msg = '❌ Não foi possível contactar o servidor. Verifique se o backend está em execução.';
+            }
+            mostrarToast(msg, 'erro');
+        } finally {
+            loginButton.textContent = textoOriginal;
+            loginButton.disabled = false;
+            loginButton.classList.remove('loading');
         }
     });
 }
 
-// ==================== REGISTRO ====================
+// ==================== REGISTO ====================
 const registerForm = document.querySelector('.form-box.register form');
+const registerButton = registerForm?.querySelector('.btn');
 
-if (registerForm) {
+if (registerForm && registerButton) {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const inputs = registerForm.querySelectorAll('input');
-        const username = inputs[0].value.trim();
-        const email = inputs[1].value.trim();
-        const password = inputs[2].value;
+        const username = document.getElementById('registerUsername')?.value.trim();
+        const email = document.getElementById('registerEmail')?.value.trim();
+        const password = document.getElementById('registerPassword')?.value;
 
-        if (!username || !email || !password) {
-            alert('Preencha todos os campos');
-            return;
+        let temErro = false;
+        
+        if (!username) {
+            mostrarErroCampo('registerUsername', 'Username é obrigatório');
+            temErro = true;
+        } else if (username.length < 3) {
+            mostrarErroCampo('registerUsername', 'Username deve ter pelo menos 3 caracteres');
+            temErro = true;
+        } else if (!validarUsername(username)) {
+            mostrarErroCampo('registerUsername', 'Username só pode conter letras, números e underscore');
+            temErro = true;
         }
+        
+        if (!email) {
+            mostrarErroCampo('registerEmail', 'Email é obrigatório');
+            temErro = true;
+        } else if (!validarEmail(email)) {
+            mostrarErroCampo('registerEmail', 'Email inválido');
+            temErro = true;
+        }
+        
+        if (!password) {
+            mostrarErroCampo('registerPassword', 'Password é obrigatória');
+            temErro = true;
+        } else if (password.length < 6) {
+            mostrarErroCampo('registerPassword', 'Password deve ter no mínimo 6 caracteres');
+            temErro = true;
+        }
+        
+        if (temErro) return;
 
-        if (password.length < 6) {
-            alert('Password deve ter no mínimo 6 caracteres');
-            return;
-        }
+        const textoOriginal = registerButton.textContent;
+        registerButton.textContent = 'A registar...';
+        registerButton.disabled = true;
+        registerButton.classList.add('loading');
 
         try {
             const res = await fetch(`${API_URL}/auth/register`, {
@@ -91,23 +237,128 @@ if (registerForm) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password })
             });
-
+            
             const data = await res.json();
-
+            
             if (!res.ok) {
-                alert(data.erro || 'Erro no registo');
-                return;
+                throw new Error(data.erro || 'Erro no registo');
             }
 
-            alert('Conta criada com sucesso! Faça login.');
-
-            // Limpar formulário e voltar para login
+            mostrarToast('✅ Conta criada com sucesso! Faça login.', 'sucesso');
             registerForm.reset();
-            container.classList.remove('active');
-
+            
+            setTimeout(() => {
+                if (container) container.classList.remove('active');
+            }, 1200);
+            
         } catch (err) {
-            console.error(err);
-            alert('Erro ao ligar ao servidor');
+            let msg = err.message;
+            if (msg.includes('Failed to fetch')) {
+                msg = '❌ Erro de conexão. Verifique o servidor.';
+            }
+            mostrarToast(msg, 'erro');
+        } finally {
+            registerButton.textContent = textoOriginal;
+            registerButton.disabled = false;
+            registerButton.classList.remove('loading');
         }
     });
 }
+
+// ==================== RECUPERAR SENHA ====================
+async function recuperarSenha(email) {
+    mostrarToast('📧 Enviando link de recuperação...', 'info');
+    
+    try {
+        const res = await fetch(`${API_URL}/auth/recuperar-senha`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+            mostrarToast('✅ Link de recuperação enviado! Verifique seu email.', 'sucesso');
+            if (data.reset_token) {
+                console.log('🔑 Token de recuperação (apenas desenvolvimento):', data.reset_token);
+            }
+        } else {
+            mostrarToast(data.erro || '❌ Erro ao enviar recuperação', 'erro');
+        }
+    } catch (err) {
+        mostrarToast('❌ Erro de conexão com o servidor', 'erro');
+    }
+}
+
+// Adicionar evento ao link "Esqueceu a senha?"
+const forgotLink = document.querySelector('.forget-link a');
+if (forgotLink) {
+    forgotLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'redefinir_senha.html';
+    });
+}
+
+// ==================== REDEFINIR SENHA (para a página redefinir_senha.html) ====================
+// Verificar se está na página de redefinir senha
+if (window.location.pathname.includes('redefinir_senha')) {
+    btnRedefinir.addEventListener('click', async () => {
+    const email = document.getElementById('email')?.value;
+    const senha = novaSenha?.value;
+    const confirmar = confirmarSenha?.value;
+
+    if (!email || !senha || !confirmar) {
+        mostrarToast('Preencha todos os campos', 'erro');
+        return;
+    }
+
+    if (senha !== confirmar) {
+        mostrarToast('As senhas não coincidem', 'erro');
+        return;
+    }
+
+    const validacao = validarSenha(senha);
+    if (!validacao.length || !validacao.number || !validacao.upper) {
+        mostrarToast('Senha fraca', 'erro');
+        return;
+    }
+
+    const res = await fetch(`${API_URL}/auth/redefinir-senha`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email,
+            nova_senha: senha
+        })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+        mostrarToast('Senha redefinida com sucesso!', 'sucesso');
+        setTimeout(() => {
+            window.location.href = 'tela_login.html';
+        }, 1500);
+    } else {
+        mostrarToast(data.erro || 'Erro ao redefinir senha', 'erro');
+    }
+});
+        };
+
+
+// ==================== VERIFICAR SE JÁ ESTÁ LOGADO ====================
+function verificarSessao() {
+    const token = localStorage.getItem('token');
+    if (token && window.location.pathname.includes('tela_login')) {
+        const user = JSON.parse(localStorage.getItem('utilizador') || '{}');
+        if (user.id) {
+            const destino = user.role === 'admin' 
+                ? '../TelaRegistro/registroAdm.html' 
+                : '../TelaPrincipal/index.html';
+            window.location.href = destino;
+        }
+    }
+}
+
+verificarSessao();

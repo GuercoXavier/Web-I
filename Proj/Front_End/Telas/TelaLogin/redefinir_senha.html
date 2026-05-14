@@ -3,178 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Redefinir Senha - BASGAM Tech">
     <title>Redefinir Senha - BASGAM Tech</title>
+    <link rel="icon" type="image/jpg" href="../../imagens/logo.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
-            font-family: 'DM Sans', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .card {
-            background: rgba(20, 20, 20, 0.95);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 24px;
-            padding: 48px;
-            max-width: 450px;
-            width: 100%;
-        }
-
-        .logo { text-align: center; margin-bottom: 32px; }
-        .logo span {
-            font-family: 'Syne', sans-serif;
-            font-size: 28px;
-            font-weight: 800;
-            color: white;
-            background: rgba(59,130,246,0.2);
-            padding: 8px 20px;
-            border-radius: 60px;
-        }
-
-        h1 { font-family: 'Syne', sans-serif; font-size: 24px; color: white; margin-bottom: 8px; text-align: center; }
-        .sub { text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 32px; }
-
-        .campo { margin-bottom: 20px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); margin-bottom: 8px; text-transform: uppercase; }
-        input {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 12px;
-            color: white;
-            font-size: 15px;
-            outline: none;
-        }
-        input:focus { border-color: #3b82f6; }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 16px;
-        }
-        .btn:hover { background: #2563eb; }
-
-        .mensagem {
-            text-align: center;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-        }
-        .mensagem.sucesso { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); display: block; }
-        .mensagem.erro { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); display: block; }
-
-        .links { text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); }
-        .links a { color: #6b7280; text-decoration: none; font-size: 14px; }
-        .links a:hover { color: #3b82f6; }
-
-        .requisitos { font-size: 12px; color: #6b7280; margin-top: 8px; }
-    </style>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Esferas decorativas -->
+    <div class="scene">
+        <div class="sphere s4"></div>
+        <div class="sphere s1"></div>
+        <div class="sphere s2"></div>
+        <div class="sphere s3"></div>
+        <div class="sphere s5"></div>
+        <div class="sphere s6"></div>
+    </div>
+
     <div class="card">
-        <div class="logo"><span>BASGAM Tech</span></div>
+        <div class="logo">
+            <span>BASGAM Tech</span>
+        </div>
         <h1>Redefinir Senha</h1>
         <p class="sub">Digite sua nova senha</p>
 
-        <div id="mensagem" class="mensagem"></div>
-
         <div class="campo">
+            <div class="campo">
+    <label>Email</label>
+    <input type="email" id="email" placeholder="teuemail@gmail.com">
+</div>
             <label>Nova Senha</label>
-            <input type="password" id="novaSenha" placeholder="••••••">
+            <div class="password-wrapper">
+                <input type="password" id="novaSenha" placeholder="••••••">
+                <i class='bx bx-show' onclick="toggleSenha('novaSenha', this)"></i>
+            </div>
+            <div class="senha-info" id="senhaInfo">
+                <span id="lengthReq"><i class='bx bx-x'></i> 6+ caracteres</span>
+                <span id="numberReq"><i class='bx bx-x'></i> Número</span>
+                <span id="upperReq"><i class='bx bx-x'></i> Maiúscula</span>
+            </div>
         </div>
+
         <div class="campo">
             <label>Confirmar Senha</label>
-            <input type="password" id="confirmarSenha" placeholder="••••••">
+            <div class="password-wrapper">
+                <input type="password" id="confirmarSenha" placeholder="••••••">
+                <i class='bx bx-show' onclick="toggleSenha('confirmarSenha', this)"></i>
+            </div>
         </div>
-        <p class="requisitos">✓ Mínimo 6 caracteres</p>
 
-        <button class="btn" onclick="redefinirSenha()">Redefinir Senha</button>
+        <button class="btn" id="btnRedefinir">Redefinir Senha</button>
 
         <div class="links">
             <a href="tela_login.html">← Voltar ao login</a>
         </div>
     </div>
 
-    <script>
-        const API_URL = 'http://localhost:3000/api';
+    <div id="toastContainer" class="toast-container"></div>
 
-        // Pegar token da URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token') || localStorage.getItem('resetToken');
-
-        if (!token) {
-            document.getElementById('mensagem').textContent = 'Token inválido. Faça a solicitação novamente.';
-            document.getElementById('mensagem').className = 'mensagem erro';
-        }
-
-        async function redefinirSenha() {
-            const novaSenha = document.getElementById('novaSenha').value;
-            const confirmarSenha = document.getElementById('confirmarSenha').value;
-            const mensagemDiv = document.getElementById('mensagem');
-
-            if (!novaSenha || !confirmarSenha) {
-                mostrarMensagem('Preencha todos os campos', 'erro');
-                return;
-            }
-
-            if (novaSenha !== confirmarSenha) {
-                mostrarMensagem('As senhas não coincidem', 'erro');
-                return;
-            }
-
-            if (novaSenha.length < 6) {
-                mostrarMensagem('A senha deve ter no mínimo 6 caracteres', 'erro');
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/auth/redefinir-senha`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, nova_senha: novaSenha })
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    mostrarMensagem('Senha redefinida com sucesso! Redirecionando...', 'sucesso');
-                    localStorage.removeItem('resetToken');
-                    setTimeout(() => {
-                        window.location.href = 'tela_login.html';
-                    }, 2000);
-                } else {
-                    mostrarMensagem(data.erro || 'Erro ao redefinir senha', 'erro');
-                }
-            } catch (err) {
-                mostrarMensagem('Erro ao conectar ao servidor', 'erro');
-            }
-        }
-
-        function mostrarMensagem(msg, tipo) {
-            const mensagemDiv = document.getElementById('mensagem');
-            mensagemDiv.textContent = msg;
-            mensagemDiv.className = `mensagem ${tipo}`;
-            setTimeout(() => {
-                mensagemDiv.className = 'mensagem';
-            }, 5000);
-        }
-    </script>
+    <script src="login.js"></script>
 </body>
 </html>

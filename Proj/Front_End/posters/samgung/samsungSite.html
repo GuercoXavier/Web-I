@@ -9,7 +9,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
 
         <style>
-            *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+            *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Bebas Neue', sans-serif; }
 
             :root {
             --cyan: #00d4ff;
@@ -19,7 +20,6 @@
             html, body {
             height: 100%;
             background: var(--bg);
-            font-family: 'Outfit', sans-serif;
             color: #fff;
             overflow: hidden;
             }
@@ -71,27 +71,8 @@
             
             .left { display: flex; flex-direction: column; }
 
-            .brand {
-            font-size: 0.70rem;
-            font-weight: 400;
-            letter-spacing: 0.38em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.38);
-            margin-bottom: clamp(1.6rem, 3vh, 2.4rem);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.7rem;
-            }
-            .brand::before {
-            content: '';
-            display: inline-block;
-            width: 24px; height: 1px;
-            background: var(--cyan);
-            opacity: 0.6;
-            }
 
             h1 {
-            font-family: 'Bebas Neue', sans-serif;
             font-size: clamp(4.5rem, 9vw, 8.5rem);
             line-height: 0.90;
             letter-spacing: 0.01em;
@@ -130,34 +111,6 @@
             margin-bottom: clamp(2rem, 4vh, 3rem);
             }
 
-            
-            a.btn {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            padding: 1rem 2rem;
-            background: var(--cyan);
-            color: #06060f;
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.78rem;
-            font-weight: 500;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            text-decoration: none;
-            width: 100%;
-            max-width: 500px;
-            position: relative;
-            overflow: hidden;
-            clip-path: polygon(0 0, 100% 0, 96% 100%, 0 100%);
-            transition: background 0.3s, color 0.3s, gap 0.3s;
-            }
-            a.btn:hover {
-            background: #fff;
-            color: #06060f;
-            gap: 1.2rem;
-            }
-            a.btn svg { flex-shrink: 0; transition: transform 0.3s; }
-            a.btn:hover svg { transform: translateX(4px); }
 
             /* ─── products column ─── */
             .products {
@@ -302,22 +255,12 @@
     <div class="content">
         
         <div class="left">
-        <span class="brand">Samsung · 2025</span>
 
         <h1>Conecte-se<br>ao <em>Futuro</em></h1>
         <span class="h1-line"></span>
 
         <p class="tag">Inovação que se sente a cada toque.<br>Tecnologia que vai além do que se vê.</p>
 
-        <a href="#" class="btn">
-            <span>Descobrir</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
-            </svg>
-        </a>
         </div>
         <div class="products">
         <div class="phone-wrap">
