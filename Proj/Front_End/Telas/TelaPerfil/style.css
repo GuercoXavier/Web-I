@@ -746,3 +746,112 @@ body {
 .btn-ir-comprar:hover {
   background: #2563eb;
 }
+/* Adicionar ao final do style.css */
+
+/* ==================== LOADING STATES ==================== */
+.btn-adicionar-credito.loading,
+.btn.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.btn-adicionar-credito.loading::after,
+.btn.loading::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* ==================== MODAL DETALHE PEDIDO ==================== */
+.modal-itens-header {
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 1fr 1fr;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 600;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.modal-item {
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 1fr 1fr;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f2f5;
+    font-size: 14px;
+}
+
+.modal-total {
+    text-align: right;
+    padding-top: 15px;
+    margin-top: 15px;
+    border-top: 2px solid #e2e8f0;
+    font-size: 16px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn-modal-fechar {
+    padding: 8px 20px;
+    background: #e5e7eb;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-modal-imprimir {
+    padding: 8px 20px;
+    background: #2f80ed;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.modal-info {
+    background: #f8f9fc;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.modal-info-linha {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.modal-info-linha:last-child {
+    margin-bottom: 0;
+}
+
+.btn-detalhe {
+    background: none;
+    border: none;
+    color: #2f80ed;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 10px;
+}

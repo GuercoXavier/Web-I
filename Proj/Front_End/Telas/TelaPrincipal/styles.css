@@ -962,3 +962,77 @@ details.filtro-sub > summary:hover { background: var(--color-background-secondar
 .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px 12px; border-bottom: 1px solid rgba(0,0,0,.1); }
 .cat-btn { padding: 6px 4px; font-size: 20px; background: transparent; border: 1px solid rgba(0,0,0,.12); border-radius: 8px; color: #555; cursor: pointer; transition: all .15s; width: 200px; height: 40px; }
 .cat-btn:hover, .cat-btn.active { background: #8a9da5; border-color: rgba(0,0,0,.3); color: #000; }
+/* Adicionar ao final do styles.css */
+
+/* ==================== LOADING STATES ==================== */
+.btn.loading,
+.btn-adicionar-credito.loading,
+.btn-carrinho-grande.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.btn.loading::after,
+.btn-adicionar-credito.loading::after,
+.btn-carrinho-grande.loading::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* ==================== MELHORIAS DE ACESSIBILIDADE ==================== */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--azul);
+    outline-offset: 2px;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--azul);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--azul-esc);
+}
+
+/* Prevenir zoom em inputs no mobile */
+@media (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px;
+    }
+}
+
+/* Melhorar contraste para modo claro/escuro */
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg: #f5f5f7;
+        --texto: #1a1a1a;
+        --muted: #666;
+    }
+}

@@ -1,55 +1,95 @@
-const API = 'http://localhost:3000/api';
+// ==================== CONFIGURAÇÃO ====================
+const API = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+
 let categoriaAtiva = '';
 let produtos = [];
 let carrinhoAtual = { itens: [], total: 0 };
 let utilizadorLogado = null;
 
-// ── Helpers ───────────────────────────────────────────
-
-const getToken       = () => localStorage.getItem('token');
+// ==================== HELPERS ====================
+const getToken = () => localStorage.getItem('token');
 const getAuthHeaders = () => ({
     'Content-Type': 'application/json',
     ...(getToken() && { Authorization: `Bearer ${getToken()}` })
 });
-const fmt = v => new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'MZN' }).format(v);
+
+const fmt = (v) => new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'MZN' }).format(v);
 
 async function apiFetch(path, opts = {}) {
-    const res  = await fetch(`${API}${path}`, opts);
+    const res = await fetch(`${API}${path}`, opts);
     const data = await res.json();
     if (!res.ok) throw new Error(data.erro || 'Erro na requisição');
     return data;
 }
 
-// ── Init ──────────────────────────────────────────────
+// ==================== TOAST ====================
+function mostrarMensagem(mensagem, tipo = 'info', duracao = 3000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
 
-document.addEventListener('DOMContentLoaded', async () => {
-    document.querySelectorAll('#ano, #anoFooter').forEach(el => {
-        if (el) el.textContent = new Date().getFullYear();
-    });
-
-    const token = getToken();
-    if (token) {
-        utilizadorLogado = JSON.parse(localStorage.getItem('utilizador') || '{}');
-        atualizarUserDisplay();
-    } else {
-        mostrarBotaoLogin();
+    let iconeHtml = '';
+    switch (tipo) {
+        case 'sucesso':
+            iconeHtml = '<i class="bx bx-check-circle" style="font-size: 20px; color: #22c55e;"></i>';
+            break;
+        case 'erro':
+            iconeHtml = '<i class="bx bx-x-circle" style="font-size: 20px; color: #ef4444;"></i>';
+            break;
+        default:
+            iconeHtml = '<i class="bx bx-info-circle" style="font-size: 20px; color: #3b82f6;"></i>';
     }
 
-    await renderDestaquesCategorias();
-    gerarSidebar();
-    await carregarProdutos();
-    await carregarCarrinho();
-    atualizarBadge();
-    iniciarSlider();
-    renderDestaque();
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${tipo}`;
+    toast.innerHTML = `
+        <div class="toast-icon">${iconeHtml}</div>
+        <div class="toast-mensagem">${mensagem}</div>
+        <button class="toast-fechar" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.style.animation = 'fadeOutRight 0.2s forwards';
+            setTimeout(() => toast.remove(), 200);
+        }
+    }, duracao);
+}
 
-    document.getElementById('searchInput')?.addEventListener('keyup', e => {
-        if (e.key === 'Enter') carregarProdutos();
-    });
-});
+// ==================== CONFIRMAÇÃO ====================
+function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
+    const modal = document.querySelector('.modal-confirmacao');
+    const msgP = modal?.querySelector('.modal-confirmacao-body p');
+    const btnSim = modal?.querySelector('#modalConfirmacaoBtnSim');
+    const btnNao = modal?.querySelector('#modalConfirmacaoBtnNao');
 
-// ── Auth / User ───────────────────────────────────────
+    if (!modal || !msgP || !btnSim || !btnNao) {
+        if (confirm(mensagem)) {
+            if (aoConfirmar) aoConfirmar();
+        } else {
+            if (aoCancelar) aoCancelar();
+        }
+        return;
+    }
 
+    msgP.textContent = mensagem;
+    modal.style.display = 'flex';
+
+    const close = () => {
+        modal.style.display = 'none';
+        btnSim.removeEventListener('click', handleSim);
+        btnNao.removeEventListener('click', handleNao);
+        modal.removeEventListener('click', handleOutside);
+    };
+    const handleSim = () => { close(); if (aoConfirmar) aoConfirmar(); };
+    const handleNao = () => { close(); if (aoCancelar) aoCancelar(); };
+    const handleOutside = e => { if (e.target === modal) handleNao(); };
+
+    btnSim.addEventListener('click', handleSim);
+    btnNao.addEventListener('click', handleNao);
+    modal.addEventListener('click', handleOutside);
+}
+
+// ==================== AUTH / USER ====================
 function mostrarBotaoLogin() {
     const el = document.querySelector('.user-menu-container');
     if (el) el.innerHTML = `
@@ -60,12 +100,12 @@ function mostrarBotaoLogin() {
 }
 
 function atualizarUserDisplay() {
-    const u    = JSON.parse(localStorage.getItem('utilizador') || '{}');
+    const u = JSON.parse(localStorage.getItem('utilizador') || '{}');
     const span = document.getElementById('userNameDisplay');
     if (u.username && span)
         span.textContent = u.username.length > 15 ? u.username.slice(0, 12) + '...' : u.username;
     if (u.username === 'Admin') {
-        const btn = document.querySelector('.dropdown-item[href*="RegistroAdm"]');
+        const btn = document.querySelector('.dropdown-item[href*="RegistroAdm.html"]');
         if (btn) btn.style.display = 'flex';
     }
 }
@@ -86,71 +126,15 @@ function logout() {
     }, () => mostrarMensagem('Operação cancelada', 'info'));
 }
 
-// ── Toast ─────────────────────────────────────────────
-
-function mostrarMensagem(mensagem, tipo = 'info', duracao = 3000) {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
-    const icones = {
-        sucesso: 'check-circle-fill',
-        erro:    'x-circle-fill',
-        info:    'info-circle-fill'
-    };
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${tipo}`;
-    toast.innerHTML = `
-        <div class="toast-icon"><img src="../../imagens/icon/${icones[tipo] || icones.info}.svg" alt=""></div>
-        <div class="toast-mensagem">${mensagem}</div>
-        <button class="toast-fechar" onclick="this.parentElement.remove()">✕</button>`;
-    container.appendChild(toast);
-    setTimeout(() => {
-        if (toast.parentElement) {
-            toast.style.animation = 'fadeOutRight 0.2s forwards';
-            setTimeout(() => toast.remove(), 200);
-        }
-    }, duracao);
-}
-
-// ── Confirmação ───────────────────────────────────────
-
-function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
-    const modal  = document.querySelector('.modal-confirmacao');
-    const msgP   = modal?.querySelector('.modal-confirmacao-body p');
-    const btnSim = modal?.querySelector('#modalConfirmacaoBtnSim');
-    const btnNao = modal?.querySelector('#modalConfirmacaoBtnNao');
-
-    if (!modal || !msgP || !btnSim || !btnNao) {
-        confirm(mensagem) ? aoConfirmar?.() : aoCancelar?.();
-        return;
-    }
-
-    msgP.textContent   = mensagem;
-    modal.style.display = 'flex';
-
-    const close = () => {
-        modal.style.display = 'none';
-        btnSim.removeEventListener('click', handleSim);
-        btnNao.removeEventListener('click', handleNao);
-        modal.removeEventListener('click', handleOutside);
-    };
-    const handleSim     = () => { close(); aoConfirmar?.(); };
-    const handleNao     = () => { close(); aoCancelar?.();  };
-    const handleOutside = e  => { if (e.target === modal) handleNao(); };
-
-    btnSim.addEventListener('click', handleSim);
-    btnNao.addEventListener('click', handleNao);
-    modal.addEventListener('click', handleOutside);
-}
-
-// ── Filtros ───────────────────────────────────────────
-
+// ==================== FILTROS ====================
 const getMarcasSelecionadas = () => [...document.querySelectorAll('.filtro-marca:checked')].map(c => c.value);
-const getApenasStock        = () => document.querySelectorAll('.filtro-stock:checked').length > 0;
+const getApenasStock = () => document.querySelectorAll('.filtro-stock:checked').length > 0;
 
 function getPrecoMin() {
     return [...document.querySelectorAll('.preco-min')]
         .map(i => parseInt(i.value) || 0).filter(v => v > 0).reduce((a, b) => Math.min(a, b), 0);
 }
+
 function getPrecoMax() {
     return [...document.querySelectorAll('.preco-max')]
         .map(i => parseInt(i.value) || 0).reduce((a, b) => Math.max(a, b), 0);
@@ -170,28 +154,30 @@ function limparFiltros() {
 
 function toggleMarca() { document.getElementById('marcaFiltro')?.classList.toggle('open'); }
 
-// ── Produtos ──────────────────────────────────────────
-
+// ==================== PRODUTOS ====================
 async function carregarProdutos() {
     try {
         const params = new URLSearchParams();
         const search = document.getElementById('searchInput')?.value;
-        if (search)          params.set('q',         search);
-        if (categoriaAtiva)  params.set('categoria',  categoriaAtiva);
+        if (search) params.set('q', search);
+        if (categoriaAtiva) params.set('categoria', categoriaAtiva);
         const min = getPrecoMin(), max = getPrecoMax();
-        if (min > 0)         params.set('min',        min);
-        if (max > 0)         params.set('max',        max);
-        if (getApenasStock()) params.set('stock',     1);
+        if (min > 0) params.set('min', min);
+        if (max > 0) params.set('max', max);
+        if (getApenasStock()) params.set('stock', 1);
         getMarcasSelecionadas().forEach(m => params.append('marca', m));
 
         const data = await apiFetch(`/produtos?${params}`);
-        produtos = data.map(p => ({
+        const produtosData = data.produtos || data || [];
+
+        produtos = produtosData.map(p => ({
             id: p.id, nome: p.nome, preco: p.preco, descricao: p.descricao,
             imagem: p.imagem || 'https://via.placeholder.com/300x200?text=Sem+Imagem',
             stock: p.stock, marca: p.marca,
             categoria_nome: p.categoria_nome, subcategoria_nome: p.subcategoria_nome,
             em_destaque: p.em_destaque
         }));
+
         renderizarProdutos();
         atualizarContador();
     } catch (err) {
@@ -204,9 +190,7 @@ async function carregarProdutos() {
 function renderizarProdutos() {
     const grid = document.getElementById('grade-produtos');
     if (!grid) return;
-    grid.innerHTML = produtos.length
-        ? ''
-        : `<p class="sem-produtos">Nenhum produto encontrado.</p>`;
+    grid.innerHTML = produtos.length ? '' : `<p class="sem-produtos">Nenhum produto encontrado.</p>`;
     produtos.forEach(p => grid.appendChild(criarCard(p)));
 }
 
@@ -218,7 +202,7 @@ function atualizarContador() {
 function criarCard(p) {
     const card = document.createElement('div');
     card.className = 'produto';
-    card.onclick   = () => ir('detalhe', p.id);
+    card.onclick = () => ir('detalhe', p.id);
     card.innerHTML = `
         <div class="produto-img">
             <img src="${p.imagem}" alt="${p.nome}"
@@ -237,14 +221,14 @@ async function renderDestaque() {
     if (!grid) return;
     try {
         const lista = await apiFetch('/produtos?destaque=1');
+        const produtosLista = lista.produtos || lista;
         grid.innerHTML = '';
-        if (!lista.length) { grid.innerHTML = `<p style="color:var(--muted)">Nenhum produto em destaque.</p>`; return; }
-        lista.slice(0, 3).forEach(p => grid.appendChild(criarCard(p)));
+        if (!produtosLista.length) { grid.innerHTML = `<p style="color:var(--muted)">Nenhum produto em destaque.</p>`; return; }
+        produtosLista.slice(0, 3).forEach(p => grid.appendChild(criarCard(p)));
     } catch { mostrarMensagem('Erro ao carregar produtos em destaque', 'erro'); }
 }
 
-// ── Detalhe ───────────────────────────────────────────
-
+// ==================== DETALHE ====================
 async function renderDetalhe(id) {
     try {
         const p = await apiFetch(`/produtos/${id}`);
@@ -267,8 +251,8 @@ async function renderDetalhe(id) {
 
         const garantias = [
             ['shield-fill-check', 'Produto verificado e com garantia'],
-            ['truck',             'Entrega rápida para Maputo'],
-            ['headset',           'Suporte técnico especializado']
+            ['truck', 'Entrega rápida para Maputo'],
+            ['headset', 'Suporte técnico especializado']
         ];
 
         container.innerHTML = `
@@ -284,7 +268,7 @@ async function renderDetalhe(id) {
                     <hr class="detalhe-divisor">
                     <div class="detalhe-meta">
                         ${metaItem('Marca', p.marca)}
-                        ${metaItem('Tipo',  p.subcategoria_nome)}
+                        ${metaItem('Tipo', p.subcategoria_nome)}
                         <div class="detalhe-meta-item">
                             <span class="detalhe-meta-label">Disponibilidade</span>${stockInfo}
                         </div>
@@ -321,8 +305,9 @@ async function carregarVejaTambem(produtoAtual) {
         const param = produtoAtual.categoria_nome
             ? `categoria=${encodeURIComponent(produtoAtual.categoria_nome)}`
             : 'destaque=1';
-        const lista    = await apiFetch(`/produtos?${param}`);
-        const sugestoes = lista.filter(p => p.id !== produtoAtual.id).slice(0, 4);
+        const lista = await apiFetch(`/produtos?${param}`);
+        const produtosLista = lista.produtos || lista;
+        const sugestoes = produtosLista.filter(p => p.id !== produtoAtual.id).slice(0, 4);
         grade.innerHTML = sugestoes.length
             ? sugestoes.map(p => `
                 <div class="veja-tambem-card"
@@ -338,9 +323,8 @@ async function carregarVejaTambem(produtoAtual) {
     } catch { grade.innerHTML = `<p style="color:var(--muted);font-size:.9rem">Não foi possível carregar sugestões.</p>`; }
 }
 
-// ── Carrinho ──────────────────────────────────────────
-
-function getCarrinhoLocal()  { return JSON.parse(localStorage.getItem('carrinho_local') || '{"itens":[],"total":0}'); }
+// ==================== CARRINHO ====================
+function getCarrinhoLocal() { return JSON.parse(localStorage.getItem('carrinho_local') || '{"itens":[],"total":0}'); }
 function saveCarrinhoLocal(c) {
     c.total = c.itens.reduce((s, i) => s + i.preco * i.quantidade, 0);
     localStorage.setItem('carrinho_local', JSON.stringify(c));
@@ -353,7 +337,16 @@ async function carregarCarrinho() {
     if (!getToken()) {
         carrinhoAtual = getCarrinhoLocal();
     } else {
-        try { carrinhoAtual = await apiFetch('/carrinho', { headers: getAuthHeaders() }); } catch {}
+        try {
+            const data = await apiFetch('/carrinho', { headers: getAuthHeaders() });
+            carrinhoAtual = {
+                itens: data.itens || [],
+                total: data.total || 0
+            };
+        } catch (err) {
+            console.error('Erro ao carregar carrinho:', err);
+            carrinhoAtual = getCarrinhoLocal();
+        }
     }
     renderCarrinho();
     atualizarBadge();
@@ -362,7 +355,9 @@ async function carregarCarrinho() {
 async function addCarrinho(produtoId) {
     let produto = produtos.find(p => p.id === produtoId);
     if (!produto) {
-        try { produto = await apiFetch(`/produtos/${produtoId}`); } catch { return; }
+        try {
+            produto = await apiFetch(`/produtos/${produtoId}`);
+        } catch { return; }
     }
     if (!getToken()) {
         const c = getCarrinhoLocal();
@@ -371,7 +366,11 @@ async function addCarrinho(produtoId) {
         saveCarrinhoLocal(c);
     } else {
         try {
-            await apiFetch('/carrinho/adicionar', { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ produto_id: produtoId, quantidade: 1 }) });
+            await apiFetch('/carrinho/adicionar', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ produto_id: produtoId, quantidade: 1 })
+            });
             await carregarCarrinho();
         } catch (err) { mostrarMensagem(err.message, 'erro'); return; }
     }
@@ -392,7 +391,11 @@ async function atualizarQuantidade(produtoId, quantidade) {
         return;
     }
     try {
-        await apiFetch('/carrinho/atualizar', { method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify({ produto_id: produtoId, quantidade }) });
+        await apiFetch('/carrinho/atualizar', {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ produto_id: produtoId, quantidade })
+        });
         await carregarCarrinho();
     } catch (err) { mostrarMensagem(err.message, 'erro'); }
 }
@@ -416,16 +419,16 @@ async function limparCarrinho() {
 }
 
 function renderCarrinho() {
-    const container    = document.getElementById('itens-carrinho');
+    const container = document.getElementById('itens-carrinho');
     const subtotalSpan = document.getElementById('subtotal');
-    const totalSpan    = document.getElementById('total');
+    const totalSpan = document.getElementById('total');
     if (!container) return;
 
     const itens = carrinhoAtual.itens || [];
     if (!itens.length) {
         container.innerHTML = `<p class="carrinho-vazio">Seu carrinho está vazio.</p>`;
         if (subtotalSpan) subtotalSpan.textContent = fmt(0);
-        if (totalSpan)    totalSpan.textContent    = fmt(0);
+        if (totalSpan) totalSpan.textContent = fmt(0);
         return;
     }
 
@@ -454,7 +457,7 @@ function renderCarrinho() {
     }).join('');
 
     if (subtotalSpan) subtotalSpan.textContent = fmt(total);
-    if (totalSpan)    totalSpan.textContent    = fmt(total);
+    if (totalSpan) totalSpan.textContent = fmt(total);
 }
 
 function atualizarBadge() {
@@ -465,8 +468,7 @@ function atualizarBadge() {
     badge.classList.toggle('oculto', total === 0);
 }
 
-// ── Checkout ──────────────────────────────────────────
-
+// ==================== CHECKOUT ====================
 async function finalizar() {
     if (!getToken()) {
         mostrarConfirmacao(
@@ -480,7 +482,7 @@ async function finalizar() {
     if (localStorage.getItem('carrinho_local')) await sincronizarCarrinhoLocal();
     try {
         const data = await apiFetch('/pedidos/checkout', { method: 'POST', headers: getAuthHeaders() });
-        mostrarMensagem(`Pedido ${data.pedido_id} realizado! Total: ${fmt(data.total)}`, 'sucesso');
+        mostrarMensagem(`Pedido ${data.pedido_id} realizado! Total: ${fmt(data.total_gasto)}`, 'sucesso');
         localStorage.removeItem('carrinho_local');
         await carregarCarrinho();
         ir('produtos');
@@ -489,15 +491,20 @@ async function finalizar() {
 
 async function sincronizarCarrinhoLocal() {
     const c = getCarrinhoLocal();
-    await Promise.allSettled(c.itens.map(item =>
-        apiFetch('/carrinho/adicionar', { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ produto_id: item.produto_id, quantidade: item.quantidade }) })
-    ));
+    for (const item of c.itens) {
+        try {
+            await apiFetch('/carrinho/adicionar', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ produto_id: item.produto_id, quantidade: item.quantidade })
+            });
+        } catch (err) { console.error('Erro ao sincronizar item:', err); }
+    }
     localStorage.removeItem('carrinho_local');
     await carregarCarrinho();
 }
 
-// ── Navegação ─────────────────────────────────────────
-
+// ==================== NAVEGAÇÃO ====================
 const VIEW_MAP = { home: 'view-home', produtos: 'view-produtos', detalhe: 'view-detalhe', carrinho: 'view-carrinho', sobre: 'sobre', contato: 'view-contato' };
 
 function ir(pagina, id = null) {
@@ -505,7 +512,7 @@ function ir(pagina, id = null) {
     document.getElementById(VIEW_MAP[pagina])?.classList.remove('oculta');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (pagina === 'detalhe' && id) renderDetalhe(id);
-    if (pagina === 'carrinho')      renderCarrinho();
+    if (pagina === 'carrinho') renderCarrinho();
     atualizarHeader();
 }
 
@@ -527,8 +534,7 @@ function filtrarMarca(marca) {
     }, 150);
 }
 
-// ── Utilitários ───────────────────────────────────────
-
+// ==================== UTILITÁRIOS ====================
 function enviarForm(e) {
     e?.preventDefault();
     mostrarMensagem('Mensagem enviada com sucesso!', 'sucesso');
@@ -536,11 +542,11 @@ function enviarForm(e) {
 }
 
 function iniciarSlider() {
-    const track     = document.querySelector('.track');
+    const track = document.querySelector('.track');
     const container = document.getElementById('scroll-container');
     if (!track || !container) return;
     let index = 0;
-    const slides     = document.querySelectorAll('.track > *');
+    const slides = document.querySelectorAll('.track > *');
     const slideWidth = () => container.offsetWidth;
     const go = i => { index = i; track.style.transform = `translateX(-${index * slideWidth()}px)`; };
     document.getElementById('next')?.addEventListener('click', () => go(Math.min(index + 1, slides.length - 1)));
@@ -552,18 +558,17 @@ function toggleMenu() { document.getElementById('menu')?.classList.toggle('abert
 
 function atualizarHeader() {
     const header = document.querySelector('header');
-    const home   = document.getElementById('view-home');
+    const home = document.getElementById('view-home');
     if (!header || !home) return;
     header.classList.toggle('scrolled', home.classList.contains('oculta') || window.scrollY > 200);
 }
 window.addEventListener('scroll', atualizarHeader);
 
-// ── Destaques por categoria ───────────────────────────
-
+// ==================== DESTAQUES POR CATEGORIA ====================
 const DESTAQUE_CATS = [
     { id: 'grid-destaque-celulares', param: 'celulares' },
-    { id: 'grid-destaque-laptops',   param: 'laptop'    },
-    { id: 'grid-destaque-gpus',      param: 'gpu'       },
+    { id: 'grid-destaque-laptops', param: 'laptop' },
+    { id: 'grid-destaque-gpus', param: 'gpu' },
 ];
 
 async function renderDestaquesCategorias() {
@@ -572,49 +577,15 @@ async function renderDestaquesCategorias() {
         if (!grid) return;
         try {
             const lista = await apiFetch(`/produtos?categoria=${encodeURIComponent(param)}`);
+            const produtosLista = lista.produtos || lista;
             grid.innerHTML = '';
-            if (!lista.length) { grid.innerHTML = `<p class="sem-produtos" style="padding:20px 0">Nenhum produto encontrado.</p>`; return; }
-            lista.sort(() => Math.random() - 0.5).slice(0, 3).forEach(p => grid.appendChild(criarCard(p)));
+            if (!produtosLista.length) { grid.innerHTML = `<p class="sem-produtos" style="padding:20px 0">Nenhum produto encontrado.</p>`; return; }
+            produtosLista.sort(() => Math.random() - 0.5).slice(0, 3).forEach(p => grid.appendChild(criarCard(p)));
         } catch { grid.innerHTML = `<p class="sem-produtos">Erro ao carregar produtos.</p>`; }
     }));
 }
 
-// ── Sidebar ───────────────────────────────────────────
-
-const FILTROS_GLOBAIS = [
-    {
-        label: 'Em Stock',
-        key: 'emStock'
-    },
-    {
-        label: 'Preço',
-        key: 'preco'
-    }
-];
-
-const SIDEBAR_CONFIG = [
-    { label: 'Celulares', id: 'grupo-celulares', cat: 'celulares',
-      marcas: ['Apple','Samsung','Xiaomi','Tecno'] },
-    { label: 'Computadores', id: 'grupo-computadores',
-      filhos: [
-        { label: 'Laptop',  id: 'grupo-laptop',  cat: 'laptop',  marcas: ['Apple','Asus','Samsung','Dell','Lenovo','HP'] },
-        { label: 'Monitor', id: 'grupo-monitor', cat: 'monitor', marcas: ['Samsung','Dell','HP','Asus','Apple'] }
-      ]},
-    { label: 'Acessórios', id: 'grupo-acessorios',
-      filhos: [
-        { label: 'Fone',            cat: 'fone',     marcas: ['Apple','Samsung','JBL'] },
-        { label: 'Teclado',         cat: 'teclado',  marcas: ['Logitech','Corsair','Razer'] },
-        { label: 'Mouse',           cat: 'mouse',    marcas: ['Logitech','Razer','Dell'] },
-        { label: 'GPU',             cat: 'gpu',      marcas: ['NVIDIA','AMD','Intel'] },
-        { label: 'Relógio Digital', cat: 'relogio',  marcas: ['Apple','Samsung','Xiaomi'] },
-        { label: 'Memória RAM',     cat: 'ram',      marcas: ['Kingston','Corsair','Crucial'] },
-        { label: 'Cooler',          cat: 'cooler',   marcas: ['CoolerMaster','Noctua','Corsair'] },
-        { label: 'CPU',             cat: 'cpu',      marcas: ['Intel','AMD'] },
-        { label: 'Placa-mãe',       cat: 'placamae', marcas: ['ASUS','MSI','Gigabyte'] }
-      ]}
-      
-];
-
+// ==================== SIDEBAR ====================
 const criarFiltroLeaf = (cat, marcas) => `
     <div class="filtro-corpo-marcas">
         ${marcas.map(m => `<label class="filtro-marca-label">
@@ -626,62 +597,103 @@ function gerarSidebar() {
     const root = document.getElementById('sidebar-filtros-content');
     if (!root) return;
 
-const globais = `
-    <div class="filtro-globais">
+    const SIDEBAR_CONFIG = [
+        {
+            label: 'Celulares', id: 'grupo-celulares', cat: 'celulares',
+            marcas: ['Apple', 'Samsung', 'Xiaomi', 'Tecno']
+        },
+        {
+            label: 'Computadores', id: 'grupo-computadores',
+            filhos: [
+                { label: 'Laptop', id: 'grupo-laptop', cat: 'laptop', marcas: ['Apple', 'Asus', 'Samsung', 'Dell', 'Lenovo', 'HP'] },
+                { label: 'Monitor', id: 'grupo-monitor', cat: 'monitor', marcas: ['Samsung', 'Dell', 'HP', 'Asus', 'Apple'] }
+            ]
+        },
+        {
+            label: 'Acessórios', id: 'grupo-acessorios',
+            filhos: [
+                { label: 'Fone', cat: 'fone', marcas: ['Apple', 'Samsung', 'JBL'] },
+                { label: 'Teclado', cat: 'teclado', marcas: ['Logitech', 'Corsair', 'Razer'] },
+                { label: 'Mouse', cat: 'mouse', marcas: ['Logitech', 'Razer', 'Dell'] },
+                { label: 'GPU', cat: 'gpu', marcas: ['NVIDIA', 'AMD', 'Intel'] },
+                { label: 'Relógio Digital', cat: 'relogio', marcas: ['Apple', 'Samsung', 'Xiaomi'] },
+                { label: 'Memória RAM', cat: 'ram', marcas: ['Kingston', 'Corsair', 'Crucial'] },
+                { label: 'Cooler', cat: 'cooler', marcas: ['CoolerMaster', 'Noctua', 'Corsair'] },
+                { label: 'CPU', cat: 'cpu', marcas: ['Intel', 'AMD'] },
+                { label: 'Placa-mãe', cat: 'placamae', marcas: ['ASUS', 'MSI', 'Gigabyte'] }
+            ]
+        }
+    ];
 
-        <label class="filtro-marca-label">
-            <input type="checkbox"
-                   class="filtro-stock"
-                   onchange="aplicarFiltros()"/>
-            Em Stock
-        </label>
-
-        <div class="filtro-preco">
-            <p>Preço</p> 
-            <div class="preco-inputs">
-                <input type="number"
-                       placeholder="Mín"
-                       class="preco-min"
-                       data-cat="global"
-                       onchange="aplicarFiltros()" />
-
-                <span>–</span>
-
-                <input type="number"
-                       placeholder="Máx"
-                       class="preco-max"
-                       data-cat="global"
-                       onchange="aplicarFiltros()" />
+    const globais = `
+        <div class="filtro-globais">
+            <label class="filtro-marca-label">
+                <input type="checkbox" class="filtro-stock" onchange="aplicarFiltros()"/>
+                Em Stock
+            </label>
+            <div class="filtro-preco">
+                <p>Preço</p>
+                <div class="preco-inputs">
+                    <input type="number" placeholder="Mín" class="preco-min" data-cat="global" onchange="aplicarFiltros()" />
+                    <span>–</span>
+                    <input type="number" placeholder="Máx" class="preco-max" data-cat="global" onchange="aplicarFiltros()" />
+                </div>
             </div>
         </div>
+    `;
 
-    </div>
-`;
+    root.innerHTML = globais + SIDEBAR_CONFIG.map(g => {
+        const corpo = g.filhos
+            ? g.filhos.map(f => `
+                <details class="filtro-sub"${f.id ? ` id="${f.id}"` : ''}>
+                    <summary>${f.label}</summary>
+                    <div class="filtro-corpo filtro-aninhado">
+                        ${criarFiltroLeaf(f.cat, f.marcas)}
+                    </div>
+                </details>`).join('')
+            : criarFiltroLeaf(g.cat, g.marcas);
 
-    root.innerHTML =
-        globais +
-        SIDEBAR_CONFIG.map(g => {
-            const corpo = g.filhos
-                ? g.filhos.map(f => `
-                    <details class="filtro-sub"${f.id ? ` id="${f.id}"` : ''}>
-                        <summary>${f.label}</summary>
-                        <div class="filtro-corpo filtro-aninhado">
-                            ${criarFiltroLeaf(f.cat, f.marcas)}
-                        </div>
-                    </details>`).join('')
-                : criarFiltroLeaf(g.cat, g.marcas);
-
-            return `
-                <details class="filtro-grupo" id="${g.id}">
-                    <summary class="filtro-grupo-titulo">${g.label}</summary>
-                    <div class="filtro-corpo">${corpo}</div>
-                </details>`;
-        }).join('');
+        return `
+            <details class="filtro-grupo" id="${g.id}">
+                <summary class="filtro-grupo-titulo">${g.label}</summary>
+                <div class="filtro-corpo">${corpo}</div>
+            </details>`;
+    }).join('');
 }
 
 function setCat(btn, cat) {
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  categoriaAtiva = cat;
-  carregarProdutos();
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    categoriaAtiva = cat;
+    carregarProdutos();
 }
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', async () => {
+    document.querySelectorAll('#ano, #anoFooter').forEach(el => {
+        if (el) el.textContent = new Date().getFullYear();
+    });
+
+    const token = getToken();
+    if (token) {
+        utilizadorLogado = JSON.parse(localStorage.getItem('utilizador') || '{}');
+        atualizarUserDisplay();
+    } else {
+        mostrarBotaoLogin();
+    }
+
+    await renderDestaquesCategorias();
+    gerarSidebar();
+    await carregarProdutos();
+    await carregarCarrinho();
+    atualizarBadge();
+    iniciarSlider();
+    renderDestaque();
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') carregarProdutos();
+        });
+    }
+});

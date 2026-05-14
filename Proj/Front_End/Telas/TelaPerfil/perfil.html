@@ -1,188 +1,146 @@
 <!doctype html>
 <html lang="pt-br">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Perfil do Utilizador - BASGAM Tech" />
     <title>BASGAM - Perfil</title>
+    <link rel="icon" type="image/jpg" href="../../imagens/logo.jpg" />
     <link rel="stylesheet" href="style.css" />
-    
-  </head>
-
-  <body>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
     <div class="dashboard-container">
-      <!-- SIDEBAR -->
-      <aside class="sidebar">
-        <div class="sidebar-logo">
-          <img
-            src="../../imagens/icon/logo.svg"
-            alt="Logo"
-            style="width: 30px; height: 30px"
-          />
-        </div>
-        <nav class="sidebar-nav">
-          <div
-            class="nav-item ativo"
-            onclick="mostrarSecao('visao-geral', this)"
-          >
-            <img
-              src="../../imagens/icon/eye-fill.svg"
-              class="icon-svg"
-              alt="Visao Geral"
-            />
-            <span>Visao Geral</span>
-          </div>
-          <div class="nav-item" onclick="mostrarSecao('pedidos', this)">
-            <img
-              src="../../imagens/icon/bag-fill.svg"
-              class="icon-svg"
-              alt="Pedidos"
-            />
-            <span>Pedidos</span>
-          </div>
-        </nav>
-        <div class="sidebar-footer">
-          <div class="nav-item" onclick="confirmarSair()">
-            <img
-              src="../../imagens/icon/box-arrow-right.svg"
-              class="icon-svg"
-              alt="Sair"
-            />
-            <span>Sair</span>
-          </div>
-        </div>
-      </aside>
-
-      <!-- CONTEUDO PRINCIPAL -->
-      <main class="conteudo">
-        <!-- HEADER -->
-        <div class="main-header">
-          <div class="header-left">
-            <span class="header-titulo">BASGAM <span>/ Perfil</span></span>
-          </div>
-          <div class="header-right">
-            <button class="btn-header" onclick="irPara('home')">
-              <img
-                src="../../imagens/icon/house-fill.svg"
-                class="icon-header"
-                alt="Inicio"
-              />
-              <span>Inicio</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- BANNER -->
-        <div class="banner"></div>
-
-        <!-- VISÃO GERAL -->
-        <section id="visao-geral" class="secao ativa">
-          <div class="profile-header">
-            <div class="avatar-wrap">
-              <div class="avatar-iniciais" id="avatarVisual">
-                <img src="../../imagens/icon/person.png" alt="Avatar" />
-              </div>
-              <div
-                class="avatar-edit-btn"
-                onclick="document.getElementById('avatarInput').click()"
-              >
-                <img src="../../imagens/icon/pencil-square.svg" alt="Editar" />
-              </div>
-              <input
-                type="file"
-                id="avatarInput"
-                accept="image/*"
-                style="display: none"
-                onchange="trocarAvatar(this)"
-              />
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="../../imagens/icon/logo.svg" alt="Logo" style="width: 30px; height: 30px" />
             </div>
-            <div class="profile-text">
-              <h3 id="sidebar-nome">Utilizador</h3>
-              <p></p>
-            </div>
-          </div>
-
-          <h1 class="secao-titulo">Visao Geral</h1>
-          <p class="secao-sub">Resumo da sua conta e actividade.</p>
-
-          <div class="cards-stats">
-            <div class="card-stat">
-              <div class="stat-label">Pedidos Totais</div>
-              <div class="stat-valor" id="stat-pedidos">0</div>
-              <div class="stat-desc">historico completo</div>
-            </div>
-            <div class="card-stat">
-              <div class="stat-label">Creditos</div>
-              <div class="stat-valor" id="stat-creditos">0</div>
-              <div class="stat-desc">em MZN</div>
-            </div>
-          </div>
-
-          <div class="painel-edicao">
-            <div class="painel-header">
-              <div class="painel-header-titulo">Adicionar Credito</div>
-              <div class="painel-header-sub">
-                Insira o valor a carregar na sua conta
-              </div>
-            </div>
-            <div class="credito-wrap">
-              <div class="credito-campo">
-                <label>Valor (MZN)</label>
-                <div class="credito-input-wrap">
-                  <span class="credito-prefix">MZN</span>
-                  <input type="number" id="inp-credito" placeholder="0" />
+            <nav class="sidebar-nav">
+                <div class="nav-item ativo" onclick="mostrarSecao('visao-geral', this)">
+                    <img src="../../imagens/icon/eye-fill.svg" class="icon-svg" alt="Visao Geral" />
+                    <span>Visao Geral</span>
                 </div>
-              </div>
-              <button
-                class="btn-adicionar-credito"
-                onclick="adicionarCredito()"
-              >
-                <img
-                  src="../../imagens/icon/plus.svg"
-                  class="icon-btn-add"
-                  alt="Adicionar"
-                />
-                <span>Adicionar</span>
-              </button>
+                <div class="nav-item" onclick="mostrarSecao('pedidos', this)">
+                    <img src="../../imagens/icon/bag-fill.svg" class="icon-svg" alt="Pedidos" />
+                    <span>Pedidos</span>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="nav-item" onclick="confirmarSair()">
+                    <img src="../../imagens/icon/box-arrow-right.svg" class="icon-svg" alt="Sair" />
+                    <span>Sair</span>
+                </div>
             </div>
-          </div>
-        </section>
+        </aside>
 
-        <!-- PEDIDOS -->
-        <section id="pedidos" class="secao">
-          <h1 class="secao-titulo">Meus Pedidos</h1>
-          <p class="secao-sub">Historico de compras e estado das encomendas.</p>
-          <div class="lista-pedidos">
-            <div class="estado-vazio-pedidos">
-              <div class="icone">
-                <img src="../../imagens/icon/box-seam-fill.svg" />
-              </div>
-              <p>Nenhum pedido!</p>
+        <!-- CONTEUDO PRINCIPAL -->
+        <main class="conteudo">
+            <!-- HEADER -->
+            <div class="main-header">
+                <div class="header-left">
+                    <span class="header-titulo">BASGAM <span>/ Perfil</span></span>
+                </div>
+                <div class="header-right">
+                    <button class="btn-header" onclick="irPara('home')">
+                        <img src="../../imagens/icon/house-fill.svg" class="icon-header" alt="Inicio" />
+                        <span>Inicio</span>
+                    </button>
+                </div>
             </div>
-          </div>
-        </section>
-      </main>
+
+            <!-- BANNER -->
+            <div class="banner"></div>
+
+            <!-- VISÃO GERAL -->
+            <section id="visao-geral" class="secao ativa">
+                <div class="profile-header">
+                    <div class="avatar-wrap">
+                        <div class="avatar-iniciais" id="avatarVisual">
+                            <img src="../../imagens/icon/person.png" alt="Avatar" />
+                        </div>
+                        <div class="avatar-edit-btn" onclick="document.getElementById('avatarInput').click()">
+                            <img src="../../imagens/icon/pencil-square.svg" alt="Editar" />
+                        </div>
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none" onchange="trocarAvatar(this)" />
+                    </div>
+                    <div class="profile-text">
+                        <h3 id="sidebar-nome">Utilizador</h3>
+                        <p></p>
+                    </div>
+                </div>
+
+                <h1 class="secao-titulo">Visao Geral</h1>
+                <p class="secao-sub">Resumo da sua conta e actividade.</p>
+
+                <div class="cards-stats">
+                    <div class="card-stat">
+                        <div class="stat-label">Pedidos Totais</div>
+                        <div class="stat-valor" id="stat-pedidos">0</div>
+                        <div class="stat-desc">historico completo</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="stat-label">Creditos</div>
+                        <div class="stat-valor" id="stat-creditos">0</div>
+                        <div class="stat-desc">em MZN</div>
+                    </div>
+                </div>
+
+                <div class="painel-edicao">
+                    <div class="painel-header">
+                        <div class="painel-header-titulo">Adicionar Credito</div>
+                        <div class="painel-header-sub">Insira o valor a carregar na sua conta</div>
+                    </div>
+                    <div class="credito-wrap">
+                        <div class="credito-campo">
+                            <label>Valor (MZN)</label>
+                            <div class="credito-input-wrap">
+                                <span class="credito-prefix">MZN</span>
+                                <input type="number" id="inp-credito" placeholder="0" />
+                            </div>
+                        </div>
+                        <button class="btn-adicionar-credito" onclick="adicionarCredito()">
+                            <img src="../../imagens/icon/plus.svg" class="icon-btn-add" alt="Adicionar" />
+                            <span>Adicionar</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PEDIDOS -->
+            <section id="pedidos" class="secao">
+                <h1 class="secao-titulo">Meus Pedidos</h1>
+                <p class="secao-sub">Historico de compras e estado das encomendas.</p>
+                <div class="lista-pedidos">
+                    <div class="estado-vazio-pedidos">
+                        <div class="icone">
+                            <img src="../../imagens/icon/box-seam-fill.svg" />
+                        </div>
+                        <p>Nenhum pedido!</p>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
     <!-- MODAL DE CONFIRMAÇÃO PERSONALIZADO -->
     <div id="modalConfirmacao" class="modal-confirmacao">
-      <div class="modal-confirmacao-conteudo">
-        <div class="modal-confirmacao-icone">
-          <img src="../../imagens/icon/question-circle-fill.svg" />
+        <div class="modal-confirmacao-conteudo">
+            <div class="modal-confirmacao-icone">
+                <img src="../../imagens/icon/question-circle-fill.svg" />
+            </div>
+            <div class="modal-confirmacao-mensagem" id="confirmacaoMensagem">Tem certeza?</div>
+            <div class="modal-confirmacao-botoes">
+                <button class="btn-confirmar" id="btnConfirmarSim">Sim</button>
+                <button class="btn-confirmar" id="btnConfirmarNao">Não</button>
+            </div>
         </div>
-        <div class="modal-confirmacao-mensagem" id="confirmacaoMensagem">
-          Tem certeza?
-        </div>
-        <div class="modal-confirmacao-botoes">
-          <button class="btn-confirmar" id="btnConfirmarSim">Sim</button>
-          <button class="btn-confirmar" id="btnConfirmarNao">Não</button>
-        </div>
-      </div>
     </div>
 
     <!-- TOAST CONTAINER -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- SEU SCRIPT JAVASCRIPT (MANTIDO) -->
     <script src="perfil.js"></script>
-  </body>
+</body>
 </html>

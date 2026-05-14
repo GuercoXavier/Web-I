@@ -1,85 +1,29 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const db = require('../config/database');
-const { autenticar } = require('../middleware/auth');
+const crypto = require('crypto');
+const router = express.Router();
+const { db } = require('../config/database');
+const {
+  verificarTentativasLogin,
+  registrarTentativaFalha,
+  limparTentativasSucesso,
+  gerarToken,
+  autenticar,
+  verificarSessaoAtual
+} = require('../middleware/auth');
 const { validarRegisto, validarLogin } = require('../middleware/validacao');
 
-const router = express.Router();
-
-// ==================== FUNÇÕES DE TENTATIVAS (USANDO BANCO) ====================
-
-function verificarTentativasLogin(username) {
-  try {
-    const user = db.prepare(`
-      SELECT tentativas_login, bloqueado_ate 
-      FROM utilizadores 
-      WHERE username = ?
-    `).get(username);
-
-    if (!user) return { blocked: false };
-
-    if (user.bloqueado_ate && new Date() < new Date(user.bloqueado_ate)) {
-      const remainingTime = Math.ceil((new Date(user.bloqueado_ate) - new Date()) / 1000 / 60);
-      return { blocked: true, remainingTime };
-    }
-
-    return { blocked: false };
-  } catch (err) {
-    console.error('Erro ao verificar tentativas:', err);
-    return { blocked: false };
-  }
-}
-
-function registrarTentativaFalha(username) {
-  try {
-    const user = db.prepare(`
-      SELECT id, tentativas_login, bloqueado_ate 
-      FROM utilizadores 
-      WHERE username = ?
-    `).get(username);
-
-    if (!user) return;
-
-    let novasTentativas = (user.tentativas_login || 0) + 1;
-    let bloqueadoAte = user.bloqueado_ate;
-
-    if (novasTentativas >= 5) {
-      bloqueadoAte = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-      novasTentativas = 0;
-    }
-
-    db.prepare(`
-      UPDATE utilizadores 
-      SET tentativas_login = ?, bloqueado_ate = ?
-      WHERE id = ?
-    `).run(novasTentativas, bloqueadoAte, user.id);
-
-  } catch (err) {
-    console.error('Erro ao registrar tentativa falha:', err);
-  }
-}
-
-function limparTentativasSucesso(username) {
-  try {
-    db.prepare(`
-      UPDATE utilizadores 
-      SET tentativas_login = 0, bloqueado_ate = NULL
-      WHERE username = ?
-    `).run(username);
-  } catch (err) {
-    console.error('Erro ao limpar tentativas:', err);
-  }
-}
-
 // ==================== LOGIN ====================
+
 router.post('/login', validarLogin, async (req, res) => {
   const { username, password } = req.body;
 
-  const tentativaCheck = verificarTentativasLogin(username);
-  if (tentativaCheck.blocked) {
-    return res.status(429).json({ 
-      erro: `Muitas tentativas. Tente novamente em ${tentativaCheck.remainingTime} minutos.` 
+  const verifica = verificarTentativasLogin(username);
+
+  if (verifica.blocked) {
+    return res.status(429).json({
+      erro: verifica.message,
+      esperar_minutos: verifica.remainingMinutes
     });
   }
 
@@ -92,43 +36,35 @@ router.post('/login', validarLogin, async (req, res) => {
 
     if (!user) {
       registrarTentativaFalha(username);
-      return res.status(401).json({ erro: 'Credenciais inválidas.' });
+      return res.status(401).json({ erro: 'Credenciais inválidas' });
     }
 
-    const valid = await bcrypt.compare(password, user.password);
+    const passwordValida = await bcrypt.compare(password, user.password);
 
-    if (!valid) {
+    if (!passwordValida) {
       registrarTentativaFalha(username);
-      return res.status(401).json({ erro: 'Credenciais inválidas.' });
+      return res.status(401).json({ erro: 'Credenciais inválidas' });
     }
 
     limparTentativasSucesso(username);
 
-    const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '8h' }
-    );
+    const token = gerarToken(user);
+    delete user.password;
 
-    return res.json({
-      mensagem: 'Login bem-sucedido.',
+    res.json({
+      success: true,
+      message: 'Login efetuado com sucesso',
       token,
-      utilizador: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        creditos: user.creditos || 0
-      }
+      utilizador: user
     });
-
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ erro: 'Erro interno.' });
+    console.error('Erro no login:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
   }
 });
 
 // ==================== REGISTO ====================
+
 router.post('/register', validarRegisto, async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -148,183 +84,165 @@ router.post('/register', validarRegisto, async (req, res) => {
       VALUES (?, ?, ?, 'cliente', 0, 0, NULL)
     `).run(username, email, hashedPassword);
 
+    db.prepare('INSERT INTO carrinhos (utilizador_id) VALUES (?)').run(result.lastInsertRowid);
+
     return res.status(201).json({
+      success: true,
       mensagem: 'Conta criada com sucesso!',
       id: result.lastInsertRowid
     });
+  } catch (err) {
+    console.error('Erro no registo:', err);
+    return res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
+});
 
+// ==================== SESSÃO ACTUAL ====================
+
+router.get('/sessao', autenticar, verificarSessaoAtual);
+
+// ==================== PERFIL ====================
+
+router.get('/perfil', autenticar, (req, res) => {
+  try {
+    const user = db.prepare(`
+      SELECT id, username, email, role, creditos, criado_em
+      FROM utilizadores
+      WHERE id = ?
+    `).get(req.utilizador.id);
+
+    if (!user) {
+      return res.status(404).json({ erro: 'Utilizador não encontrado.' });
+    }
+
+    res.json({ utilizador: user });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ erro: 'Erro interno.' });
+    res.status(500).json({ erro: 'Erro ao buscar perfil.' });
   }
 });
 
 // ==================== CRÉDITOS ====================
+
 router.get('/creditos', autenticar, (req, res) => {
   try {
-    const user = db.prepare(`SELECT creditos FROM utilizadores WHERE id = ?`).get(req.utilizador.id);
+    const user = db.prepare('SELECT creditos FROM utilizadores WHERE id = ?').get(req.utilizador.id);
     res.json({ creditos: user?.creditos || 0 });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ erro: 'Erro ao buscar créditos' });
   }
 });
 
-router.get('/creditos/historico', autenticar, (req, res) => {
-  try {
-    const userId = req.utilizador.id;
-    
-    const creditos = db.prepare(`SELECT creditos FROM utilizadores WHERE id = ?`).get(userId);
-    
-    const historico = db.prepare(`
-      SELECT id, valor, tipo, descricao, referencia, criado_em
-      FROM transacoes_creditos
-      WHERE utilizador_id = ?
-      ORDER BY criado_em DESC
-      LIMIT 50
-    `).all(userId);
-    
-    res.json({
-      creditos: creditos?.creditos || 0,
-      historico: historico
-    });
-    
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao buscar histórico' });
-  }
-});
-
-router.post('/creditos/adicionar', autenticar, (req, res) => {
-  const { valor, descricao } = req.body;
-  const userId = req.utilizador.id;
-
-  if (!valor || valor <= 0) {
-    return res.status(400).json({ erro: 'Valor inválido' });
-  }
-
-  try {
-    db.prepare(`UPDATE utilizadores SET creditos = creditos + ? WHERE id = ?`).run(valor, userId);
-    
-    db.prepare(`
-      INSERT INTO transacoes_creditos (utilizador_id, valor, tipo, descricao)
-      VALUES (?, ?, 'adicionar', ?)
-    `).run(userId, valor, descricao || 'Adição manual de créditos');
-
-    res.json({ mensagem: 'Créditos adicionados com sucesso!', valor });
-  } catch (err) {
-    res.status(500).json({ erro: 'Erro ao adicionar créditos' });
-  }
-});
-
 // ==================== RECUPERAR SENHA ====================
+
 router.post('/recuperar-senha', async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
-    return res.status(400).json({ erro: 'Email obrigatório.' });
+    return res.status(400).json({ erro: 'Email é obrigatório.' });
   }
 
   try {
     const user = db.prepare('SELECT id, username FROM utilizadores WHERE email = ?').get(email);
 
     if (!user) {
-      return res.status(404).json({ erro: 'Email não encontrado.' });
+      return res.json({
+        mensagem: 'Se o email existir, receberá instruções para redefinir a senha.'
+      });
     }
 
-    const resetToken = jwt.sign(
-      { id: user.id, email: email, type: 'reset' },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpiry = new Date(Date.now() + 3600000).toISOString();
 
     db.prepare(`
-      UPDATE utilizadores SET reset_token = ?, reset_token_expires = datetime('now', '+1 hour')
+      UPDATE utilizadores
+      SET reset_token = ?, reset_token_expires = ?
       WHERE id = ?
-    `).run(resetToken, user.id);
+    `).run(resetToken, tokenExpiry, user.id);
 
-    return res.json({
-      mensagem: 'Token de recuperação gerado.',
-      reset_token: resetToken
+    console.log(`Token de recuperação para ${user.username}: ${resetToken}`);
+
+    res.json({
+      success: true,
+      mensagem: 'Se o email existir, receberá instruções para redefinir a senha.',
+      reset_token: process.env.NODE_ENV === 'development' ? resetToken : undefined
     });
-
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ erro: 'Erro interno.' });
-  }
-});
-
-// ==================== VERIFICAR TOKEN ====================
-router.post('/verificar-token', (req, res) => {
-  const { token } = req.body;
-
-  if (!token) {
-    return res.status(400).json({ erro: 'Token obrigatório.' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    if (decoded.type !== 'reset') {
-      return res.status(400).json({ erro: 'Token inválido.' });
-    }
-
-    const user = db.prepare(`
-      SELECT id FROM utilizadores 
-      WHERE id = ? AND reset_token = ? AND reset_token_expires > datetime('now')
-    `).get(decoded.id, token);
-
-    if (!user) {
-      return res.status(400).json({ erro: 'Token expirado ou inválido.' });
-    }
-
-    return res.json({ valido: true, id: user.id });
-
-  } catch (err) {
-    return res.status(400).json({ erro: 'Token inválido ou expirado.' });
+    console.error('Erro na recuperação:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
   }
 });
 
 // ==================== REDEFINIR SENHA ====================
+
 router.post('/redefinir-senha', async (req, res) => {
-  const { token, nova_senha } = req.body;
+  const { email, nova_senha } = req.body;
 
-  if (!token || !nova_senha) {
-    return res.status(400).json({ erro: 'Dados incompletos.' });
-  }
-
-  if (nova_senha.length < 6) {
-    return res.status(400).json({ erro: 'Senha deve ter no mínimo 6 caracteres.' });
+  if (!email || !nova_senha) {
+    return res.status(400).json({ erro: 'Email e nova senha são obrigatórios.' });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    if (decoded.type !== 'reset') {
-      return res.status(400).json({ erro: 'Token inválido.' });
-    }
-
-    const user = db.prepare(`
-      SELECT id FROM utilizadores 
-      WHERE id = ? AND reset_token = ? AND reset_token_expires > datetime('now')
-    `).get(decoded.id, token);
+    const user = db.prepare(
+      'SELECT id FROM utilizadores WHERE email = ?'
+    ).get(email);
 
     if (!user) {
-      return res.status(400).json({ erro: 'Token expirado ou inválido.' });
+      return res.status(404).json({ erro: 'Utilizador não encontrado.' });
     }
 
-    const hashedPassword = await bcrypt.hash(nova_senha, 10);
+    const hashed = await bcrypt.hash(nova_senha, 10);
 
     db.prepare(`
       UPDATE utilizadores 
-      SET password = ?, reset_token = NULL, reset_token_expires = NULL
+      SET password = ? 
       WHERE id = ?
-    `).run(hashedPassword, user.id);
+    `).run(hashed, user.id);
 
-    return res.json({ mensagem: 'Senha redefinida com sucesso!' });
+    res.json({ success: true, mensagem: 'Senha alterada com sucesso!' });
 
   } catch (err) {
-    return res.status(400).json({ erro: 'Token inválido ou expirado.' });
+    console.error(err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
   }
+});
+// ==================== ALTERAR PASSWORD ====================
+
+router.post('/alterar-password', autenticar, async (req, res) => {
+  const { password_atual, nova_password } = req.body;
+  const userId = req.utilizador.id;
+
+  if (!password_atual || !nova_password) {
+    return res.status(400).json({ erro: 'Senha atual e nova senha são obrigatórias.' });
+  }
+
+  if (nova_password.length < 6) {
+    return res.status(400).json({ erro: 'A nova senha deve ter no mínimo 6 caracteres.' });
+  }
+
+  try {
+    const user = db.prepare('SELECT password FROM utilizadores WHERE id = ?').get(userId);
+
+    const passwordValida = await bcrypt.compare(password_atual, user.password);
+    if (!passwordValida) {
+      return res.status(401).json({ erro: 'Senha atual incorreta.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(nova_password, 10);
+    db.prepare('UPDATE utilizadores SET password = ? WHERE id = ?').run(hashedPassword, userId);
+
+    res.json({ success: true, mensagem: 'Senha alterada com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao alterar senha:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
+});
+
+// ==================== LOGOUT ====================
+
+router.post('/logout', autenticar, (req, res) => {
+  res.json({ mensagem: 'Logout efetuado.' });
 });
 
 module.exports = router;

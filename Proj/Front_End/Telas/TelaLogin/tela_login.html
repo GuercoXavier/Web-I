@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login e Registro - BASGAM Tech Loja de Gaming">
   <title>Login - BASGAM Tech</title>
   <link rel="icon" type="image/jpg" href="../../imagens/logo.jpg">
   <link rel="stylesheet" href="style.css">
@@ -33,15 +34,15 @@
       <form action="#">
         <h1>Login</h1>
         <div class="input-box">
-          <input type="text" id="loginUsername" placeholder="Username" required>
+          <input type="text" id="loginUsername" placeholder="Username" autocomplete="username" required>
           <i class='bx bxs-user'></i>
         </div>
         <div class="input-box">
-          <input type="password" id="loginPassword" placeholder="Password" required>
+          <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" required>
           <i class='bx bxs-lock-alt'></i>
         </div>
         <div class="forget-link">
-          <a href="redefinir_senha.html">Esqueceu a senha?</a>
+          <a href="./redefinir_senha.html">Esqueceu a senha?</a>
         </div>
         <button type="submit" class="btn">Entrar</button>
       </form>
@@ -52,15 +53,15 @@
       <form action="#">
         <h1>Registro</h1>
         <div class="input-box">
-          <input type="text" id="registerUsername" placeholder="Username" required>
+          <input type="text" id="registerUsername" placeholder="Username" autocomplete="username" required>
           <i class='bx bxs-user'></i>
         </div>
         <div class="input-box">
-          <input type="email" id="registerEmail" placeholder="Email" required>
+          <input type="email" id="registerEmail" placeholder="Email" autocomplete="email" required>
           <i class='bx bxs-envelope'></i>
         </div>
         <div class="input-box">
-          <input type="password" id="registerPassword" placeholder="Password" required>
+          <input type="password" id="registerPassword" placeholder="Password" autocomplete="new-password" required>
           <i class='bx bxs-lock-alt'></i>
         </div>
         <button type="submit" class="btn">Registar</button>

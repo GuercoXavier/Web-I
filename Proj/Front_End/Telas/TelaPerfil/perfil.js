@@ -1,4 +1,5 @@
-const API = 'http://localhost:3000/api';
+// ==================== CONFIGURAÇÃO ====================
+const API = `${window.location.protocol}//${window.location.hostname}:3000/api`;
 
 let utilizadorAtual = null;
 let pedidosUsuario = [];
@@ -30,13 +31,27 @@ function mostrarToast(mensagem, tipo = 'info', duracao = 3000) {
 
     const toast = document.createElement('div');
     toast.className = `toast toast-${tipo === 'sucesso' ? 'sucesso' : (tipo === 'erro' ? 'erro' : 'info')}`;
-    let icone = tipo === 'sucesso' ? '<img src="../../imagens/icon/check-circle-fill.svg">' : (tipo === 'erro' ? '<img src="../../imagens/icon/x-circle-fill.svg">' : '<img src="../../imagens/icon/info-circle-fill.svg">');
+    
+    let iconeHtml = '';
+    switch(tipo) {
+        case 'sucesso':
+            iconeHtml = '<i class="bx bx-check-circle" style="font-size: 20px; color: #22c55e;"></i>';
+            break;
+        case 'erro':
+            iconeHtml = '<i class="bx bx-x-circle" style="font-size: 20px; color: #ef4444;"></i>';
+            break;
+        default:
+            iconeHtml = '<i class="bx bx-info-circle" style="font-size: 20px; color: #3b82f6;"></i>';
+    }
+    
     toast.innerHTML = `
-        <div class="toast-icon">${icone}</div>
+        <div class="toast-icon">${iconeHtml}</div>
         <div class="toast-mensagem">${mensagem}</div>
         <button class="toast-fechar" onclick="this.parentElement.remove()">✕</button>
     `;
+    
     container.appendChild(toast);
+    
     setTimeout(() => {
         if (toast && toast.parentElement) {
             toast.style.animation = 'fadeOutRight 0.2s forwards';
@@ -53,7 +68,6 @@ function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
     const btnNao = document.getElementById('btnConfirmarNao');
 
     if (!modal) {
-        // fallback para confirm nativo caso o modal não exista
         if (confirm(mensagem)) {
             if (aoConfirmar) aoConfirmar();
         } else {
@@ -65,7 +79,6 @@ function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
     msgSpan.textContent = mensagem;
     modal.classList.add('aberto');
 
-    // Remove listeners antigos clonando botões
     const novoSim = btnSim.cloneNode(true);
     const novoNao = btnNao.cloneNode(true);
     btnSim.parentNode.replaceChild(novoSim, btnSim);
@@ -79,7 +92,7 @@ function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
         modal.classList.remove('aberto');
         if (aoCancelar) aoCancelar();
     });
-    // Fechar ao clicar fora
+    
     modal.addEventListener('click', function fecharFora(e) {
         if (e.target === modal) {
             modal.classList.remove('aberto');
@@ -89,26 +102,28 @@ function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
     });
 }
 
-// ==================== FUNÇÕES EXISTENTES (adaptadas) ====================
+// ==================== CARREGAR UTILIZADOR ====================
 async function carregarUtilizador() {
     try {
-        const usuarioSalvo = localStorage.getItem('utilizador');
-        if (usuarioSalvo) {
-            utilizadorAtual = JSON.parse(usuarioSalvo);
+        // Tentar buscar do backend primeiro
+        const response = await fetch(`${API}/auth/perfil`, { headers: getAuthHeaders() });
+        if (response.ok) {
+            const data = await response.json();
+            utilizadorAtual = data.utilizador;
+            localStorage.setItem('utilizador', JSON.stringify(utilizadorAtual));
         } else {
-            const token = localStorage.getItem('token');
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            utilizadorAtual = {
-                id: payload.id,
-                username: payload.username,
-                role: payload.role
-            };
+            // Fallback para localStorage
+            const usuarioSalvo = localStorage.getItem('utilizador');
+            if (usuarioSalvo) {
+                utilizadorAtual = JSON.parse(usuarioSalvo);
+            }
         }
     } catch (err) {
         console.error('Erro ao carregar utilizador:', err);
     }
 }
 
+// ==================== CARREGAR CRÉDITOS ====================
 async function carregarCreditos() {
     try {
         const response = await fetch(`${API}/auth/creditos`, { headers: getAuthHeaders() });
@@ -122,11 +137,13 @@ async function carregarCreditos() {
     }
 }
 
+// ==================== CARREGAR PEDIDOS ====================
 async function carregarPedidos() {
     try {
-        const response = await fetch(`${API}/pedidos`, { headers: getAuthHeaders() });
+        const response = await fetch(`${API}/pedidos/meus-pedidos`, { headers: getAuthHeaders() });
         if (!response.ok) throw new Error('Erro ao carregar pedidos');
-        pedidosUsuario = await response.json();
+        const data = await response.json();
+        pedidosUsuario = data.pedidos || [];
         renderizarPedidos();
         const statPedidos = document.getElementById('stat-pedidos');
         if (statPedidos) statPedidos.textContent = pedidosUsuario.length;
@@ -134,23 +151,28 @@ async function carregarPedidos() {
         console.error('Erro:', err);
         pedidosUsuario = [];
         renderizarPedidos();
+        const statPedidos = document.getElementById('stat-pedidos');
+        if (statPedidos) statPedidos.textContent = '0';
     }
 }
 
+// ==================== RENDERIZAR PEDIDOS ====================
 function renderizarPedidos() {
     const container = document.querySelector('.lista-pedidos');
     if (!container) return;
+    
     if (!pedidosUsuario || pedidosUsuario.length === 0) {
-         container.innerHTML = `
+        container.innerHTML = `
             <div class="estado-vazio-pedidos">
                 <div class="icone">
                     <img src="../../imagens/icon/box-seam-fill.svg" style="width:70px; height:70px;" />
                 </div>
-                <p>Nenhum pedido!</p>
+                <p>Nenhum pedido encontrado!</p>
                 <button class="btn-ir-comprar" onclick="irPara('produtos')">Fazer Compras</button>
             </div>`;
         return;
     }
+    
     let html = '';
     for (const pedido of pedidosUsuario) {
         const dataPedido = new Date(pedido.criado_em).toLocaleDateString('pt-PT');
@@ -177,14 +199,30 @@ function renderizarPedidos() {
 }
 
 function getStatusClasse(estado) {
-    const estados = { 'pendente': 'status-pendente', 'pago': 'status-pago', 'enviado': 'status-enviado', 'entregue': 'status-entregue', 'cancelado': 'status-cancelado' };
+    const estados = { 
+        'pendente': 'status-pendente', 
+        'pago': 'status-pago', 
+        'processando': 'status-pago',
+        'enviado': 'status-enviado', 
+        'entregue': 'status-entregue', 
+        'cancelado': 'status-cancelado' 
+    };
     return estados[estado] || 'status-pendente';
 }
+
 function getStatusTexto(estado) {
-    const textos = { 'pendente': 'Pendente', 'pago': 'Pago', 'enviado': 'Enviado', 'entregue': 'Entregue', 'cancelado': 'Cancelado' };
+    const textos = { 
+        'pendente': 'Pendente', 
+        'pago': 'Pago', 
+        'processando': 'Processando',
+        'enviado': 'Enviado', 
+        'entregue': 'Entregue', 
+        'cancelado': 'Cancelado' 
+    };
     return textos[estado] || estado;
 }
 
+// ==================== VER DETALHE DO PEDIDO ====================
 async function verDetalhePedido(pedidoId) {
     try {
         const response = await fetch(`${API}/pedidos/${pedidoId}`, { headers: getAuthHeaders() });
@@ -200,6 +238,7 @@ async function verDetalhePedido(pedidoId) {
 function mostrarModalDetalhe(pedido) {
     const pedidoInfo = pedido.pedido || pedido;
     const itens = pedido.itens || [];
+    
     let itensHtml = '';
     for (const item of itens) {
         const precoUnit = item.preco_unit || item.preco || 0;
@@ -213,6 +252,7 @@ function mostrarModalDetalhe(pedido) {
                 <div class="modal-item-subtotal">${formatarMoeda(subtotal)}</div>
             </div>`;
     }
+    
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.innerHTML = `
@@ -235,6 +275,7 @@ function mostrarModalDetalhe(pedido) {
                 <button class="btn-modal-imprimir" onclick="imprimirRecibo(${pedidoInfo.id})">Imprimir Recibo</button>
             </div>
         </div>`;
+    
     document.body.appendChild(modal);
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
 }
@@ -248,28 +289,33 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
 }
 
+// ==================== ADICIONAR CRÉDITOS ====================
 async function adicionarCredito() {
     const input = document.getElementById('inp-credito');
     const btn = document.querySelector('.btn-adicionar-credito');
     const valor = parseInt(input.value);
+    
     if (!valor || valor <= 0) {
         mostrarToast('Valor inválido', 'erro');
         return;
     }
-    // Loading no botão
+    
     const textoOriginal = btn.textContent;
     btn.textContent = '⏳ Adicionando...';
     btn.disabled = true;
+    
     try {
         const response = await fetch(`${API}/auth/creditos/adicionar`, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({ valor, descricao: 'Adicionado pelo perfil' })
         });
+        
         if (!response.ok) {
             const erro = await response.json();
             throw new Error(erro.erro || 'Erro ao adicionar créditos');
         }
+        
         await carregarCreditos();
         input.value = '';
         mostrarToast(`${formatarMoeda(valor)} adicionado com sucesso!`, 'sucesso');
@@ -282,33 +328,20 @@ async function adicionarCredito() {
     }
 }
 
+// ==================== PERFIL ====================
 function preencherDadosPerfil() {
     const nomeSpan = document.getElementById('sidebar-nome');
-    const avatarDiv = document.getElementById('avatarVisual');
     
     if (utilizadorAtual) {
         const nome = utilizadorAtual.username || 'Utilizador';
         if (nomeSpan) nomeSpan.textContent = nome;
-        
-        const avatarSalvo = localStorage.getItem('avatar');
-        
-
-        if (avatarSalvo) {
-            avatarDiv.innerHTML = `<img src="${avatarSalvo}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-            return;
-        }
-
-        const imagemExistente = avatarDiv.querySelector('img');
-        
-        if (!imagemExistente) {
-            // Se nao tiver imagem vai continuar com o placeholder original (imagem SVG)
-        }
     }
 }
 
 function trocarAvatar(input) {
     const file = input.files[0];
     if (!file) return;
+    
     const leitor = new FileReader();
     leitor.onload = function (e) {
         const avatarDiv = document.getElementById('avatarVisual');
@@ -338,7 +371,7 @@ function mostrarSecao(id, elemento) {
     elemento.classList.add('ativo');
 }
 
-// ==================== CONFIRMAÇÃO DE SAÍDA (substitui o confirm nativo) ====================
+// ==================== SAIR ====================
 function confirmarSair() {
     mostrarConfirmacao(
         'Tem certeza que deseja sair?',

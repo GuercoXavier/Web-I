@@ -1,20 +1,35 @@
 const Database = require('better-sqlite3');
 const bcrypt = require('bcrypt');
 const path = require('path');
+const fs = require('fs');
 
-const db = new Database(path.join(__dirname, '../../basgam.db'));
+// ===================== CONEXÃO =====================
+const dbPath = path.join(__dirname, '../../basgam.db');
 
-// =====================
-// CONFIGURAÇÃO
-// =====================
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+
+let db;
+
+try {
+  db = new Database(dbPath);
+  console.log('📂 Banco de dados conectado em:', dbPath);
+} catch (err) {
+  console.error('❌ Erro ao conectar ao banco de dados:', err.message);
+  process.exit(1);
+}
+
+// ===================== CONFIGURAÇÃO =====================
 function configureDatabase() {
   db.exec('PRAGMA foreign_keys = ON;');
   db.exec('PRAGMA journal_mode = WAL;');
+  db.exec('PRAGMA synchronous = NORMAL;');
+  db.exec('PRAGMA cache_size = -20000;');
 }
 
-// =====================
-// CRIAÇÃO DE TABELAS
-// =====================
+// ===================== CRIAÇÃO DE TABELAS =====================
 function createTables() {
   db.exec(`
     CREATE TABLE IF NOT EXISTS utilizadores (
@@ -56,8 +71,8 @@ function createTables() {
       subcategoria_id INTEGER,
       em_destaque INTEGER NOT NULL DEFAULT 0,
       criado_em TEXT DEFAULT (datetime('now')),
-      FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE CASCADE,
-      FOREIGN KEY (subcategoria_id) REFERENCES subcategorias(id) ON DELETE CASCADE
+      FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE SET NULL,
+      FOREIGN KEY (subcategoria_id) REFERENCES subcategorias(id) ON DELETE SET NULL
     );
 
     CREATE TABLE IF NOT EXISTS carrinhos (
@@ -107,111 +122,103 @@ function createTables() {
       FOREIGN KEY (utilizador_id) REFERENCES utilizadores(id) ON DELETE CASCADE
     );
   `);
+  
+  console.log('✅ Tabelas verificadas/criadas');
 }
 
-// =====================
-// INDEXES
-// =====================
+// ===================== INDEXES =====================
 function createIndexes() {
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_produtos_categoria ON produtos(categoria_id);
     CREATE INDEX IF NOT EXISTS idx_produtos_subcategoria ON produtos(subcategoria_id);
+    CREATE INDEX IF NOT EXISTS idx_produtos_preco ON produtos(preco);
     CREATE INDEX IF NOT EXISTS idx_carrinho_itens_produto ON carrinho_itens(produto_id);
     CREATE INDEX IF NOT EXISTS idx_pedidos_utilizador ON pedidos(utilizador_id);
+    CREATE INDEX IF NOT EXISTS idx_pedidos_estado ON pedidos(estado);
+    CREATE INDEX IF NOT EXISTS idx_pedidos_criado_em ON pedidos(criado_em);
     CREATE INDEX IF NOT EXISTS idx_transacoes_utilizador ON transacoes_creditos(utilizador_id);
     CREATE INDEX IF NOT EXISTS idx_transacoes_data ON transacoes_creditos(criado_em);
+    CREATE INDEX IF NOT EXISTS idx_utilizadores_username ON utilizadores(username);
+    CREATE INDEX IF NOT EXISTS idx_utilizadores_email ON utilizadores(email);
   `);
+  
+  console.log('✅ Índices verificados/criados');
 }
 
-// =====================
-// SEED COMPLETO (Todas as categorias e subcategorias)
-// =====================
+// ===================== SEED DATABASE =====================
 async function seedDatabase() {
   const adminExiste = db.prepare(
     'SELECT id FROM utilizadores WHERE role = ? LIMIT 1'
   ).get('admin');
 
-  if (adminExiste) return;
+  if (adminExiste) {
+    console.log('📋 Dados iniciais já existem');
+    return;
+  }
 
   console.log('🌱 A criar dados iniciais...');
 
-  // ==================== CATEGORIAS ====================
+  // ==================== CATEGORIAS (compatíveis com frontend) ====================
   const insertCategoria = db.prepare('INSERT INTO categorias (nome) VALUES (?)');
   
-  const celId = insertCategoria.run('celulares').lastInsertRowid;
-  const compId = insertCategoria.run('computadores').lastInsertRowid;
-  const acId = insertCategoria.run('acessórios').lastInsertRowid;
+  // ✅ Categorias compatíveis com o frontend
+  const categoriasMap = {
+    'celulares': insertCategoria.run('celulares').lastInsertRowid,
+    'computadores': insertCategoria.run('computadores').lastInsertRowid,
+    'acessórios': insertCategoria.run('acessórios').lastInsertRowid
+  };
+  
+  // Adicionar também categorias específicas que o frontend usa nos filtros
+  const categoriasExtras = ['laptop', 'gpu', 'monitor', 'fone', 'teclado', 'mouse', 'relogio', 'ram', 'cooler', 'cpu', 'placamae'];
+  for (const cat of categoriasExtras) {
+    const exists = db.prepare('SELECT id FROM categorias WHERE nome = ?').get(cat);
+    if (!exists) {
+      insertCategoria.run(cat);
+      console.log(`   Categoria extra criada: ${cat}`);
+    }
+  }
 
   // ==================== SUBCATEGORIAS ====================
   const insertSub = db.prepare('INSERT INTO subcategorias (nome, categoria_id) VALUES (?, ?)');
   
-  // --- Computadores ---
-  const lapId = insertSub.run('Laptop', compId).lastInsertRowid;
-  const monId = insertSub.run('Monitor', compId).lastInsertRowid;
-  const pcId = insertSub.run('Desktop', compId).lastInsertRowid;
+  // Re-obter IDs atualizados
+  const getCatId = (nome) => db.prepare('SELECT id FROM categorias WHERE nome = ?').get(nome)?.id;
   
-  // --- Celulares ---
-  insertSub.run('Smartphone', celId);
-  insertSub.run('Tablet', celId);
-  insertSub.run('Acessórios Celular', celId);
+  const celId = getCatId('celulares');
+  const compId = getCatId('computadores');
+  const acId = getCatId('acessórios');
+  const laptopId = getCatId('laptop') || compId;
+  const gpuId = getCatId('gpu') || acId;
   
-  // --- Acessórios completos ---
-  // Áudio
-  insertSub.run('Fones de Ouvido', acId);
-  insertSub.run('Caixas de Som', acId);
-  insertSub.run('Microfones', acId);
+  if (celId) {
+    insertSub.run('Smartphone', celId);
+    insertSub.run('Tablet', celId);
+  }
   
-  // Periféricos
-  insertSub.run('Teclados', acId);
-  insertSub.run('Mouses', acId);
-  insertSub.run('Tapetes de Mouse', acId);
+  if (compId || laptopId) {
+    insertSub.run('Laptop', laptopId || compId);
+    insertSub.run('Desktop', compId);
+  }
   
-  // Componentes PC
-  insertSub.run('Placas de Vídeo (GPU)', acId);
-  insertSub.run('Processadores (CPU)', acId);
-  insertSub.run('Memória RAM', acId);
-  insertSub.run('Placas-mãe', acId);
-  insertSub.run('Armazenamento (SSD/HDD)', acId);
-  insertSub.run('Fontes de Alimentação', acId);
-  insertSub.run('Coolers e Ventoinhas', acId);
-  insertSub.run('Gabinetes', acId);
+  if (gpuId) {
+    insertSub.run('Placa de Vídeo', gpuId);
+  }
   
-  // Wearables
-  insertSub.run('Smartwatches', acId);
-  insertSub.run('Pulseiras Fitness', acId);
-  
-  // Rede e Conectividade
-  insertSub.run('Routers e Switches', acId);
-  insertSub.run('Cabos e Adaptadores', acId);
-  
-  // Gaming
-  insertSub.run('Cadeiras Gamer', acId);
-  insertSub.run('Volantes e Joysticks', acId);
-  
-  // Iluminação
-  insertSub.run('LEDs e Iluminação', acId);
-  
-  // Carregadores
-  insertSub.run('Carregadores', acId);
-  insertSub.run('Power Banks', acId);
-  insertSub.run('Bases de Carregamento', acId);
-  
-  // Suportes
-  insertSub.run('Suportes para Monitor', acId);
-  insertSub.run('Suportes para Notebook', acId);
-  
-  // Limpeza
-  insertSub.run('Kits de Limpeza', acId);
-  
-  // Mochilas e Pastas
-  insertSub.run('Mochilas para Notebook', acId);
-  insertSub.run('Pastas e Cases', acId);
+  if (acId) {
+    const acessorios = [
+      'Fones de Ouvido', 'Caixas de Som', 'Teclados', 'Mouses',
+      'Processadores', 'Memória RAM', 'Armazenamento SSD/HDD',
+      'Fontes de Alimentação', 'Gabinetes', 'Smartwatches', 'Routers',
+      'Cadeiras Gamer', 'Carregadores', 'Power Banks', 'Monitores', 'Coolers'
+    ];
+    acessorios.forEach(nome => {
+      try { insertSub.run(nome, acId); } catch(e) {}
+    });
+  }
 
   // ==================== CRIAR ADMIN ====================
-  const hash = await bcrypt.hash(
-    process.env.ADMIN_PASSWORD || 'AdminAnik',
-    10
-  );
+  const adminPassword = process.env.ADMIN_PASSWORD || 'AdminAnik';
+  const hash = await bcrypt.hash(adminPassword, 10);
 
   db.prepare(`
     INSERT INTO utilizadores (username, email, password, role, creditos)
@@ -226,33 +233,56 @@ async function seedDatabase() {
   console.log('✔ Base de dados inicializada com sucesso!');
   console.log('========================================');
   console.log('📋 ADMIN:');
-  console.log('   - Username: Admin');
-  console.log('   - Password: AdminAnik');
+  console.log(`   - Username: ${process.env.ADMIN_USERNAME || 'Admin'}`);
+  console.log(`   - Password: ${adminPassword}`);
   console.log('');
-  console.log('📂 CATEGORIAS CRIADAS:');
-  console.log('   1. Celulares');
-  console.log('   2. Computadores');
-  console.log('   3. Acessórios');
-  console.log('');
-  console.log('📁 SUBCATEGORIAS CRIADAS:');
-  console.log('   Computadores: Laptop, Monitor, Desktop');
-  console.log('   Celulares: Smartphone, Tablet, Acessórios Celular');
-  console.log('   Acessórios: 25+ subcategorias');
-  console.log('========================================');
-  console.log('💡 Adicione os produtos manualmente pelo painel admin!');
+  console.log('📂 CATEGORIAS: Celulares, Computadores, Acessórios, Laptop, GPU, Monitor, etc.');
   console.log('========================================');
 }
 
-// =====================
-// INIT
-// =====================
+// ===================== FUNÇÕES AUXILIARES =====================
+
+function verificarCreditos(utilizadorId) {
+  const user = db.prepare('SELECT creditos FROM utilizadores WHERE id = ?').get(utilizadorId);
+  return user ? user.creditos : 0;
+}
+
+function verificarStockCarrinho(carrinhoId) {
+  const itens = db.prepare(`
+    SELECT p.id, p.nome, ci.quantidade, p.stock, p.preco
+    FROM carrinho_itens ci
+    JOIN produtos p ON ci.produto_id = p.id
+    WHERE ci.carrinho_id = ?
+  `).all(carrinhoId);
+  
+  for (const item of itens) {
+    if (item.quantidade > item.stock) {
+      return {
+        valido: false,
+        produto: item.nome,
+        disponivel: item.stock,
+        solicitado: item.quantidade
+      };
+    }
+  }
+  
+  const total = itens.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+  return { valido: true, total: total / 100, itens };
+}
+
+// ===================== INIT =====================
 async function initDatabase() {
+  console.log('🔄 Inicializando base de dados...');
   configureDatabase();
   createTables();
   createIndexes();
   await seedDatabase();
+  console.log('✅ Base de dados pronta!');
 }
 
-initDatabase();
+initDatabase().catch(err => {
+  console.error('❌ Erro fatal na inicialização do banco:', err);
+  process.exit(1);
+});
 
-module.exports = db;
+module.exports = { db, verificarCreditos, verificarStockCarrinho };
