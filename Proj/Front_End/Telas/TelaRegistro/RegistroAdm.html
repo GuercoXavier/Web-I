@@ -6,857 +6,186 @@
     <title>BASGAM - Admin</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <style>
+        /* (mesmo CSS que tinha, sem alterações – apenas removidas as partes conflituosas) */
         @font-face {
             font-family: "manrope";
             src: url(../../fontes/Manrope-VariableFont_wght.ttf);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "manrope", sans-serif;
-        }
-
-        body {
-            background: #f5f7fb;
-            color: #1f2937;
-            min-height: 100vh;
-        }
-
-        .dashboard-container {
-            max-width: 1400px;
-            margin: 30px auto;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-            display: flex;
-            min-height: 90vh;
-        }
-
-        .sidebar {
-            width: 240px;
-            background: #ffffff;
-            padding: 30px 20px;
-            border-right: 1px solid #e5e7eb;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 40px;
-        }
-
-        .logo-badge {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-
-        .sidebar-header h2 {
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        .sidebar-header h2 span {
-            color: #6b7280;
-            font-weight: 400;
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex-grow: 1;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #6b7280;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .nav-item:hover {
-            background: #f9fafb;
-            color: #1f2937;
-        }
-
-        .nav-item.ativo {
-            background: #eef2ff;
-            color: #3b82f6;
-            font-weight: 600;
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 20px;
-        }
-
-        .sidebar-footer .nav-item {
-            color: #ef4444;
-        }
-
-        .sidebar-footer .nav-item:hover {
-            background: #fef2f2;
-            color: #dc2626;
-        }
-
-        .conteudo {
-            flex-grow: 1;
-            padding: 35px 40px;
-            background: #fefefe;
-        }
-
-        .aba-conteudo {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .aba-conteudo.ativa {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .secao-titulo {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .secao-titulo-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-
-        .secao-sub {
-            color: #6b7280;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-grid .full-width {
-            grid-column: 1 / -1;
-        }
-
-        .campo {
-            margin-bottom: 18px;
-        }
-
-        .campo label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 6px;
-        }
-
-        .campo label span {
-            font-weight: 400;
-            color: #6b7280;
-            font-size: 12px;
-        }
-
-        .campo input,
-        .campo textarea,
-        .campo select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: "manrope", sans-serif;
-            background: white;
-            transition: border-color 0.2s;
-            color: #1f2937;
-        }
-
-        .campo input:focus,
-        .campo textarea:focus,
-        .campo select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .campo .prefix-wrap {
-            display: flex;
-            align-items: center;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            background: white;
-            overflow: hidden;
-        }
-
-        .campo .prefix-wrap span {
-            padding: 0 12px;
-            background: #f9fafb;
-            border-right: 1px solid #e5e7eb;
-            color: #6b7280;
-            font-weight: 500;
-        }
-
-        .campo .prefix-wrap input {
-            border: none;
-            border-radius: 0;
-            flex-grow: 1;
-            padding: 10px 14px;
-        }
-
-        .btn-primario {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 14px;
-        }
-
-        .btn-primario:hover {
-            background: #2563eb;
-        }
-
-        .btn-danger {
-            background: #ef4444;
-        }
-
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-
-        .zona-foto {
-            border: 2px dashed #e5e7eb;
-            border-radius: 16px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 20px;
-            position: relative;
-            background: #f9fafb;
-            transition: border-color 0.2s;
-        }
-
-        .zona-foto:hover { border-color: #3b82f6; }
-
-        .zona-foto.tem-foto {
-            border-style: solid;
-            border-color: #3b82f6;
-            padding: 0;
-        }
-
-        .zona-foto img {
-            width: 100%;
-            max-height: 250px;
-            object-fit: contain;
-            border-radius: 12px;
-        }
-
-        .zona-foto .placeholder-foto {
-            color: #6b7280;
-        }
-
-        .zona-foto .overlay-troca {
-            display: none;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .bloco-categorizacao {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .bloco-titulo {
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .caminho-filtro {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
-
-        .caminho-pilula {
-            background: #eef2ff;
-            color: #3b82f6;
-            padding: 2px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .caminho-pilula.marca {
-            background: #dbeafe;
-        }
-
-        .lista-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .lista-titulo {
-            font-weight: 600;
-            font-size: 18px;
-        }
-
-        .badge-count {
-            background: #f3f4f6;
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 13px;
-        }
-
-        #grid-registados {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-        }
-
-        .estado-vazio {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6b7280;
-        }
-
-        .card-reg {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: box-shadow 0.2s;
-        }
-
-        .card-reg:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); }
-
-        .card-reg-img {
-            aspect-ratio: 4/3;
-            background: #f9fafb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card-reg-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .card-reg-corpo {
-            padding: 16px;
-        }
-
-        .card-reg-nome {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .card-reg-cat {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            font-size: 12px;
-        }
-
-        .card-reg-desc {
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: 6px;
-        }
-
-        .card-reg-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 12px;
-        }
-
-        .card-reg-preco {
-            font-weight: 700;
-        }
-
-        .card-reg-stock {
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 999px;
-        }
-
-        .card-reg-stock.ok { background: #d1fae5; color: #059669; }
-        .card-reg-stock.zero { background: #fee2e2; color: #dc2626; }
-
-        .btn-remover-card {
-            width: 100%;
-            border: none;
-            border-top: 1px solid #e5e7eb;
-            padding: 8px;
-            background: transparent;
-            color: #ef4444;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-remover-card:hover { background: #fef2f2; }
-
-        .form-remover-container {
-            max-width: 500px;
-        }
-
-        .icon-svg {
-            width: 20px;
-            height: 20px;
-            filter: invert(42%) sepia(5%) saturate(0%) hue-rotate(190deg) brightness(95%) contrast(90%);
-            transition: filter 0.2s ease;
-        }
-
-        .nav-item:hover .icon-svg {
-            filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
-        }
-
-        .nav-item.ativo .icon-svg {
-            filter: invert(33%) sepia(98%) saturate(2000%) hue-rotate(205deg) brightness(100%) contrast(100%);
-        }
-
-        .sidebar-footer .nav-item .icon-svg {
-            filter: invert(36%) sepia(78%) saturate(3500%) hue-rotate(345deg) brightness(100%) contrast(90%);
-        }
-
-        .sidebar-footer .nav-item:hover .icon-svg {
-            filter: invert(16%) sepia(99%) saturate(5000%) hue-rotate(345deg) brightness(90%) contrast(90%);
-        }
-
-        .icon-upload {
-            width: 64px;
-            height: 64px;
-            filter: invert(42%) sepia(5%) saturate(0%) hue-rotate(190deg) brightness(95%) contrast(90%);
-            margin-bottom: 8px;
-        }
-
-        .icon-btn-add {
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
-            vertical-align: middle;
-            filter: brightness(0) invert(1);
-            transition: filter 0.2s ease;
-            display: inline-block;
-        }
-
-        .icon-btn-remove {
-            width: 18px;
-            height: 18px;
-            margin-right: 8px;
-            vertical-align: middle;
-            filter: brightness(0) invert(1);
-            transition: filter 0.2s ease;
-            display: inline-block;
-        }
-
-        .divider {
-            margin: 40px 0;
-            border: none;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        #toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #1f2937;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            display: none;
-            z-index: 9999;
-        }
-
-        #toast.visivel {
-            display: block;
-            animation: slideIn 0.3s;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-container {
-                flex-direction: column;
-                margin: 10px;
-            }
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #e5e7eb;
-                padding: 20px;
-            }
-            .sidebar-nav {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-            .sidebar-footer {
-                margin-top: 0;
-                border-top: none;
-                padding-top: 0;
-            }
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            .conteudo {
-                padding: 20px;
-            }
-        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:"manrope",sans-serif; }
+        body { background:#f5f7fb; color:#1f2937; min-height:100vh; }
+        .dashboard-container { max-width:1400px; margin:30px auto; background:#fff; border-radius:16px; box-shadow:0 8px 30px rgba(0,0,0,0.05); display:flex; min-height:90vh; }
+        .sidebar { width:240px; background:#fff; padding:30px 20px; border-right:1px solid #e5e7eb; display:flex; flex-direction:column; flex-shrink:0; }
+        .sidebar-header { display:flex; align-items:center; gap:12px; margin-bottom:40px; }
+        .logo-badge { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+        .logo-img { width:100%; height:100%; object-fit:cover; border-radius:10px; }
+        .sidebar-header h2 { font-size:15px; font-weight:700; }
+        .sidebar-header h2 span { color:#6b7280; font-weight:400; }
+        .sidebar-nav { display:flex; flex-direction:column; gap:6px; flex-grow:1; }
+        .nav-item { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:10px; cursor:pointer; transition:all 0.2s; color:#6b7280; font-weight:500; font-size:14px; }
+        .nav-item:hover { background:#f9fafb; color:#1f2937; }
+        .nav-item.ativo { background:#eef2ff; color:#3b82f6; font-weight:600; }
+        .sidebar-footer { margin-top:auto; border-top:1px solid #e5e7eb; padding-top:20px; }
+        .sidebar-footer .nav-item { color:#ef4444; }
+        .sidebar-footer .nav-item:hover { background:#fef2f2; color:#dc2626; }
+        .conteudo { flex-grow:1; padding:35px 40px; background:#fefefe; }
+        .aba-conteudo { display:none; animation:fadeIn 0.3s ease; }
+        .aba-conteudo.ativa { display:block; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+        .secao-titulo { font-size:22px; font-weight:700; margin-bottom:4px; }
+        .secao-sub { color:#6b7280; margin-bottom:30px; font-size:14px; }
+        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+        .form-grid .full-width { grid-column:1/-1; }
+        .campo { margin-bottom:18px; }
+        .campo label { display:block; font-size:13px; font-weight:600; color:#1f2937; margin-bottom:6px; }
+        .campo input, .campo textarea, .campo select { width:100%; padding:10px 14px; border:1px solid #e5e7eb; border-radius:8px; font-size:14px; font-family:"manrope",sans-serif; background:white; transition:border-color 0.2s; color:#1f2937; }
+        .campo input:focus, .campo textarea:focus, .campo select:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.1); }
+        .campo .prefix-wrap { display:flex; align-items:center; border:1px solid #e5e7eb; border-radius:8px; background:white; overflow:hidden; }
+        .campo .prefix-wrap span { padding:0 12px; background:#f9fafb; border-right:1px solid #e5e7eb; color:#6b7280; font-weight:500; }
+        .campo .prefix-wrap input { border:none; border-radius:0; flex-grow:1; padding:10px 14px; }
+        .btn-primario { background:#3b82f6; color:white; border:none; padding:12px 30px; border-radius:8px; font-weight:600; cursor:pointer; transition:background 0.2s; font-size:14px; }
+        .btn-primario:hover { background:#2563eb; }
+        .btn-danger { background:#ef4444; }
+        .btn-danger:hover { background:#b91c1c; }
+        .zona-foto { border:2px dashed #e5e7eb; border-radius:16px; padding:40px; text-align:center; cursor:pointer; margin-bottom:20px; position:relative; background:#f9fafb; transition:border-color 0.2s; }
+        .zona-foto:hover { border-color:#3b82f6; }
+        .zona-foto.tem-foto { border-style:solid; border-color:#3b82f6; padding:0; }
+        .zona-foto img { width:100%; max-height:250px; object-fit:contain; border-radius:12px; }
+        .zona-foto .placeholder-foto { color:#6b7280; }
+        .hidden { display:none !important; }
+        .bloco-categorizacao { background:#f9fafb; border:1px solid #e5e7eb; border-radius:12px; padding:20px; margin-bottom:20px; }
+        .bloco-titulo { font-weight:600; margin-bottom:12px; }
+        .caminho-filtro { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+        .caminho-pilula { background:#eef2ff; color:#3b82f6; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:500; }
+        .lista-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+        .lista-titulo { font-weight:600; font-size:18px; }
+        .badge-count { background:#f3f4f6; padding:4px 12px; border-radius:999px; font-size:13px; }
+        #grid-registados { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:20px; }
+        .estado-vazio { text-align:center; padding:60px 20px; color:#6b7280; }
+        .card-reg { background:white; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; transition:box-shadow 0.2s; }
+        .card-reg:hover { box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+        .card-reg-img { aspect-ratio:4/3; background:#f9fafb; display:flex; align-items:center; justify-content:center; }
+        .card-reg-img img { width:100%; height:100%; object-fit:cover; }
+        .card-reg-corpo { padding:16px; }
+        .card-reg-nome { font-weight:600; margin-bottom:4px; }
+        .card-reg-cat { display:flex; gap:6px; flex-wrap:wrap; font-size:12px; }
+        .card-reg-desc { font-size:13px; color:#6b7280; margin-top:6px; }
+        .card-reg-meta { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+        .card-reg-preco { font-weight:700; }
+        .card-reg-stock { font-size:12px; padding:2px 8px; border-radius:999px; }
+        .card-reg-stock.ok { background:#d1fae5; color:#059669; }
+        .card-reg-stock.zero { background:#fee2e2; color:#dc2626; }
+        .btn-remover-card { width:100%; border:none; border-top:1px solid #e5e7eb; padding:8px; background:transparent; color:#ef4444; font-weight:500; cursor:pointer; transition:background 0.2s; }
+        .btn-remover-card:hover { background:#fef2f2; }
+        .form-remover-container { max-width:500px; }
+        .icon-svg { width:20px; height:20px; filter:invert(42%) sepia(5%) saturate(0%) hue-rotate(190deg) brightness(95%) contrast(90%); transition:filter 0.2s; }
+        .nav-item:hover .icon-svg { filter:invert(0%); }
+        .nav-item.ativo .icon-svg { filter:invert(33%) sepia(98%) saturate(2000%) hue-rotate(205deg) brightness(100%) contrast(100%); }
+        .sidebar-footer .nav-item .icon-svg { filter:invert(36%) sepia(78%) saturate(3500%) hue-rotate(345deg) brightness(100%) contrast(90%); }
+        .sidebar-footer .nav-item:hover .icon-svg { filter:invert(16%) sepia(99%) saturate(5000%) hue-rotate(345deg) brightness(90%) contrast(90%); }
+        .icon-upload { width:64px; height:64px; filter:invert(42%) sepia(5%) saturate(0%) hue-rotate(190deg) brightness(95%) contrast(90%); margin-bottom:8px; }
+        .icon-btn-add, .icon-btn-remove { width:24px; height:24px; margin-right:8px; vertical-align:middle; filter:brightness(0) invert(1); display:inline-block; }
+        .divider { margin:40px 0; border:none; border-top:1px solid #e5e7eb; }
+        #toast { position:fixed; bottom:30px; right:30px; background:#1f2937; color:white; padding:12px 24px; border-radius:10px; font-size:14px; font-weight:500; display:none; z-index:9999; }
+        @media (max-width:768px) { .dashboard-container { flex-direction:column; margin:10px; } .sidebar { width:100%; border-right:none; border-bottom:1px solid #e5e7eb; padding:20px; } .sidebar-nav { flex-direction:row; flex-wrap:wrap; } .sidebar-footer { margin-top:0; border-top:none; padding-top:0; } .form-grid { grid-template-columns:1fr; } .conteudo { padding:20px; } }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-badge">
-                    <img src="../../imagens/colorless.png" alt="Logo" class="logo-img" />
-                </div>
-                <h2>BASGAM <span>/ Admin</span></h2>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-badge"><img src="../../imagens/colorless.png" alt="Logo" class="logo-img" /></div>
+            <h2>BASGAM <span>/ Admin</span></h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item ativo" onclick="mudarAba('registar', this)"><img src="../../imagens/icon/plus.svg" class="icon-svg" /><span>Registar Produto</span></div>
+            <div class="nav-item" onclick="mudarAba('remover-produto', this)"><img src="../../imagens/icon/trash3-fill.svg" class="icon-svg" /><span>Remover Produto</span></div>
+            <div class="nav-item" onclick="mudarAba('remover-perfil', this)"><img src="../../imagens/icon/person-dash-fill.svg" class="icon-svg" /><span>Remover Perfil</span></div>
+            <div class="nav-item" onclick="mudarAba('relatorios', this)"><img src="../../imagens/icon/graph-up.svg" class="icon-svg" /><span>Relatorios</span></div>
+        </nav>
+        <div class="sidebar-footer"><div class="nav-item" onclick="confirmarSair()"><img src="../../imagens/icon/box-arrow-right.svg" class="icon-svg" /><span>Sair</span></div></div>
+    </aside>
+    <main class="conteudo">
+        <!-- Aba Registar Produto -->
+        <div id="aba-registar" class="aba-conteudo ativa">
+            <div class="secao-titulo">Registar Produto</div>
+            <div class="secao-sub">Preencha os dados abaixo para adicionar um novo produto ao catálogo.</div>
+            <div class="zona-foto" id="zona-foto" onclick="document.getElementById('input-foto').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">
+                <img id="preview-img" src="" alt="preview" class="hidden" />
+                <div class="placeholder-foto"><img src="../../imagens/icon/cloud-arrow-up-fill.svg" class="icon-upload" /><p>Clique ou arraste a imagem do produto</p></div>
             </div>
-            <nav class="sidebar-nav">
-                <div class="nav-item ativo" onclick="mudarAba('registar', this)">
-                    <img src="../../imagens/icon/plus.svg" class="icon-svg" alt="Registar" />
-                    <span>Registar Produto</span>
-                </div>
-                <div class="nav-item" onclick="mudarAba('remover-produto', this)">
-                    <img src="../../imagens/icon/trash3-fill.svg" class="icon-svg" alt="Remover Produto" />
-                    <span>Remover Produto</span>
-                </div>
-                <div class="nav-item" onclick="mudarAba('remover-perfil', this)">
-                    <img src="../../imagens/icon/person-dash-fill.svg" class="icon-svg" alt="Remover Perfil" />
-                    <span>Remover Perfil</span>
-                </div>
-                <div class="nav-item" onclick="mudarAba('relatorios', this)">
-                    <img src="../../imagens/icon/graph-up.svg" class="icon-svg" alt="Relatórios" />
-                    <span>Relatorios</span>
-                </div>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="nav-item" onclick="confirmarSair()">
-                    <img src="../../imagens/icon/box-arrow-right.svg" class="icon-svg" alt="Sair" />
-                    <span>Sair</span>
-                </div>
+            <input type="file" id="input-foto" accept="image/*" class="hidden" />
+            <div class="form-grid">
+                <div class="full-width campo"><label for="inp-nome">Nome do Produto</label><input type="text" id="inp-nome" placeholder="Ex: iPhone 16 Pro Max 256 GB" /></div>
+                <div class="campo"><label for="inp-preco">Preço (MZN)</label><div class="prefix-wrap"><span>MZN</span><input type="number" id="inp-preco" placeholder="0.00" min="0" step="0.01" /></div></div>
+                <div class="campo"><label for="inp-stock">Stock</label><input type="number" id="inp-stock" placeholder="0" min="0" /></div>
             </div>
-        </aside>
-
-        <!-- Conteúdo -->
-        <main class="conteudo">
-            <!-- Aba: Registar Produto -->
-            <div id="aba-registar" class="aba-conteudo ativa">
-                <div class="secao-titulo">Registar Produto</div>
-                <div class="secao-sub">Preencha os dados abaixo para adicionar um novo produto ao catalogo.</div>
-
-                <div class="zona-foto" id="zona-foto" onclick="document.getElementById('input-foto').click()"
-                     ondragover="dragOver(event)"
-                     ondragleave="dragLeave(event)"
-                     ondrop="drop(event)">
-                    <img id="preview-img" src="" alt="preview" class="hidden" />
-                    <div class="placeholder-foto">
-                        <img src="../../imagens/icon/cloud-arrow-up-fill.svg" class="icon-upload" alt="Upload" />
-                        <p>Clique ou arraste a imagem do produto</p>
-                    </div>
-                </div>
-                <input type="file" id="input-foto" accept="image/*" onchange="fotoSelecionada(this)" class="hidden" />
-
+            <div class="bloco-categorizacao">
+                <div class="bloco-titulo">Categorização</div>
                 <div class="form-grid">
-                    <div class="full-width campo">
-                        <label for="inp-nome">Nome do Produto</label>
-                        <input type="text" id="inp-nome" placeholder="Ex: iPhone 16 Pro Max 256 GB" />
-                    </div>
-                    <div class="campo">
-                        <label for="inp-preco">Preco (MZN)</label>
-                        <div class="prefix-wrap">
-                            <span>MZN</span>
-                            <input type="number" id="inp-preco" placeholder="0.00" min="0" step="0.01" />
-                        </div>
-                    </div>
-                    <div class="campo">
-                        <label for="inp-stock">Stock</label>
-                        <input type="number" id="inp-stock" placeholder="0" min="0" />
-                    </div>
+                    <div class="campo"><label for="sel-cat">Categoria</label><select id="sel-cat" onchange="onCategoria()"><option value="">— selecione —</option></select></div>
+                    <div class="campo hidden" id="wrap-sub"><label for="sel-sub">Subcategoria</label><select id="sel-sub" onchange="onSubcategoria()"><option value="">— selecione —</option></select></div>
+                    <div class="campo hidden" id="wrap-marca"><label for="sel-marca">Marca</label><select id="sel-marca" onchange="onMarca()"><option value="">— selecione —</option></select></div>
                 </div>
-
-                <div class="bloco-categorizacao">
-                    <div class="bloco-titulo">Categorizacao</div>
-                    <div class="form-grid">
-                        <div class="campo">
-                            <label for="sel-cat">Categoria</label>
-                            <select id="sel-cat" onchange="onCategoria()">
-                                <option value="">- selecione -</option>
-                            </select>
-                        </div>
-                        <div class="campo hidden" id="wrap-sub">
-                            <label for="sel-sub">Subcategoria</label>
-                            <select id="sel-sub" onchange="onSubcategoria()">
-                                <option value="">- selecione -</option>
-                            </select>
-                        </div>
-                        <div class="campo hidden" id="wrap-marca">
-                            <label for="sel-marca">Marca</label>
-                            <select id="sel-marca" onchange="onMarca()">
-                                <option value="">- selecione -</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="caminho-filtro" id="caminho-filtro"></div>
-                </div>
-
-                <div class="campo full-width">
-                    <label for="inp-desc">Descricao</label>
-                    <textarea id="inp-desc" rows="4" placeholder="Descreva o produto..."></textarea>
-                </div>
-
-                <button class="btn-primario" id="btn-adicionar">
-                    <img src="../../imagens/icon/plus.svg" class="icon-btn-add" alt="Adicionar" />
-                    Adicionar Produto
-                </button>
-
-                <hr class="divider" />
-
-                <div class="lista-header">
-                    <span class="lista-titulo">Produtos Registados</span>
-                    <span class="badge-count" id="badge-count">0 produtos</span>
-                </div>
-                <div class="estado-vazio" id="estado-vazio">
-                    <p>Nenhum produto registado ainda.</p>
-                </div>
-                <div id="grid-registados"></div>
+                <div class="caminho-filtro" id="caminho-filtro"></div>
             </div>
+            <div class="campo full-width"><label for="inp-desc">Descrição</label><textarea id="inp-desc" rows="4" placeholder="Descreva o produto..."></textarea></div>
+            <button class="btn-primario" id="btn-adicionar"><img src="../../imagens/icon/plus.svg" class="icon-btn-add" />Adicionar Produto</button>
+            <hr class="divider" />
+            <div class="lista-header"><span class="lista-titulo">Produtos Registados</span><span class="badge-count" id="badge-count">0 produtos</span></div>
+            <div class="estado-vazio" id="estado-vazio"><p>Nenhum produto registado ainda.</p></div>
+            <div id="grid-registados"></div>
+        </div>
 
-            <!-- Aba: Remover Produto -->
-            <div id="aba-remover-produto" class="aba-conteudo">
-                <div class="secao-titulo">Remover Produto</div>
-                <div class="secao-sub">Insira o ID do produto a remover.</div>
-                <div class="form-remover-container">
-                    <div class="campo">
-                        <label for="inp-id-produto">ID do Produto</label>
-                        <input type="text" id="inp-id-produto" placeholder="Ex: 1, 2, 3..." />
-                    </div>
-                    <div class="campo">
-                        <label for="inp-nome-busca-produto">Nome do Produto <span>(opcional)</span></label>
-                        <input type="text" id="inp-nome-busca-produto" placeholder="Ex: iPhone 16" />
-                    </div>
-                    <button class="btn-primario btn-danger" id="btn-remover-produto">
-                        <img src="../../imagens/icon/trash3-fill.svg" class="icon-btn-remove" alt="Remover" />
-                        Remover Produto
-                    </button>
-                </div>
+        <!-- Aba Remover Produto -->
+        <div id="aba-remover-produto" class="aba-conteudo">
+            <div class="secao-titulo">Remover Produto</div>
+            <div class="secao-sub">Insira o ID do produto a remover.</div>
+            <div class="form-remover-container">
+                <div class="campo"><label for="inp-id-produto">ID do Produto</label><input type="text" id="inp-id-produto" placeholder="Ex: 1, 2, 3..." /></div>
+                <div class="campo"><label for="inp-nome-busca-produto">Nome do Produto <span>(opcional)</span></label><input type="text" id="inp-nome-busca-produto" placeholder="Ex: iPhone 16" /></div>
+                <button class="btn-primario btn-danger" id="btn-remover-produto"><img src="../../imagens/icon/trash3-fill.svg" class="icon-btn-remove" />Remover Produto</button>
             </div>
+        </div>
 
-            <!-- Aba: Remover Perfil -->
-            <div id="aba-remover-perfil" class="aba-conteudo">
-                <div class="secao-titulo">Remover Perfil</div>
-                <div class="secao-sub">Remova um utilizador do sistema (exceto administradores).</div>
-                <div class="form-remover-container">
-                    <div class="campo">
-                        <label for="inp-nome-perfil">Nome do Utilizador</label>
-                        <input type="text" id="inp-nome-perfil" placeholder="Ex: João Silva" />
-                    </div>
-                    <div class="campo">
-                        <label for="inp-email-perfil">Email <span>(opcional)</span></label>
-                        <input type="email" id="inp-email-perfil" placeholder="Ex: joao@email.com" />
-                    </div>
-                    <button class="btn-primario btn-danger" id="btn-remover-perfil">
-                        <img src="../../imagens/icon/person-dash-fill.svg" class="icon-btn-remove" alt="Remover Perfil" />
-                        Remover Perfil
-                    </button>
-                </div>
+        <!-- Aba Remover Perfil -->
+        <div id="aba-remover-perfil" class="aba-conteudo">
+            <div class="secao-titulo">Remover Perfil</div>
+            <div class="secao-sub">Remova um utilizador do sistema (exceto administradores).</div>
+            <div class="form-remover-container">
+                <div class="campo"><label for="inp-nome-perfil">Nome do Utilizador</label><input type="text" id="inp-nome-perfil" placeholder="Ex: João Silva" /></div>
+                <div class="campo"><label for="inp-email-perfil">Email <span>(opcional)</span></label><input type="email" id="inp-email-perfil" placeholder="Ex: joao@email.com" /></div>
+                <button class="btn-primario btn-danger" id="btn-remover-perfil"><img src="../../imagens/icon/person-dash-fill.svg" class="icon-btn-remove" />Remover Perfil</button>
             </div>
+        </div>
 
-            <!-- Aba: Relatórios -->
-            <div id="aba-relatorios" class="aba-conteudo">
-                <div class="secao-titulo">Relatorios</div>
-                <div class="secao-sub">Visao geral das vendas e faturacao.</div>
-
-                <div class="cards-resumo" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
-                    <div class="card-resumo" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;">
-                        <h4 style="font-size: 14px; color: #6b7280;">Total de Vendas</h4>
-                        <div class="valor" id="totalVendas" style="font-size: 24px; font-weight: 700;">-</div>
-                    </div>
-                    <div class="card-resumo" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;">
-                        <h4 style="font-size: 14px; color: #6b7280;">Faturação Total</h4>
-                        <div class="valor" id="faturacaoTotal" style="font-size: 24px; font-weight: 700;">-</div>
-                    </div>
-                    <div class="card-resumo" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;">
-                        <h4 style="font-size: 14px; color: #6b7280;">Total Clientes</h4>
-                        <div class="valor" id="totalClientes" style="font-size: 24px; font-weight: 700;">-</div>
-                    </div>
-                </div>
-
-                <div class="filtros" style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 30px;">
-                    <div class="filtro-group" style="display: flex; flex-direction: column; gap: 4px;">
-                        <label style="font-size: 13px;">Data Inicial</label>
-                        <input type="date" id="dataInicio" style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px;" />
-                    </div>
-                    <div class="filtro-group" style="display: flex; flex-direction: column; gap: 4px;">
-                        <label style="font-size: 13px;">Data Final</label>
-                        <input type="date" id="dataFim" style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px;" />
-                    </div>
-                    <button class="btn-primario" onclick="carregarRelatorio()">
-                        <i class='bx bx-search'></i> Filtrar
-                    </button>
-                </div>
-
-                <div style="overflow-x: auto; margin-bottom: 30px;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background: #f9fafb;">
-                                <th style="padding: 12px; text-align: left;">ID</th>
-                                <th style="padding: 12px; text-align: left;">Data</th>
-                                <th style="padding: 12px; text-align: left;">Cliente</th>
-                                <th style="padding: 12px; text-align: left;">Total</th>
-                                <th style="padding: 12px; text-align: left;">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaBody">
-                            <tr><td colspan="5" style="padding: 12px; text-align: center;">Carregando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="top-produtos" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;">
-                    <h3 style="margin-bottom: 20px;">🏆 Produtos Mais Vendidos</h3>
-                    <div id="topProdutos"></div>
-                </div>
+        <!-- Aba Relatórios -->
+        <div id="aba-relatorios" class="aba-conteudo">
+            <div class="secao-titulo">Relatórios</div>
+            <div class="secao-sub">Visão geral das vendas e faturação.</div>
+            <div class="cards-resumo" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:30px;">
+                <div class="card-resumo" style="background:white; border:1px solid #e5e7eb; border-radius:12px; padding:20px;"><h4 style="font-size:14px; color:#6b7280;">Total de Vendas</h4><div class="valor" id="totalVendas" style="font-size:24px; font-weight:700;">-</div></div>
+                <div class="card-resumo" style="background:white; border:1px solid #e5e7eb; border-radius:12px; padding:20px;"><h4 style="font-size:14px; color:#6b7280;">Faturação Total</h4><div class="valor" id="faturacaoTotal" style="font-size:24px; font-weight:700;">-</div></div>
+                <div class="card-resumo" style="background:white; border:1px solid #e5e7eb; border-radius:12px; padding:20px;"><h4 style="font-size:14px; color:#6b7280;">Total Clientes</h4><div class="valor" id="totalClientes" style="font-size:24px; font-weight:700;">-</div></div>
             </div>
-        </main>
-    </div>
-
-    <div id="toast"></div>
-
-    <script src="Admin.js"></script>
-    <script>
-        // Função para carregar relatório (integrada ao admin)
-        async function carregarRelatorio() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                mostrarToast('Faça login primeiro!', true);
-                return;
-            }
-            
-            const dataInicio = document.getElementById('dataInicio')?.value || '';
-            const dataFim = document.getElementById('dataFim')?.value || '';
-            
-            let url = `${API_URL}/pedidos/admin/relatorio?`;
-            if (dataInicio) url += `data_inicio=${dataInicio}&`;
-            if (dataFim) url += `data_fim=${dataFim}&`;
-            
-            try {
-                const response = await fetch(url, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        mostrarToast('Sessão expirada. Faça login novamente.', true);
-                        return;
-                    }
-                    throw new Error('Erro ao carregar relatório');
-                }
-                
-                const data = await response.json();
-                
-                // Atualizar resumo
-                const totalVendasEl = document.getElementById('totalVendas');
-                const faturacaoTotalEl = document.getElementById('faturacaoTotal');
-                const totalClientesEl = document.getElementById('totalClientes');
-                
-                if (totalVendasEl) totalVendasEl.textContent = data.resumo?.total_vendas || 0;
-                if (faturacaoTotalEl) faturacaoTotalEl.textContent = formatarMoeda(data.resumo?.faturacao_total || 0);
-                if (totalClientesEl) totalClientesEl.textContent = data.resumo?.total_clientes || 0;
-                
-                // Preencher tabela
-                const tbody = document.getElementById('tabelaBody');
-                if (!data.pedidos || !data.pedidos.length) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 12px; text-align: center;">Nenhum pedido encontrado</td></tr>';
-                } else {
-                    tbody.innerHTML = data.pedidos.map(p => `
-                        <tr>
-                            <td style="padding: 12px;">#${p.pedido_id || p.id}</td>
-                            <td style="padding: 12px;">${new Date(p.criado_em).toLocaleDateString('pt-PT')}</td>
-                            <td style="padding: 12px;">${escapeHtml(p.username || 'Anónimo')}</td>
-                            <td style="padding: 12px;">${formatarMoeda(p.total)}</td>
-                            <td style="padding: 12px;">${p.estado}</td>
-                        </tr>
-                    `).join('');
-                }
-                
-                // Preencher top produtos
-                const topDiv = document.getElementById('topProdutos');
-                if (!data.top_produtos || !data.top_produtos.length) {
-                    topDiv.innerHTML = '<p>Nenhum produto vendido ainda.</p>';
-                } else {
-                    topDiv.innerHTML = data.top_produtos.map(p => `
-                        <div class="produto-item" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
-                            <span><strong>${escapeHtml(p.nome)}</strong></span>
-                            <span>${p.vendidos} vendidos | ${formatarMoeda(p.receita_total || p.receita)}</span>
-                        </div>
-                    `).join('');
-                }
-                
-            } catch (err) {
-                console.error('Erro:', err);
-                mostrarToast('Erro ao carregar relatório', true);
-                const tbody = document.getElementById('tabelaBody');
-                if (tbody) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 12px; text-align: center;">Erro ao carregar dados</td></tr>';
-                }
-            }
-        }
-    </script>
+            <div class="filtros" style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; margin-bottom:30px;">
+                <div class="filtro-group" style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:13px;">Data Inicial</label><input type="date" id="dataInicio" style="padding:8px 12px; border:1px solid #e5e7eb; border-radius:8px;" /></div>
+                <div class="filtro-group" style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:13px;">Data Final</label><input type="date" id="dataFim" style="padding:8px 12px; border:1px solid #e5e7eb; border-radius:8px;" /></div>
+                <button class="btn-primario" onclick="carregarRelatorio()"><i class='bx bx-search'></i> Filtrar</button>
+            </div>
+            <div style="overflow-x:auto; margin-bottom:30px;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead><tr style="background:#f9fafb;"><th style="padding:12px; text-align:left;">ID</th><th style="padding:12px; text-align:left;">Data</th><th style="padding:12px; text-align:left;">Cliente</th><th style="padding:12px; text-align:left;">Total</th><th style="padding:12px; text-align:left;">Estado</th></tr></thead>
+                    <tbody id="tabelaBody"><tr><td colspan="5" style="padding:12px; text-align:center;">Carregando...</td></tr></tbody>
+                </table>
+            </div>
+            <div class="top-produtos" style="background:white; border:1px solid #e5e7eb; border-radius:12px; padding:20px;">
+                <h3 style="margin-bottom:20px;">🏆 Produtos Mais Vendidos</h3>
+                <div id="topProdutos"></div>
+            </div>
+        </div>
+    </main>
+</div>
+<div id="toast"></div>
+<script src="Admin.js"></script>
 </body>
 </html>

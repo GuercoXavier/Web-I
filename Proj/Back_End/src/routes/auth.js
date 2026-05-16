@@ -243,6 +243,51 @@ router.post('/alterar-password', autenticar, async (req, res) => {
 
 router.post('/logout', autenticar, (req, res) => {
   res.json({ mensagem: 'Logout efetuado.' });
+  
 });
+// ==================== ADICIONAR CRÉDITOS ====================
+router.post('/creditos/adicionar', autenticar, (req, res) => {
+  const { valor, descricao } = req.body;
+  const userId = req.utilizador.id;
 
+  if (!valor || typeof valor !== 'number' || valor <= 0) {
+    return res.status(400).json({ erro: 'Valor inválido. Deve ser um número positivo.' });
+  }
+
+  const valorCentavos = Math.round(valor * 100);
+
+  try {
+    const transacao = db.transaction(() => {
+      const update = db.prepare(`
+        UPDATE utilizadores SET creditos = creditos + ? WHERE id = ?
+      `).run(valorCentavos, userId);
+
+      if (update.changes === 0) throw new Error('Utilizador não encontrado');
+
+      const referencia = `credito_${Date.now()}_${userId}`;
+      db.prepare(`
+        INSERT INTO transacoes_creditos (utilizador_id, valor, tipo, descricao, referencia)
+        VALUES (?, ?, 'adicionado', ?, ?)
+      `).run(userId, valorCentavos, descricao || 'Adicionado manualmente', referencia);
+
+      const novoSaldoCentavos = db.prepare('SELECT creditos FROM utilizadores WHERE id = ?')
+        .get(userId).creditos;
+      return novoSaldoCentavos;
+    });
+
+    const novoSaldoCentavos = transacao();
+
+    res.json({
+      success: true,
+      mensagem: `${valor} MZN adicionado com sucesso!`,
+      creditos: novoSaldoCentavos / 100
+    });
+  } catch (err) {
+    console.error('Erro ao adicionar créditos:', err);
+    if (err.message === 'Utilizador não encontrado') {
+      return res.status(404).json({ erro: 'Utilizador não encontrado.' });
+    }
+    res.status(500).json({ erro: 'Erro interno ao adicionar créditos.' });
+  }
+});
 module.exports = router;

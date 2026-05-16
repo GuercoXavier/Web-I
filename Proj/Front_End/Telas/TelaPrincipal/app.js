@@ -13,13 +13,30 @@ const getAuthHeaders = () => ({
     ...(getToken() && { Authorization: `Bearer ${getToken()}` })
 });
 
-const fmt = (v) => new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'MZN' }).format(v);
+// Formata moeda, convertendo centavos para unidades se necessário
+const fmt = (v) => {
+    if (v === undefined || v === null) return '0 MZN';
+    let valor = v;
+    // Se o valor for maior que 10000, assume que está em centavos e converte
+    if (typeof v === 'number' && v > 10000) {
+        valor = v / 100;
+    }
+    return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'MZN' }).format(valor);
+};
 
 async function apiFetch(path, opts = {}) {
     const res = await fetch(`${API}${path}`, opts);
     const data = await res.json();
     if (!res.ok) throw new Error(data.erro || 'Erro na requisição');
     return data;
+}
+
+// Normaliza URL da imagem (caminhos relativos -> absolutos)
+function normalizarImagem(url) {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('/')) return `${window.location.origin}${url}`;
+    return `${window.location.origin}/${url}`;
 }
 
 // ==================== TOAST ====================
@@ -91,16 +108,6 @@ function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
 
 // ==================== AUTH / USER ====================
 function mostrarBotaoLogin() {
-<<<<<<< HEAD
-    const userContainer = document.querySelector('.user-menu-container');
-    if (userContainer) {
-        userContainer.innerHTML = `
-            <a href="../TelaLogin/tela_login.html" class="btn-login-header">
-                <img src="../../imagens/icon/person-circle.svg" alt="Login" />
-                <span>Entrar / Registrar</span>                
-            </a>
-        `;
-=======
     const el = document.querySelector('.user-menu-container');
     if (el) el.innerHTML = `
         <a href="../TelaLogin/tela_login.html" class="btn-login-header">
@@ -117,7 +124,6 @@ function atualizarUserDisplay() {
     if (u.username === 'Admin') {
         const btn = document.querySelector('.dropdown-item[href*="RegistroAdm.html"]');
         if (btn) btn.style.display = 'flex';
->>>>>>> Homem-Aranha--esqueceram-fora-de-casa
     }
 }
 
@@ -178,12 +184,11 @@ async function carregarProdutos() {
         if (getApenasStock()) params.set('stock', 1);
         getMarcasSelecionadas().forEach(m => params.append('marca', m));
 
-        const data = await apiFetch(`/produtos?${params}`);
-        const produtosData = data.produtos || data || [];
-
+        const produtosData = await apiFetch(`/produtos?${params}`);
+        // O backend retorna um array diretamente
         produtos = produtosData.map(p => ({
             id: p.id, nome: p.nome, preco: p.preco, descricao: p.descricao,
-            imagem: p.imagem || 'https://via.placeholder.com/300x200?text=Sem+Imagem',
+            imagem: normalizarImagem(p.imagem) || 'https://via.placeholder.com/300x200?text=Sem+Imagem',
             stock: p.stock, marca: p.marca,
             categoria_nome: p.categoria_nome, subcategoria_nome: p.subcategoria_nome,
             em_destaque: p.em_destaque
@@ -232,10 +237,13 @@ async function renderDestaque() {
     if (!grid) return;
     try {
         const lista = await apiFetch('/produtos?destaque=1');
-        const produtosLista = lista.produtos || lista;
+        const produtosLista = Array.isArray(lista) ? lista : (lista.produtos || []);
         grid.innerHTML = '';
         if (!produtosLista.length) { grid.innerHTML = `<p style="color:var(--muted)">Nenhum produto em destaque.</p>`; return; }
-        produtosLista.slice(0, 3).forEach(p => grid.appendChild(criarCard(p)));
+        produtosLista.slice(0, 3).forEach(p => {
+            p.imagem = normalizarImagem(p.imagem) || 'https://via.placeholder.com/300x200?text=Sem+Imagem';
+            grid.appendChild(criarCard(p));
+        });
     } catch { mostrarMensagem('Erro ao carregar produtos em destaque', 'erro'); }
 }
 
@@ -243,6 +251,8 @@ async function renderDestaque() {
 async function renderDetalhe(id) {
     try {
         const p = await apiFetch(`/produtos/${id}`);
+        // O backend agora retorna o produto diretamente (sem wrapper)
+        p.imagem = normalizarImagem(p.imagem) || 'https://via.placeholder.com/500x400?text=Sem+Imagem';
         const container = document.getElementById('detalhe-conteudo');
         if (!container) return;
 
@@ -269,8 +279,7 @@ async function renderDetalhe(id) {
         container.innerHTML = `
             <div class="detalhe-grid">
                 <div class="detalhe-imagem">
-                    <img src="${p.imagem || 'https://via.placeholder.com/500x400?text=Sem+Imagem'}"
-                         alt="${p.nome}" onerror="this.src='https://via.placeholder.com/500x400?text=Sem+Imagem'">
+                    <img src="${p.imagem}" alt="${p.nome}" onerror="this.src='https://via.placeholder.com/500x400?text=Sem+Imagem'">
                 </div>
                 <div class="detalhe-info">
                     ${p.categoria_nome ? `<span class="detalhe-badge">${p.categoria_nome}</span>` : ''}
@@ -317,19 +326,21 @@ async function carregarVejaTambem(produtoAtual) {
             ? `categoria=${encodeURIComponent(produtoAtual.categoria_nome)}`
             : 'destaque=1';
         const lista = await apiFetch(`/produtos?${param}`);
-        const produtosLista = lista.produtos || lista;
+        const produtosLista = Array.isArray(lista) ? lista : (lista.produtos || []);
         const sugestoes = produtosLista.filter(p => p.id !== produtoAtual.id).slice(0, 4);
         grade.innerHTML = sugestoes.length
-            ? sugestoes.map(p => `
+            ? sugestoes.map(p => {
+                const img = normalizarImagem(p.imagem) || 'https://via.placeholder.com/200x200?text=Sem+Imagem';
+                return `
                 <div class="veja-tambem-card"
                      onclick="renderDetalhe(${p.id});window.scrollTo({top:0,behavior:'smooth'})">
                     <div class="veja-tambem-img">
-                        <img src="${p.imagem || 'https://via.placeholder.com/200x200?text=Sem+Imagem'}"
-                             alt="${p.nome}" onerror="this.src='https://via.placeholder.com/200x200?text=Sem+Imagem'">
+                        <img src="${img}" alt="${p.nome}" onerror="this.src='https://via.placeholder.com/200x200?text=Sem+Imagem'">
                     </div>
                     <div class="veja-tambem-nome">${p.nome}</div>
                     <div class="veja-tambem-preco">${fmt(p.preco)}</div>
-                </div>`).join('')
+                </div>`;
+            }).join('')
             : `<p style="color:var(--muted);font-size:.9rem">Sem sugestões disponíveis.</p>`;
     } catch { grade.innerHTML = `<p style="color:var(--muted);font-size:.9rem">Não foi possível carregar sugestões.</p>`; }
 }
@@ -351,7 +362,10 @@ async function carregarCarrinho() {
         try {
             const data = await apiFetch('/carrinho', { headers: getAuthHeaders() });
             carrinhoAtual = {
-                itens: data.itens || [],
+                itens: (data.itens || []).map(item => ({
+                    ...item,
+                    imagem: normalizarImagem(item.imagem)
+                })),
                 total: data.total || 0
             };
         } catch (err) {
@@ -368,12 +382,19 @@ async function addCarrinho(produtoId) {
     if (!produto) {
         try {
             produto = await apiFetch(`/produtos/${produtoId}`);
+            produto.imagem = normalizarImagem(produto.imagem) || 'https://via.placeholder.com/80x80?text=Sem+Imagem';
         } catch { return; }
     }
     if (!getToken()) {
         const c = getCarrinhoLocal();
         const ex = c.itens.find(i => i.produto_id === produtoId);
-        ex ? ex.quantidade++ : c.itens.push({ produto_id: produto.id, nome: produto.nome, preco: produto.preco, imagem: produto.imagem, quantidade: 1 });
+        ex ? ex.quantidade++ : c.itens.push({ 
+            produto_id: produto.id, 
+            nome: produto.nome, 
+            preco: produto.preco, 
+            imagem: produto.imagem, 
+            quantidade: 1 
+        });
         saveCarrinhoLocal(c);
     } else {
         try {
@@ -448,10 +469,11 @@ function renderCarrinho() {
         const sub = item.preco * item.quantidade;
         total += sub;
         const pid = item.produto_id || item.id;
+        const imgSrc = normalizarImagem(item.imagem) || 'https://via.placeholder.com/80x80?text=Sem+Imagem';
         return `
             <div class="item">
                 <div class="item-img">
-                    <img src="${item.imagem || 'https://via.placeholder.com/80x80?text=Sem+Imagem'}" alt="${item.nome}">
+                    <img src="${imgSrc}" alt="${item.nome}" onerror="this.src='https://via.placeholder.com/80x80?text=Sem+Imagem'">
                 </div>
                 <div class="item-info">
                     <h3 onclick="ir('detalhe',${pid})">${item.nome}</h3>
@@ -542,77 +564,21 @@ function filtrarMarca(marca) {
         document.querySelectorAll('.preco-min, .preco-max').forEach(i => i.value = '');
         document.querySelectorAll(`.filtro-marca[value="${marca}"]`).forEach(c => c.checked = true);
         carregarProdutos();
-<<<<<<< HEAD
     }, 100);
 }
 
-function filtrarMarca(marca) {
-    document.querySelectorAll('.pagina').forEach(el => el.classList.add('oculta'));
-    const view = document.getElementById('view-produtos');
-    if (view) view.classList.remove('oculta');
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    setTimeout(() => {
-        document.querySelectorAll('.filtro-marca:checked').forEach(cb => cb.checked = false);
-        document.querySelectorAll('.preco-min, .preco-max').forEach(input => input.value = '');
-
-        document.querySelectorAll(`.filtro-marca[value="${marca}"]`).forEach(cb => cb.checked = true);
-
-        document.querySelectorAll('.filtro-grupo').forEach(grupo => {
-            const titulo = grupo.querySelector('.filtro-grupo-titulo');
-            if (titulo && titulo.innerText.trim() === 'Celulares') {
-                grupo.setAttribute('open', '');
-            }
-        });
-
-        carregarProdutos();
-    }, 150);
+function setCat(btn, cat) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    categoriaAtiva = cat;
+    carregarProdutos();
 }
 
-async function renderDetalhe(id) {
-    try {
-        const res = await fetch(`${API}/produtos/${id}`);
-        const p = await res.json();
-
-        if (!res.ok) throw new Error('Produto nao encontrado');
-
-        const container = document.getElementById('detalhe-conteudo');
-        if (!container) return;
-
-        container.innerHTML = `
-            <div class="detalhe-grid">
-                <div class="detalhe-imagem">
-                    <img src="${p.imagem || 'https://via.placeholder.com/500x400?text=Sem+Imagem'}" alt="${p.nome}">
-                </div>
-                <div class="detalhe-info">
-                    <h1>${p.nome}</h1>
-                    <p class="detalhe-preco">${fmt(p.preco)}</p>
-                    ${p.marca ? `<p><strong>Marca:</strong> ${p.marca}</p>` : ''}
-                    ${p.categoria_nome ? `<p><strong>Categoria:</strong> ${p.categoria_nome}</p>` : ''}
-                    <p><strong>Stock:</strong> ${p.stock > 0 ? p.stock + ' unidades' : 'Esgotado'}</p>
-                    <p class="detalhe-descricao">${p.descricao || 'Sem descricao'}</p>
-                    ${p.stock > 0 ? 
-                        `<button class="btn-carrinho-grande" onclick="addCarrinho(${p.id})">Adicionar ao Carrinho</button>` : 
-                        '<button class="btn-carrinho-grande disabled" disabled>Indisponivel</button>'
-                    }
-                </div>
-            </div>
-        `;
-    } catch (err) {
-        console.error('Erro:', err);
-    }
+// ==================== BUSCA ====================
+function buscarProdutos(event) {
+    if (event.key === 'Enter') carregarProdutos();
 }
-
-function fmt(valor) {
-    return new Intl.NumberFormat('pt-PT', {
-        style: 'currency',
-        currency: 'MZN'
-    }).format(valor);
-=======
-    }, 150);
->>>>>>> Homem-Aranha--esqueceram-fora-de-casa
-}
+function buscarProdutosPorTexto() { carregarProdutos(); }
 
 // ==================== UTILITÁRIOS ====================
 function enviarForm(e) {
@@ -657,10 +623,13 @@ async function renderDestaquesCategorias() {
         if (!grid) return;
         try {
             const lista = await apiFetch(`/produtos?categoria=${encodeURIComponent(param)}`);
-            const produtosLista = lista.produtos || lista;
+            const produtosLista = Array.isArray(lista) ? lista : (lista.produtos || []);
             grid.innerHTML = '';
             if (!produtosLista.length) { grid.innerHTML = `<p class="sem-produtos" style="padding:20px 0">Nenhum produto encontrado.</p>`; return; }
-            produtosLista.sort(() => Math.random() - 0.5).slice(0, 3).forEach(p => grid.appendChild(criarCard(p)));
+            produtosLista.sort(() => Math.random() - 0.5).slice(0, 3).forEach(p => {
+                p.imagem = normalizarImagem(p.imagem) || 'https://via.placeholder.com/300x200?text=Sem+Imagem';
+                grid.appendChild(criarCard(p));
+            });
         } catch { grid.innerHTML = `<p class="sem-produtos">Erro ao carregar produtos.</p>`; }
     }));
 }
@@ -714,9 +683,9 @@ function gerarSidebar() {
             <div class="filtro-preco">
                 <p>Preço</p>
                 <div class="preco-inputs">
-                    <input type="number" placeholder="Mín" class="preco-min" data-cat="global" onchange="aplicarFiltros()" />
+                    <input type="number" placeholder="Mín" class="preco-min" onchange="aplicarFiltros()" />
                     <span>–</span>
-                    <input type="number" placeholder="Máx" class="preco-max" data-cat="global" onchange="aplicarFiltros()" />
+                    <input type="number" placeholder="Máx" class="preco-max" onchange="aplicarFiltros()" />
                 </div>
             </div>
         </div>
@@ -739,13 +708,6 @@ function gerarSidebar() {
                 <div class="filtro-corpo">${corpo}</div>
             </details>`;
     }).join('');
-}
-
-function setCat(btn, cat) {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    categoriaAtiva = cat;
-    carregarProdutos();
 }
 
 // ==================== INIT ====================
@@ -772,8 +734,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') carregarProdutos();
-        });
+        searchInput.addEventListener('keyup', buscarProdutos);
     }
 });

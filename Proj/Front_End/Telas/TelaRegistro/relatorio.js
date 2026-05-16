@@ -1,12 +1,11 @@
 // relatorio.js - Versão Final Corrigida
 // Local: Front_End/Telas/TelaRegistro/relatorio.js
-// Usado com relatorios.html (página separada)
 
 // ==================== CONFIGURAÇÃO ====================
 const API_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
 const token = localStorage.getItem('token');
 
-// ==================== VERIFICAR AUTENTICAÇÃO ====================
+// ==================== TOAST ====================
 function mostrarToast(mensagem, erro = false) {
     let toast = document.getElementById('toast-relatorio');
     if (!toast) {
@@ -27,7 +26,6 @@ function mostrarToast(mensagem, erro = false) {
         `;
         document.body.appendChild(toast);
     }
-    
     toast.textContent = erro ? `✗ ${mensagem}` : `✓ ${mensagem}`;
     toast.style.display = 'block';
     setTimeout(() => {
@@ -78,14 +76,14 @@ async function carregarRelatorio() {
         const faturacaoTotalEl = document.getElementById('faturacaoTotal');
         const totalClientesEl = document.getElementById('totalClientes');
         
-        if (totalVendasEl) totalVendasEl.textContent = data.resumo?.total_vendas || 0;
+        if (totalVendasEl) totalVendasEl.textContent = data.resumo?.total_pedidos || 0;
         if (faturacaoTotalEl) faturacaoTotalEl.textContent = formatarMoeda(data.resumo?.faturacao_total || 0);
         if (totalClientesEl) totalClientesEl.textContent = data.resumo?.total_clientes || 0;
         
         // Preencher tabela de pedidos
         const tbody = document.getElementById('tabelaBody');
         if (!data.pedidos || !data.pedidos.length) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Nenhum pedido encontrado</td></tr>';
+            tbody.innerHTML = '<td><td colspan="5" class="text-center text-muted">Nenhum pedido encontrado</td></tr>';
         } else {
             tbody.innerHTML = data.pedidos.map(p => `
                 <tr>
@@ -98,7 +96,7 @@ async function carregarRelatorio() {
             `).join('');
         }
         
-        // Preencher top produtos
+        // Preencher top produtos (com o campo correto: quantidade_vendida)
         const topDiv = document.getElementById('topProdutos');
         if (!data.top_produtos || !data.top_produtos.length) {
             topDiv.innerHTML = '<p class="text-muted">Nenhum produto vendido ainda.</p>';
@@ -106,7 +104,7 @@ async function carregarRelatorio() {
             topDiv.innerHTML = data.top_produtos.map(p => `
                 <div class="produto-item">
                     <span><strong>${escapeHtml(p.nome)}</strong></span>
-                    <span>${p.vendidos} vendidos | ${formatarMoeda(p.receita_total || p.receita)}</span>
+                    <span>${p.quantidade_vendida} vendidos | ${formatarMoeda(p.receita_total)}</span>
                 </div>
             `).join('');
         }

@@ -1,152 +1,13 @@
 // ==================== CONFIGURAÇÃO ====================
 const API = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+const token = localStorage.getItem('token');
 
-let categorias = [];
-let subcategorias = [];
 const marcas = [
     'Apple', 'Samsung', 'Xiaomi', 'Asus', 'Dell', 'Lenovo', 'HP', 'Tecno', 'JBL',
     'NVIDIA', 'AMD', 'Intel', 'Corsair', 'Logitech', 'Razer', 'MSI', 'Gigabyte'
 ];
 
-<<<<<<< HEAD
-// VERIFICAR AUTENTICAÇÃO
-/*if (!authToken) {
-    alert('Faça login primeiro!');
-    window.location.href = '../TelaLogin/tela_login.html';
-}
-
-const user = JSON.parse(localStorage.getItem('utilizador') || '{}');
-if (user.role !== 'admin') {
-    alert('Acesso negado! Apenas administradores podem acessar esta página.');
-    window.location.href = '../TelaPrincipal/index.html';
-}
-
-function q(id) { return document.getElementById(id); }
-function hide(id) { const el = q(id); if(el) el.style.display = 'none'; }
-function show(id) { const el = q(id); if(el) el.style.display = ''; }
-
-function mostrarToast(msg, erro = false) {
-    const toast = q('toast');
-    if (!toast) return;
-    toast.textContent = erro ? `✗ ${msg}` : `✓ ${msg}`;
-    toast.classList.add('visivel');
-    setTimeout(() => toast.classList.remove('visivel'), 3000);
-}
-
-function getHeaders() {
-    return {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-    };
-}
-*/
-function criarModalCSS() {
-    if (document.getElementById('modal-sistema-style')) return;
-    const style = document.createElement('style');
-    style.id = 'modal-sistema-style';
-    style.textContent = `
-        #modal-overlay {
-            position: fixed; inset: 0; z-index: 9999;
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(4px);
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.2s ease;
-            pointer-events: none;
-        }
-        #modal-overlay.visivel {
-            opacity: 1; pointer-events: all;
-        }
-        #modal-caixa {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 28px 32px 24px;
-            min-width: 320px; max-width: 420px; width: 90%;
-            box-shadow: 0 24px 64px rgba(0,0,0,0.6);
-            transform: translateY(10px) scale(0.97);
-            transition: transform 0.22s ease, opacity 0.2s ease;
-            opacity: 0;
-        }
-        #modal-overlay.visivel #modal-caixa {
-            transform: translateY(0) scale(1); opacity: 1;
-        }
-        #modal-icone {
-            font-size: 2rem; margin-bottom: 10px; display: block;
-        }
-        #modal-titulo {
-            font-family: 'Segoe UI', sans-serif;
-            font-size: 1rem; font-weight: 600;
-            color: #f0f0f0; margin: 0 0 8px;
-        }
-        #modal-mensagem {
-            font-family: 'Segoe UI', sans-serif;
-            font-size: 0.88rem; color: #aaa;
-            line-height: 1.5; margin: 0 0 22px;
-        }
-        #modal-acoes {
-            display: flex; gap: 10px; justify-content: flex-end;
-        }
-        .modal-btn {
-            font-family: 'Segoe UI', sans-serif;
-            font-size: 0.85rem; font-weight: 500;
-            padding: 8px 20px; border-radius: 7px;
-            border: none; cursor: pointer;
-            transition: opacity 0.15s, transform 0.1s;
-        }
-        .modal-btn:hover { opacity: 0.85; }
-        .modal-btn:active { transform: scale(0.97); }
-        .modal-btn-cancelar {
-            background: #2e2e2e; color: #ccc;
-            border: 1px solid #444;
-        }
-        .modal-btn-confirmar {
-            background: #e53e3e; color: #fff;
-        }
-        .modal-btn-confirmar.seguro {
-            background: #2563eb;
-        }
-        .modal-btn-ok {
-            background: #2e2e2e; color: #f0f0f0;
-            border: 1px solid #444; min-width: 80px;
-        }
-    `;
-    document.head.appendChild(style);
-}
-// ===================== CARREGAR CATEGORIAS =====================
-async function carregarCategorias() {
-    try {
-        const response = await fetch(`${API_URL}/categorias`);
-        const categorias = await response.json();
-        
-        window.CATEGORIAS = {};
-        categorias.forEach(cat => {
-            window.CATEGORIAS[cat.nome.toLowerCase()] = {
-                label: cat.nome,
-                subcategorias: {},
-                marcas: []
-            };
-            if (cat.subcategorias) {
-                cat.subcategorias.forEach(sub => {
-                    window.CATEGORIAS[cat.nome.toLowerCase()].subcategorias[sub.nome] = [];
-                });
-            }
-        });
-        
-        const selCat = q('sel-cat');
-        if (selCat) {
-            selCat.innerHTML = '<option value="">— selecione —</option>';
-            categorias.forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat.nome.toLowerCase();
-                option.textContent = cat.nome;
-                selCat.appendChild(option);
-            });
-        }
-    } catch (err) {
-        console.error('Erro categorias:', err);
-        mostrarToast('Erro ao carregar categorias', true);
-=======
-const token = localStorage.getItem('token');
+let categorias = [];
 
 // ==================== TOAST ====================
 function mostrarToast(mensagem, erro = false) {
@@ -155,32 +16,52 @@ function mostrarToast(mensagem, erro = false) {
         toast = document.createElement('div');
         toast.id = 'toast';
         toast.style.cssText = `
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #1f2937;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 9999;
-            display: none;
+            position: fixed; bottom: 30px; right: 30px;
+            background: #1f2937; color: white;
+            padding: 12px 24px; border-radius: 10px;
+            font-size: 14px; font-weight: 500;
+            z-index: 9999; display: none;
         `;
         document.body.appendChild(toast);
->>>>>>> Homem-Aranha--esqueceram-fora-de-casa
     }
     toast.textContent = erro ? `✗ ${mensagem}` : `✓ ${mensagem}`;
     toast.style.display = 'block';
     setTimeout(() => (toast.style.display = 'none'), 3000);
 }
 
+// ==================== VALIDAÇÃO DE TOKEN ====================
 if (!token) {
     mostrarToast('Faça login primeiro!', true);
     setTimeout(() => (window.location.href = '../TelaLogin/tela_login.html'), 2000);
 }
 
-// ==================== CARREGAR PRODUTOS ====================
+// ==================== UTILITÁRIOS ====================
+function formatarMoeda(valor) {
+    return new Intl.NumberFormat('pt-PT', {
+        style: 'currency',
+        currency: 'MZN',
+        minimumFractionDigits: 2
+    }).format(valor);
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+function formatarImagem(imagem) {
+    if (!imagem) return '../../imagens/placeholder.png';
+    if (imagem.startsWith('http')) return imagem;
+    if (imagem.startsWith('/uploads')) return `${API.replace('/api', '')}${imagem}`;
+    return `${API.replace('/api', '')}/uploads/produtos/${imagem}`;
+}
+
+// ==================== CARREGAR PRODUTOS (lista) ====================
 async function carregarProdutos() {
     try {
         const res = await fetch(`${API}/produtos`, {
@@ -188,7 +69,7 @@ async function carregarProdutos() {
         });
         if (!res.ok) throw new Error('Erro ao carregar produtos');
         const data = await res.json();
-        const produtos = data.produtos || [];
+        const produtos = data.produtos || data || [];
 
         const grid = document.getElementById('grid-registados');
         const vazio = document.getElementById('estado-vazio');
@@ -203,7 +84,6 @@ async function carregarProdutos() {
         }
 
         vazio.style.display = 'none';
-
         grid.innerHTML = produtos.map(p => `
             <div class="card-reg">
                 <div class="card-reg-img">
@@ -218,7 +98,7 @@ async function carregarProdutos() {
                     </div>
                     <div class="card-reg-desc">${escapeHtml(p.descricao || '')}</div>
                     <div class="card-reg-meta">
-                        <div class="card-reg-preco">${Number(p.preco).toLocaleString()} MZN</div>
+                        <div class="card-reg-preco">${formatarMoeda(p.preco)}</div>
                         <div class="card-reg-stock ${p.stock > 0 ? 'ok' : 'zero'}">${p.stock}</div>
                     </div>
                 </div>
@@ -226,31 +106,13 @@ async function carregarProdutos() {
             </div>
         `).join('');
     } catch (err) {
-        console.error(err);
-        mostrarToast('Erro ao carregar produtos', true);
+        mostrarToast(err.message, true);
     }
-}
-
-function formatarImagem(imagem) {
-    if (!imagem) return '../../imagens/placeholder.png';
-    if (imagem.startsWith('http')) return imagem;
-    if (imagem.startsWith('/uploads')) return `${API.replace('/api', '')}${imagem}`;
-    return `${API.replace('/api', '')}/uploads/produtos/${imagem}`;
-}
-
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-    });
 }
 
 // ==================== REMOVER PRODUTO (botão na lista) ====================
 async function removerProduto(id) {
-    if (!confirm('Tens a certeza que queres remover este produto?')) return;
+    if (!confirm('Tem certeza que quer remover este produto?')) return;
     try {
         const res = await fetch(`${API}/produtos/${id}`, {
             method: 'DELETE',
@@ -259,10 +121,12 @@ async function removerProduto(id) {
                 Authorization: `Bearer ${token}`
             }
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.erro || 'Erro ao remover');
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.erro || 'Erro ao remover');
+        }
         mostrarToast('Produto removido com sucesso');
-        carregarProdutos(); // recarrega a lista
+        carregarProdutos();
     } catch (err) {
         mostrarToast(err.message, true);
     }
@@ -279,9 +143,9 @@ async function carregarCategorias() {
         categorias = data.categorias || [];
 
         const selCat = document.getElementById('sel-cat');
-        selCat.innerHTML = '<option value="">- selecione -</option>';
-        categorias.forEach(c => {
-            selCat.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+        selCat.innerHTML = '<option value="">— selecione —</option>';
+        categorias.forEach(cat => {
+            selCat.innerHTML += `<option value="${cat.id}">${escapeHtml(cat.nome)}</option>`;
         });
         document.getElementById('wrap-sub')?.classList.add('hidden');
         document.getElementById('wrap-marca')?.classList.add('hidden');
@@ -311,25 +175,22 @@ async function onCategoria() {
         const data = await res.json();
         const subcats = data.categoria?.subcategorias || [];
 
-        selSub.innerHTML = '<option value="">- selecione -</option>';
+        selSub.innerHTML = '<option value="">— selecione —</option>';
         subcats.forEach(sub => {
-            selSub.innerHTML += `<option value="${sub.id}">${sub.nome}</option>`;
+            selSub.innerHTML += `<option value="${sub.id}">${escapeHtml(sub.nome)}</option>`;
         });
         wrapSub?.classList.remove('hidden');
 
         const selMarca = document.getElementById('sel-marca');
-        selMarca.innerHTML = '<option value="">- selecione -</option>';
+        selMarca.innerHTML = '<option value="">— selecione —</option>';
         marcas.forEach(m => {
-            selMarca.innerHTML += `<option value="${m}">${m}</option>`;
+            selMarca.innerHTML += `<option value="${m}">${escapeHtml(m)}</option>`;
         });
         wrapMarca?.classList.remove('hidden');
     } catch (err) {
         mostrarToast('Erro ao carregar subcategorias', true);
     }
 }
-
-function onSubcategoria() {} // Placeholder
-function onMarca() {}       // Placeholder
 
 // ==================== CRIAR PRODUTO ====================
 document.getElementById('btn-adicionar')?.addEventListener('click', async () => {
@@ -359,19 +220,21 @@ document.getElementById('btn-adicionar')?.addEventListener('click', async () => 
         document.getElementById('inp-stock').value = '';
         document.getElementById('inp-desc').value = '';
         document.getElementById('sel-cat').value = '';
-        document.getElementById('sel-sub').innerHTML = '<option value="">- selecione -</option>';
-        document.getElementById('sel-marca').innerHTML = '<option value="">- selecione -</option>';
+        document.getElementById('sel-sub').innerHTML = '<option value="">— selecione —</option>';
+        document.getElementById('sel-marca').innerHTML = '<option value="">— selecione —</option>';
         document.getElementById('input-foto').value = '';
-        document.getElementById('preview-img').classList.add('hidden');
-        document.getElementById('zona-foto').classList.remove('tem-foto');
-        document.querySelector('.placeholder-foto').style.display = 'block';
+        const preview = document.getElementById('preview-img');
+        const placeholder = document.querySelector('.placeholder-foto');
+        if (preview) preview.classList.add('hidden');
+        if (placeholder) placeholder.style.display = 'block';
+        document.getElementById('zona-foto')?.classList.remove('tem-foto');
         carregarProdutos();
     } catch (err) {
         mostrarToast(err.message, true);
     }
 });
 
-// ==================== REMOVER PRODUTO (aba por ID) ====================
+// ==================== REMOVER PRODUTO POR ID (aba específica) ====================
 document.getElementById('btn-remover-produto')?.addEventListener('click', async () => {
     const id = document.getElementById('inp-id-produto').value.trim();
     if (!id) {
@@ -396,7 +259,7 @@ document.getElementById('btn-remover-produto')?.addEventListener('click', async 
     }
 });
 
-// ==================== REMOVER PERFIL (utilizador) ====================
+// ==================== REMOVER UTILIZADOR ====================
 document.getElementById('btn-remover-perfil')?.addEventListener('click', async () => {
     const nome = document.getElementById('inp-nome-perfil').value.trim();
     const email = document.getElementById('inp-email-perfil').value.trim();
@@ -435,6 +298,65 @@ document.getElementById('btn-remover-perfil')?.addEventListener('click', async (
     }
 });
 
+// ==================== RELATÓRIOS ====================
+async function carregarRelatorio() {
+    const dataInicio = document.getElementById('dataInicio')?.value || '';
+    const dataFim = document.getElementById('dataFim')?.value || '';
+    let url = `${API}/pedidos/admin/relatorio?`;
+    if (dataInicio) url += `data_inicio=${dataInicio}&`;
+    if (dataFim) url += `data_fim=${dataFim}&`;
+
+    try {
+        const res = await fetch(url, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) {
+            if (res.status === 401) {
+                mostrarToast('Sessão expirada. Faça login novamente.', true);
+                return;
+            }
+            throw new Error('Erro ao carregar relatório');
+        }
+        const data = await res.json();
+
+        // Resumo
+        document.getElementById('totalVendas').textContent = data.resumo?.total_pedidos || 0;
+        document.getElementById('faturacaoTotal').textContent = formatarMoeda(data.resumo?.faturacao_total || 0);
+        document.getElementById('totalClientes').textContent = data.resumo?.total_clientes || 0;
+
+        // Tabela de pedidos
+        const tbody = document.getElementById('tabelaBody');
+        if (!data.pedidos?.length) {
+            tbody.innerHTML = '<tr><td colspan="5" style="padding:12px;text-align:center;">Nenhum pedido encontrado</td></tr>';
+        } else {
+            tbody.innerHTML = data.pedidos.map(p => `
+                <tr>
+                    <td style="padding:12px;">#${p.pedido_id || p.id}</td>
+                    <td style="padding:12px;">${new Date(p.criado_em).toLocaleDateString('pt-PT')}</td>
+                    <td style="padding:12px;">${escapeHtml(p.username || 'Anónimo')}</td>
+                    <td style="padding:12px;">${formatarMoeda(p.total)}</td>
+                    <td style="padding:12px;">${p.estado}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Top produtos
+        const topDiv = document.getElementById('topProdutos');
+        if (!data.top_produtos?.length) {
+            topDiv.innerHTML = '<p>Nenhum produto vendido ainda.</p>';
+        } else {
+            topDiv.innerHTML = data.top_produtos.map(p => `
+                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #e5e7eb;">
+                    <span><strong>${escapeHtml(p.nome)}</strong></span>
+                    <span>${p.quantidade_vendida} vendidos | ${formatarMoeda(p.receita_total)}</span>
+                </div>
+            `).join('');
+        }
+    } catch (err) {
+        mostrarToast(err.message, true);
+    }
+}
+
 // ==================== ABAS ====================
 function mudarAba(id, el) {
     document.querySelectorAll('.aba-conteudo').forEach(a => a.classList.remove('ativa'));
@@ -451,38 +373,59 @@ function confirmarSair() {
     }
 }
 
-// ==================== INIT ====================
+// ==================== PREVIEW DE IMAGEM ====================
+function fotoSelecionada(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('preview-img');
+    const placeholder = document.querySelector('.placeholder-foto');
+    const zona = document.getElementById('zona-foto');
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            if (placeholder) placeholder.style.display = 'none';
+            if (zona) zona.classList.add('tem-foto');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.classList.add('hidden');
+        if (placeholder) placeholder.style.display = 'block';
+        if (zona) zona.classList.remove('tem-foto');
+    }
+}
+
+function dragOver(e) { e.preventDefault(); }
+function dragLeave(e) { e.preventDefault(); }
+function drop(e) {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    const input = document.getElementById('input-foto');
+    if (file && input) {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+        fotoSelecionada(input);
+    }
+}
+
+// ==================== INICIALIZAÇÃO ====================
 document.addEventListener('DOMContentLoaded', () => {
     carregarCategorias();
     carregarProdutos();
 
-<<<<<<< HEAD
-window.onload = init;
-=======
-    // Preview da imagem
     const inputFoto = document.getElementById('input-foto');
-    const zonaFoto = document.getElementById('zona-foto');
-    const preview = document.getElementById('preview-img');
-    const placeholder = document.querySelector('.placeholder-foto');
-
     if (inputFoto) {
-        inputFoto.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    preview.src = ev.target.result;
-                    preview.classList.remove('hidden');
-                    if (placeholder) placeholder.style.display = 'none';
-                    if (zonaFoto) zonaFoto.classList.add('tem-foto');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.classList.add('hidden');
-                if (placeholder) placeholder.style.display = 'block';
-                if (zonaFoto) zonaFoto.classList.remove('tem-foto');
-            }
-        });
+        inputFoto.addEventListener('change', () => fotoSelecionada(inputFoto));
     }
+
+    // Carregar relatório quando a aba de relatórios for mostrada pela primeira vez
+    const observer = new MutationObserver(() => {
+        const abaRelatorios = document.getElementById('aba-relatorios');
+        if (abaRelatorios && abaRelatorios.classList.contains('ativa')) {
+            carregarRelatorio();
+            observer.disconnect();
+        }
+    });
+    observer.observe(document.getElementById('aba-relatorios'), { attributes: true, attributeFilter: ['class'] });
 });
->>>>>>> Homem-Aranha--esqueceram-fora-de-casa

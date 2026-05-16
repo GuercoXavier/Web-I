@@ -24,7 +24,7 @@ function getAuthHeaders() {
     };
 }
 
-// ==================== TOAST MELHORADO ====================
+// ==================== TOAST ====================
 function mostrarToast(mensagem, tipo = 'info', duracao = 3000) {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -60,7 +60,7 @@ function mostrarToast(mensagem, tipo = 'info', duracao = 3000) {
     }, duracao);
 }
 
-// ==================== CONFIRMAÇÃO PERSONALIZADA ====================
+// ==================== CONFIRMAÇÃO ====================
 function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
     const modal = document.getElementById('modalConfirmacao');
     const msgSpan = document.getElementById('confirmacaoMensagem');
@@ -105,14 +105,12 @@ function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
 // ==================== CARREGAR UTILIZADOR ====================
 async function carregarUtilizador() {
     try {
-        // Tentar buscar do backend primeiro
         const response = await fetch(`${API}/auth/perfil`, { headers: getAuthHeaders() });
         if (response.ok) {
             const data = await response.json();
             utilizadorAtual = data.utilizador;
             localStorage.setItem('utilizador', JSON.stringify(utilizadorAtual));
         } else {
-            // Fallback para localStorage
             const usuarioSalvo = localStorage.getItem('utilizador');
             if (usuarioSalvo) {
                 utilizadorAtual = JSON.parse(usuarioSalvo);
@@ -123,14 +121,23 @@ async function carregarUtilizador() {
     }
 }
 
-// ==================== CARREGAR CRÉDITOS ====================
+// ==================== CARREGAR CRÉDITOS (converte centavos para unidades) ====================
 async function carregarCreditos() {
     try {
         const response = await fetch(`${API}/auth/creditos`, { headers: getAuthHeaders() });
         if (response.ok) {
             const data = await response.json();
+            // O backend pode retornar em centavos ou unidades. Convertemos para unidade.
+            let creditos = data.creditos || 0;
+            // Se o valor for muito grande (ex: 2000000) provavelmente está em centavos
+            // Para 20000 MZN, centavos seriam 2.000.000. Assumimos que valores > 10000 são centavos.
+            if (creditos > 10000) {
+                creditos = creditos / 100;
+            }
             const statCreditos = document.getElementById('stat-creditos');
-            if (statCreditos) statCreditos.textContent = data.creditos || 0;
+            if (statCreditos) statCreditos.textContent = creditos.toLocaleString('pt-PT');
+            // Guardar também no localStorage em unidades
+            localStorage.setItem('creditos', creditos);
         }
     } catch (err) {
         console.error('Erro ao carregar créditos:', err);
@@ -293,7 +300,7 @@ function escapeHtml(str) {
 async function adicionarCredito() {
     const input = document.getElementById('inp-credito');
     const btn = document.querySelector('.btn-adicionar-credito');
-    const valor = parseInt(input.value);
+    let valor = parseInt(input.value);
     
     if (!valor || valor <= 0) {
         mostrarToast('Valor inválido', 'erro');
@@ -316,7 +323,17 @@ async function adicionarCredito() {
             throw new Error(erro.erro || 'Erro ao adicionar créditos');
         }
         
-        await carregarCreditos();
+        const data = await response.json();
+        // A resposta deve conter `creditos` em unidades (já convertido pelo backend)
+        if (data.creditos !== undefined) {
+            const statCreditos = document.getElementById('stat-creditos');
+            if (statCreditos) statCreditos.textContent = data.creditos.toLocaleString('pt-PT');
+            localStorage.setItem('creditos', data.creditos);
+        } else {
+            // Fallback: recarregar créditos
+            await carregarCreditos();
+        }
+        
         input.value = '';
         mostrarToast(`${formatarMoeda(valor)} adicionado com sucesso!`, 'sucesso');
     } catch (err) {
@@ -331,7 +348,6 @@ async function adicionarCredito() {
 // ==================== PERFIL ====================
 function preencherDadosPerfil() {
     const nomeSpan = document.getElementById('sidebar-nome');
-    
     if (utilizadorAtual) {
         const nome = utilizadorAtual.username || 'Utilizador';
         if (nomeSpan) nomeSpan.textContent = nome;
@@ -398,5 +414,7 @@ function irPara(pagina) {
 }
 
 function formatarMoeda(valor) {
-    return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'MZN' }).format(valor);
+    const num = typeof valor === 'number' ? valor : parseFloat(valor);
+    if (isNaN(num)) return '0 MZN';
+    return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'MZN' }).format(num);
 }
