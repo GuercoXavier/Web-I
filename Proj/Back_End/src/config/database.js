@@ -4,7 +4,9 @@ const path = require('path');
 const fs = require('fs');
 
 // ===================== CONEXÃO =====================
-const dbPath = path.join(__dirname, '../../basgam.db');
+const dbPath = process.env.NODE_ENV === 'production'
+    ? path.join(__dirname, '../../data/basgam.db')
+    : path.join(__dirname, '../../basgam.db');
 
 const dbDir = path.dirname(dbPath);
 if (!fs.existsSync(dbDir)) {
