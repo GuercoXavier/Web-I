@@ -205,7 +205,7 @@ router.get('/:id', validarId, (req, res) => {
             return res.status(404).json({ erro: 'Produto não encontrado.' });
         }
         const produtoConvertido = converterPreco(produto);
-        // Retorna o produto diretamente (sem wrapper) para compatibilidade com o frontend
+        // Retorna o produto directamente (sem wrapper) para compatibilidade com o frontend
         res.json(produtoConvertido);
     } catch (err) {
         console.error('Erro ao buscar produto:', err);
@@ -219,7 +219,7 @@ router.post('/', autenticar, somenteAdmin, upload.single('imagem'), validarProdu
         const { nome, descricao = '', preco, stock = 0, marca = '', categoria_id = null, subcategoria_id = null, em_destaque = 0 } = req.body;
         const imagem = req.file ? `/uploads/produtos/${req.file.filename}` : '';
 
-        // Validações de categoria/subcategoria (omitidas para brevidade, mas devem permanecer)
+        // Validação de categoria/subcategoria (omitida para brevidade, mas deve permanecer)
         const result = db.prepare(`
             INSERT INTO produtos (nome, descricao, preco, stock, marca, imagem, categoria_id, subcategoria_id, em_destaque)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)

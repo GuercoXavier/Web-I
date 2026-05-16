@@ -13,15 +13,10 @@ const getAuthHeaders = () => ({
     ...(getToken() && { Authorization: `Bearer ${getToken()}` })
 });
 
-// Formata moeda, convertendo centavos para unidades se necessário
+// Formata moeda (backend já envia em unidades)
 const fmt = (v) => {
     if (v === undefined || v === null) return '0 MZN';
-    let valor = v;
-    // Se o valor for maior que 10000, assume que está em centavos e converte
-    if (typeof v === 'number' && v > 10000) {
-        valor = v / 100;
-    }
-    return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'MZN' }).format(valor);
+    return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'MZN' }).format(v);
 };
 
 async function apiFetch(path, opts = {}) {
@@ -185,7 +180,7 @@ async function carregarProdutos() {
         getMarcasSelecionadas().forEach(m => params.append('marca', m));
 
         const produtosData = await apiFetch(`/produtos?${params}`);
-        // O backend retorna um array diretamente
+        // O backend retorna array directamente
         produtos = produtosData.map(p => ({
             id: p.id, nome: p.nome, preco: p.preco, descricao: p.descricao,
             imagem: normalizarImagem(p.imagem) || 'https://via.placeholder.com/300x200?text=Sem+Imagem',
@@ -250,8 +245,11 @@ async function renderDestaque() {
 // ==================== DETALHE ====================
 async function renderDetalhe(id) {
     try {
-        const p = await apiFetch(`/produtos/${id}`);
-        // O backend agora retorna o produto diretamente (sem wrapper)
+        const data = await apiFetch(`/produtos/${id}`);
+        // Detecta se a resposta é wrapper { produto: {...} } ou produto directo
+        const p = data.produto || data;
+        if (!p || !p.id) throw new Error('Produto não encontrado ou dados inválidos');
+        
         p.imagem = normalizarImagem(p.imagem) || 'https://via.placeholder.com/500x400?text=Sem+Imagem';
         const container = document.getElementById('detalhe-conteudo');
         if (!container) return;
@@ -314,8 +312,31 @@ async function renderDetalhe(id) {
                 </div>
             </div>`;
 
-        carregarVejaTambem(p);
-    } catch (err) { mostrarMensagem(err.message, 'erro'); }
+        // Se o backend enviou relacionados, usa-os; senão, carrega por categoria
+        const relacionados = data.relacionados || [];
+        const grade = document.getElementById('grade-veja-tambem');
+        if (grade) {
+            if (relacionados.length) {
+                grade.innerHTML = relacionados.map(rel => {
+                    const img = normalizarImagem(rel.imagem) || 'https://via.placeholder.com/200x200?text=Sem+Imagem';
+                    return `
+                    <div class="veja-tambem-card"
+                         onclick="renderDetalhe(${rel.id});window.scrollTo({top:0,behavior:'smooth'})">
+                        <div class="veja-tambem-img">
+                            <img src="${img}" alt="${rel.nome}" onerror="this.src='https://via.placeholder.com/200x200?text=Sem+Imagem'">
+                        </div>
+                        <div class="veja-tambem-nome">${rel.nome}</div>
+                        <div class="veja-tambem-preco">${fmt(rel.preco)}</div>
+                    </div>`;
+                }).join('');
+            } else {
+                carregarVejaTambem(p);
+            }
+        }
+    } catch (err) {
+        console.error('Erro no renderDetalhe:', err);
+        mostrarMensagem(err.message, 'erro');
+    }
 }
 
 async function carregarVejaTambem(produtoAtual) {
@@ -382,6 +403,8 @@ async function addCarrinho(produtoId) {
     if (!produto) {
         try {
             produto = await apiFetch(`/produtos/${produtoId}`);
+            // Se vier wrapper, extrai
+            produto = produto.produto || produto;
             produto.imagem = normalizarImagem(produto.imagem) || 'https://via.placeholder.com/80x80?text=Sem+Imagem';
         } catch { return; }
     }
@@ -432,7 +455,7 @@ async function atualizarQuantidade(produtoId, quantidade) {
     } catch (err) { mostrarMensagem(err.message, 'erro'); }
 }
 
-const removerItemCarrinho = produtoId => atualizarQuantidade(produtoId, 0);
+const removerItemCarrinho = produitId => atualizarQuantidade(produitId, 0);
 
 async function limparCarrinho() {
     mostrarConfirmacao('Limpar todo o carrinho?', async () => {
