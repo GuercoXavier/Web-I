@@ -1,5 +1,16 @@
 // ==================== CONFIGURAÇÃO ====================
-const API_URL = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+// ==================== CONFIGURAÇÃO ====================
+// Em produção, não usar a porta :3000
+const API_URL = (() => {
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return `${protocol}//${hostname}:3000/api`;
+    }
+    return `${protocol}//${hostname}/api`;
+})();
+
+// ... resto do código (toggle, toast, validações, etc.) mantém-se igual, exceto os redirecionamentos que já usam caminhos absolutos
 
 // ==================== TOGGLE LOGIN/REGISTO ====================
 const container = document.getElementById('container');

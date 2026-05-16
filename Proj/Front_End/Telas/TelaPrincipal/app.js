@@ -1,5 +1,12 @@
 // ==================== CONFIGURAÇÃO ====================
-const API = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+const API = (() => {
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return `${protocol}//${hostname}:3000/api`;
+    }
+    return `${protocol}//${hostname}/api`;
+})();
 
 let categoriaAtiva = '';
 let produtos = [];

@@ -37,14 +37,21 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// ==================== CSP CONFIGURADA CORRETAMENTE ====================
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
+      // Permite scripts inline (onclick, etc.) e estilos inline
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
+      // Permite conexões para a mesma origem (incluindo porta 3000) e para o próprio domínio
+      connectSrc: ["'self'", "https://*.onrender.com:3000", "http://localhost:3000"],
       imgSrc: ["'self'", "data:", "blob:"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://fonts.googleapis.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
     },
   },
 }));
