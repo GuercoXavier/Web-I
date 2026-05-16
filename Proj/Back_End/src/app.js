@@ -37,7 +37,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Helmet com CSP desativada (apenas para o trabalho académico)
+// Helmet com CSP desativada (para permitir iframes e estilos inline)
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   contentSecurityPolicy: false
@@ -65,7 +65,7 @@ app.use('/api/auth/register', authLimiter);
 
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');   // permite iframes da mesma origem
   res.setHeader('X-XSS-Protection', '1; mode=block');
   next();
 });
@@ -79,12 +79,25 @@ app.use('/uploads', express.static(uploadsDir));
 
 const frontendPath = path.join(__dirname, '../../Front_End');
 if (fs.existsSync(frontendPath)) {
+  // Servir toda a pasta Front_End (inclui Telas/, imagens/, posters/)
   app.use(express.static(frontendPath));
+  
+  // Para que a página inicial (raiz) consiga carregar CSS/JS que estão dentro de Telas/TelaPrincipal
   app.use(express.static(path.join(frontendPath, 'Telas/TelaPrincipal')));
+  
+  // Servir também as subpastas das outras telas
   app.use(express.static(path.join(frontendPath, 'Telas/TelaLogin')));
   app.use(express.static(path.join(frontendPath, 'Telas/TelaPerfil')));
   app.use(express.static(path.join(frontendPath, 'Telas/TelaRegistro')));
   app.use(express.static(path.join(frontendPath, 'Telas/TelaRecibo')));
+  
+  // Servir os posters com cabeçalho X-Frame-Options apropriado
+  app.use('/posters', (req, res, next) => {
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    next();
+  });
+  app.use('/posters', express.static(path.join(frontendPath, 'posters')));
+  
   console.log('📁 Frontend estático disponível em:', frontendPath);
 } else {
   console.warn('⚠️ Pasta Front_End NÃO encontrada em:', frontendPath);

@@ -1,5 +1,13 @@
 // ==================== CONFIGURAÇÃO ====================
-const API = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+const API = (() => {
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return `${protocol}//${hostname}:3000/api`;
+    }
+    return `${protocol}//${hostname}/api`;
+})();
+
 const token = localStorage.getItem('token');
 
 const marcas = [
@@ -55,7 +63,7 @@ function escapeHtml(str) {
 }
 
 function formatarImagem(imagem) {
-    if (!imagem) return '../../imagens/placeholder.png';
+    if (!imagem) return '/imagens/placeholder.png';
     if (imagem.startsWith('http')) return imagem;
     if (imagem.startsWith('/uploads')) return `${API.replace('/api', '')}${imagem}`;
     return `${API.replace('/api', '')}/uploads/produtos/${imagem}`;
@@ -365,8 +373,10 @@ function mudarAba(id, el) {
     el.classList.add('ativo');
 }
 
+// ==================== LOGOUT CORRIGIDO ====================
 function confirmarSair() {
-    if (confirm('Deseja realmente sair?')) {
+    const sair = confirm('Deseja realmente sair?');
+    if (sair) {
         localStorage.removeItem('token');
         localStorage.removeItem('utilizador');
         window.location.href = '/Telas/TelaLogin/tela_login.html';

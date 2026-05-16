@@ -9,7 +9,7 @@
         /* (CSS idêntico ao original – manter o mesmo) */
         @font-face {
             font-family: "manrope";
-            src: url(../../fontes/Manrope-VariableFont_wght.ttf);
+            src: url(/fontes/Manrope-VariableFont_wght.ttf);
         }
         * { margin:0; padding:0; box-sizing:border-box; font-family:"manrope",sans-serif; }
         body { background:#f5f7fb; color:#1f2937; min-height:100vh; }
@@ -93,16 +93,16 @@
 <div class="dashboard-container">
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo-badge"><img src="../../imagens/colorless.png" alt="Logo" class="logo-img" /></div>
+            <div class="logo-badge"><img src="/imagens/colorless.png" alt="Logo" class="logo-img" /></div>
             <h2>BASGAM <span>/ Admin</span></h2>
         </div>
         <nav class="sidebar-nav">
-            <div class="nav-item ativo" onclick="mudarAba('registar', this)"><img src="../../imagens/icon/plus.svg" class="icon-svg" /><span>Registar Produto</span></div>
-            <div class="nav-item" onclick="mudarAba('remover-produto', this)"><img src="../../imagens/icon/trash3-fill.svg" class="icon-svg" /><span>Remover Produto</span></div>
-            <div class="nav-item" onclick="mudarAba('remover-perfil', this)"><img src="../../imagens/icon/person-dash-fill.svg" class="icon-svg" /><span>Remover Perfil</span></div>
-            <div class="nav-item" onclick="mudarAba('relatorios', this)"><img src="../../imagens/icon/graph-up.svg" class="icon-svg" /><span>Relatorios</span></div>
+            <div class="nav-item ativo" onclick="mudarAba('registar', this)"><img src="/imagens/icon/plus.svg" class="icon-svg" /><span>Registar Produto</span></div>
+            <div class="nav-item" onclick="mudarAba('remover-produto', this)"><img src="/imagens/icon/trash3-fill.svg" class="icon-svg" /><span>Remover Produto</span></div>
+            <div class="nav-item" onclick="mudarAba('remover-perfil', this)"><img src="/imagens/icon/person-dash-fill.svg" class="icon-svg" /><span>Remover Perfil</span></div>
+            <div class="nav-item" onclick="mudarAba('relatorios', this)"><img src="/imagens/icon/graph-up.svg" class="icon-svg" /><span>Relatorios</span></div>
         </nav>
-        <div class="sidebar-footer"><div class="nav-item" onclick="confirmarSair()"><img src="../../imagens/icon/box-arrow-right.svg" class="icon-svg" /><span>Sair</span></div></div>
+        <div class="sidebar-footer"><div class="nav-item" onclick="confirmarSair()"><img src="/imagens/icon/box-arrow-right.svg" class="icon-svg" /><span>Sair</span></div></div>
     </aside>
     <main class="conteudo">
         <!-- Aba Registar Produto -->
@@ -111,7 +111,7 @@
             <div class="secao-sub">Preencha os dados abaixo para adicionar um novo produto ao catálogo.</div>
             <div class="zona-foto" id="zona-foto" onclick="document.getElementById('input-foto').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">
                 <img id="preview-img" src="" alt="preview" class="hidden" />
-                <div class="placeholder-foto"><img src="../../imagens/icon/cloud-arrow-up-fill.svg" class="icon-upload" /><p>Clique ou arraste a imagem do produto</p></div>
+                <div class="placeholder-foto"><img src="/imagens/icon/cloud-arrow-up-fill.svg" class="icon-upload" /><p>Clique ou arraste a imagem do produto</p></div>
             </div>
             <input type="file" id="input-foto" accept="image/*" class="hidden" />
             <div class="form-grid">
@@ -129,7 +129,7 @@
                 <div class="caminho-filtro" id="caminho-filtro"></div>
             </div>
             <div class="campo full-width"><label for="inp-desc">Descrição</label><textarea id="inp-desc" rows="4" placeholder="Descreva o produto..."></textarea></div>
-            <button class="btn-primario" id="btn-adicionar"><img src="../../imagens/icon/plus.svg" class="icon-btn-add" />Adicionar Produto</button>
+            <button class="btn-primario" id="btn-adicionar"><img src="/imagens/icon/plus.svg" class="icon-btn-add" />Adicionar Produto</button>
             <hr class="divider" />
             <div class="lista-header"><span class="lista-titulo">Produtos Registados</span><span class="badge-count" id="badge-count">0 produtos</span></div>
             <div class="estado-vazio" id="estado-vazio"><p>Nenhum produto registado ainda.</p></div>
@@ -143,7 +143,7 @@
             <div class="form-remover-container">
                 <div class="campo"><label for="inp-id-produto">ID do Produto</label><input type="text" id="inp-id-produto" placeholder="Ex: 1, 2, 3..." /></div>
                 <div class="campo"><label for="inp-nome-busca-produto">Nome do Produto <span>(opcional)</span></label><input type="text" id="inp-nome-busca-produto" placeholder="Ex: iPhone 16" /></div>
-                <button class="btn-primario btn-danger" id="btn-remover-produto"><img src="../../imagens/icon/trash3-fill.svg" class="icon-btn-remove" />Remover Produto</button>
+                <button class="btn-primario btn-danger" id="btn-remover-produto"><img src="/imagens/icon/trash3-fill.svg" class="icon-btn-remove" />Remover Produto</button>
             </div>
         </div>
 
@@ -154,7 +154,7 @@
             <div class="form-remover-container">
                 <div class="campo"><label for="inp-nome-perfil">Nome do Utilizador</label><input type="text" id="inp-nome-perfil" placeholder="Ex: João Silva" /></div>
                 <div class="campo"><label for="inp-email-perfil">Email <span>(opcional)</span></label><input type="email" id="inp-email-perfil" placeholder="Ex: joao@email.com" /></div>
-                <button class="btn-primario btn-danger" id="btn-remover-perfil"><img src="../../imagens/icon/person-dash-fill.svg" class="icon-btn-remove" />Remover Perfil</button>
+                <button class="btn-primario btn-danger" id="btn-remover-perfil"><img src="/imagens/icon/person-dash-fill.svg" class="icon-btn-remove" />Remover Perfil</button>
             </div>
         </div>
 
