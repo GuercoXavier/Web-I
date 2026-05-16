@@ -164,8 +164,8 @@ if (loginForm && loginButton) {
 
             setTimeout(() => {
                 const destino = data.utilizador.role === 'admin'
-                    ? '../TelaRegistro/registroAdm.html'
-                    : '../TelaPrincipal/index.html';
+                    ? '/Telas/TelaRegistro/RegistroAdm.html'
+                    : '/Telas/TelaPrincipal/index.html';
                 window.location.href = destino;
             }, 800);
             
@@ -296,56 +296,80 @@ const forgotLink = document.querySelector('.forget-link a');
 if (forgotLink) {
     forgotLink.addEventListener('click', (e) => {
         e.preventDefault();
-        window.location.href = 'redefinir_senha.html';
+        window.location.href = '/Telas/TelaLogin/redefinir_senha.html';
     });
 }
 
-// ==================== REDEFINIR SENHA (para a página redefinir_senha.html) ====================
-// Verificar se está na página de redefinir senha
+// ==================== REDEFINIR SENHA (página de redefinição) ====================
 if (window.location.pathname.includes('redefinir_senha')) {
-    btnRedefinir.addEventListener('click', async () => {
-    const email = document.getElementById('email')?.value;
-    const senha = novaSenha?.value;
-    const confirmar = confirmarSenha?.value;
+    const btnRedefinir = document.getElementById('btnRedefinir');
+    const emailInput = document.getElementById('email');
+    const novaSenha = document.getElementById('novaSenha');
+    const confirmarSenha = document.getElementById('confirmarSenha');
+    const senhaInfo = document.getElementById('senhaInfo');
+    const lengthReq = document.getElementById('lengthReq');
+    const numberReq = document.getElementById('numberReq');
+    const upperReq = document.getElementById('upperReq');
 
-    if (!email || !senha || !confirmar) {
-        mostrarToast('Preencha todos os campos', 'erro');
-        return;
+    // Validação da senha em tempo real (opcional)
+    if (novaSenha) {
+        novaSenha.addEventListener('input', () => {
+            const senha = novaSenha.value;
+            const valid = validarSenha(senha);
+            lengthReq.innerHTML = valid.length ? '<i class="bx bx-check"></i> 6+ caracteres' : '<i class="bx bx-x"></i> 6+ caracteres';
+            numberReq.innerHTML = valid.number ? '<i class="bx bx-check"></i> Número' : '<i class="bx bx-x"></i> Número';
+            upperReq.innerHTML = valid.upper ? '<i class="bx bx-check"></i> Maiúscula' : '<i class="bx bx-x"></i> Maiúscula';
+            lengthReq.style.color = valid.length ? '#22c55e' : '#6b7280';
+            numberReq.style.color = valid.number ? '#22c55e' : '#6b7280';
+            upperReq.style.color = valid.upper ? '#22c55e' : '#6b7280';
+        });
     }
 
-    if (senha !== confirmar) {
-        mostrarToast('As senhas não coincidem', 'erro');
-        return;
+    if (btnRedefinir) {
+        btnRedefinir.addEventListener('click', async () => {
+            const email = emailInput?.value.trim();
+            const senha = novaSenha?.value;
+            const confirmar = confirmarSenha?.value;
+
+            if (!email || !senha || !confirmar) {
+                mostrarToast('Preencha todos os campos', 'erro');
+                return;
+            }
+
+            if (senha !== confirmar) {
+                mostrarToast('As senhas não coincidem', 'erro');
+                return;
+            }
+
+            const validacao = validarSenha(senha);
+            if (!validacao.length || !validacao.number || !validacao.upper) {
+                mostrarToast('Senha fraca. Deve ter pelo menos 6 caracteres, um número e uma letra maiúscula.', 'erro');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/auth/redefinir-senha`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, nova_senha: senha })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    mostrarToast('Senha redefinida com sucesso!', 'sucesso');
+                    setTimeout(() => {
+                        window.location.href = '/Telas/TelaLogin/tela_login.html';
+                    }, 1500);
+                } else {
+                    mostrarToast(data.erro || 'Erro ao redefinir senha', 'erro');
+                }
+            } catch (err) {
+                mostrarToast('Erro de conexão com o servidor', 'erro');
+            }
+        });
     }
-
-    const validacao = validarSenha(senha);
-    if (!validacao.length || !validacao.number || !validacao.upper) {
-        mostrarToast('Senha fraca', 'erro');
-        return;
-    }
-
-    const res = await fetch(`${API_URL}/auth/redefinir-senha`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            email,
-            nova_senha: senha
-        })
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-        mostrarToast('Senha redefinida com sucesso!', 'sucesso');
-        setTimeout(() => {
-            window.location.href = 'tela_login.html';
-        }, 1500);
-    } else {
-        mostrarToast(data.erro || 'Erro ao redefinir senha', 'erro');
-    }
-});
-        };
-
+}
 
 // ==================== VERIFICAR SE JÁ ESTÁ LOGADO ====================
 function verificarSessao() {
@@ -354,8 +378,8 @@ function verificarSessao() {
         const user = JSON.parse(localStorage.getItem('utilizador') || '{}');
         if (user.id) {
             const destino = user.role === 'admin' 
-                ? '../TelaRegistro/registroAdm.html' 
-                : '../TelaPrincipal/index.html';
+                ? '/Telas/TelaRegistro/RegistroAdm.html' 
+                : '/Telas/TelaPrincipal/index.html';
             window.location.href = destino;
         }
     }

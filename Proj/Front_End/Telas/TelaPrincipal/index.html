@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="BASGAM Tech - Loja de Produtos Gaming e Eletrônicos" />
     <title>BASGAM Tech</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/Telas/TelaPrincipal/styles.css" />
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Manrope:wght@200..800&family=Open+Sans:wght@300..800&family=Playwrite+NZ+Basic:wght@100..400&family=Roboto+Condensed:wght@100..900&display=swap" rel="stylesheet" />
 </head>
@@ -16,7 +16,7 @@
         <div class="esquerda-header">
           <div class="logo" onclick="ir('home')">
             <span class="logo-icone">
-              <img src="../../imagens/colorless.png" alt="B" />
+              <img src="/imagens/colorless.png" alt="B" />
             </span>
           </div>
           <nav id="menu">
@@ -24,7 +24,6 @@
               <span>Home</span>
             </a>
             <a href="javascript:void(0)" onclick="ir('produtos')">
-
               <span>Produtos</span>
             </a>
             <a href="javascript:void(0)" id="contacto-icon" onclick="ir('contato')">
@@ -40,39 +39,39 @@
           <div class="search-wrapper">
             <input type="text" id="searchInput" placeholder="Buscar produtos..." onkeyup="buscarProdutos(event)" />
             <span class="search-icon" onclick="buscarProdutosPorTexto()">
-              <img src="../../imagens/icon/search.svg" alt="" />
+              <img src="/imagens/icon/search.svg" alt="" />
             </span>
           </div>
 
           <button class="btn-carrinho" onclick="ir('carrinho')">
-            <img src="../../imagens/icon/cart_icon.svg" title="Carrinho" alt="Carrinho" />
+            <img src="/imagens/icon/cart_icon.svg" title="Carrinho" alt="Carrinho" />
             <span id="badge" class="badge oculto">0</span>
           </button>
 
           <div class="user-menu-container">
             <button class="btn-user" id="userBtn" onclick="toggleUserMenu()">
-              <img src="../../imagens/icon/person-circle.svg" title="Utilizador" alt="Utilizador" />
+              <img src="/imagens/icon/person-circle.svg" title="Utilizador" alt="Utilizador" />
               <span id="userNameDisplay" class="user-name"></span>
               <span class="user-arrow">▼</span>
             </button>
             <div id="userMenu" class="user-dropdown">
-              <a href="../TelaPerfil/perfil.html" class="dropdown-item">
-                <img src="../../imagens/icon/user-check.svg" alt="" />
+              <a href="/Telas/TelaPerfil/perfil.html" class="dropdown-item">
+                <img src="/imagens/icon/user-check.svg" alt="" />
                 Meu Perfil
               </a>
-              <a href="../TelaRegistro/RegistroAdm.html" class="dropdown-item" style="display: none">
-                <img src="../../imagens/icon/admin-icon.svg" alt="" />
+              <a href="/Telas/TelaRegistro/RegistroAdm.html" class="dropdown-item" style="display: none">
+                <img src="/imagens/icon/admin-icon.svg" alt="" />
                 Modo Administrador
               </a>
               <button onclick="logout()" class="dropdown-item logout">
-                <img src="../../imagens/icon/log-out.svg" alt="" />
+                <img src="/imagens/icon/log-out.svg" alt="" />
                 Sair
               </button>
             </div>
           </div>
 
           <button class="btn-menu" onclick="toggleMenu()">
-            <img src="../../imagens/icon/list.svg" alt="Menu" />
+            <img src="/imagens/icon/list.svg" alt="Menu" />
           </button>
         </div>
       </div>
@@ -85,30 +84,30 @@
         <div id="sroll-Lateral">
           <div id="button">
             <button id="prev">
-              <img src="../../imagens/icon/prev.png" alt="prev" />
+              <img src="/imagens/icon/prev.png" alt="prev" />
             </button>
             <div id="scroll-container">
               <div class="track">
                 <div class="poster-wrapper" onclick="filtrarMarca('Apple')">
-                  <iframe src="../../posters/apple/appleSite.html" class="poster-frame" title="Apple"></iframe>
+                  <iframe src="/posters/apple/appleSite.html" class="poster-frame" title="Apple"></iframe>
                   <div class="poster-overlay"></div>
                 </div>
                 <div class="poster-wrapper" onclick="filtrarMarca('Samsung')">
-                  <iframe src="../../posters/samgung/samsungSite.html" class="poster-frame" title="Samsung"></iframe>
+                  <iframe src="/posters/samgung/samsungSite.html" class="poster-frame" title="Samsung"></iframe>
                   <div class="poster-overlay"></div>
                 </div>
                 <div class="poster-wrapper" onclick="filtrarMarca('Asus')">
-                  <iframe src="../../posters/asus/Poster.html" class="poster-frame" title="Asus"></iframe>
+                  <iframe src="/posters/asus/Poster.html" class="poster-frame" title="Asus"></iframe>
                   <div class="poster-overlay"></div>
                 </div>
                 <div class="poster-wrapper" onclick="filtrar('diversos')">
-                  <iframe src="../../posters/diversos/index.html" class="poster-frame" title="Diversos"></iframe>
+                  <iframe src="/posters/diversos/index.html" class="poster-frame" title="Diversos"></iframe>
                   <div class="poster-overlay"></div>
                 </div>
               </div>
             </div>
             <button id="next">
-              <img src="../../imagens/icon/next.png" alt="next" />
+              <img src="/imagens/icon/next.png" alt="next" />
             </button>
           </div>
         </div>
@@ -149,32 +148,32 @@
         <div class="quartetos-container">
           <div class="quarteto" onclick="filtrar('laptop'); ir('produtos')">
             <p>Celulares <br>Portabilidade sem limites</p>
-            <img src="../../imagens/icon/phone.png" alt="asus laptop" />
+            <img src="/imagens/icon/phone.png" alt="asus laptop" />
             <button onclick="event.stopPropagation(); filtrar('Celulares'); ir('produtos')">explorar ></button>
           </div>
           <div class="quarteto" onclick="filtrar('laptop'); ir('produtos')">
             <p>Laptops <br>Imersão total</p>
-            <img src="../../imagens/icon/laptop.png" alt="asus laptop" />
+            <img src="/imagens/icon/laptop.png" alt="asus laptop" />
             <button onclick="event.stopPropagation(); filtrar('laptop'); ir('produtos')">explorar ></button>
           </div>
           <div class="quarteto" onclick="filtrar('teclado'); ir('produtos')">
             <p>Keyboards <br>texto curto em falta</p>
-            <img src="../../imagens/icon/RezeKeyboard.png" alt="reze keyboard" />
+            <img src="/imagens/icon/RezeKeyboard.png" alt="reze keyboard" />
             <button onclick="event.stopPropagation(); filtrar('teclado'); ir('produtos')">explorar ></button>
           </div>
           <div class="quarteto" onclick="filtrar('gpu'); ir('produtos')">
             <p>GPUs <br>Performance extrema</p>
-            <img src="../../imagens/icon/RTX3060.png" alt="rtx 3060" />
+            <img src="/imagens/icon/RTX3060.png" alt="rtx 3060" />
             <button onclick="event.stopPropagation(); filtrar('gpu'); ir('produtos')">explorar ></button>
           </div>
           <div class="quarteto" onclick="filtrar('fone'); ir('produtos')">
             <p>HeadFones <br>Som que emociona</p>
-            <img src="../../imagens/icon/Headphone.png" alt="headphone" />
+            <img src="/imagens/icon/Headphone.png" alt="headphone" />
             <button onclick="event.stopPropagation(); filtrar('fone'); ir('produtos')">explorar ></button>
           </div>
           <div class="quarteto" onclick="filtrar('cpu'); ir('produtos')">
             <p>CPUs <br>Poder absoluto</p>
-            <img src="../../imagens/icon/AMDRYZEN9950X3D.png" alt="amd ryzen 9 9950x3d" />
+            <img src="/imagens/icon/AMDRYZEN9950X3D.png" alt="amd ryzen 9 9950x3d" />
             <button onclick="event.stopPropagation(); filtrar('cpu'); ir('produtos')">explorar ></button>
           </div>
         </div>
@@ -182,11 +181,8 @@
 
       <!-- ===== PRODUTOS ===== -->
       <section id="view-produtos" class="pagina oculta">
-
-
         <div class="produtos-wrapper">
-
-          <!--SIDEBAR-->
+          <!-- SIDEBAR -->
           <aside class="sidebar-filtros">
             <div class="sidebar-header">
               <button class="btn-voltar" onclick="ir('home')">← Voltar</button>
@@ -196,48 +192,37 @@
 
           <!-- AREA DIREITA -->
           <div class="produtos-conteudo">
-            
-            <!-- BARRA GLOBAL DE FILTROS -->
             <div class="barra-filtros-topo">
               <section id="topo-filtros">
                 <h1>Filtros globais</h1>
                 <span>Categorias</span>
-                  <div id="cat-container">
-                    <div class="cat-grid">
-                      <button class="cat-btn active" onclick="setCat(this,'')">Todos</button>
-                      <button class="cat-btn" onclick="setCat(this,'celulares')">Celulares</button>
-                      <button class="cat-btn" onclick="setCat(this,'laptop')">Laptops</button>
-                      <button class="cat-btn" onclick="setCat(this,'monitor')">Monitor</button>
-                      <button class="cat-btn" onclick="setCat(this,'acessorios')">Acessórios</button>
-                      <button class="cat-btn" onclick="setCat(this,'gpu')">GPUs</button>
-                    </div>
-                  </div>
-                <div id="topo-filtos-texto">
-                  <div>
-                    <button class="marca-toggle" onclick="toggleMarca()">Marca</button>
-                  </div>
-
-
-                  <div>
-                    <button class="btn-limpar-filtros" onclick="limparFiltros()">Limpar</button>
+                <div id="cat-container">
+                  <div class="cat-grid">
+                    <button class="cat-btn active" onclick="setCat(this,'')">Todos</button>
+                    <button class="cat-btn" onclick="setCat(this,'celulares')">Celulares</button>
+                    <button class="cat-btn" onclick="setCat(this,'laptop')">Laptops</button>
+                    <button class="cat-btn" onclick="setCat(this,'monitor')">Monitor</button>
+                    <button class="cat-btn" onclick="setCat(this,'acessorios')">Acessórios</button>
+                    <button class="cat-btn" onclick="setCat(this,'gpu')">GPUs</button>
                   </div>
                 </div>
-
+                <div id="topo-filtos-texto">
+                  <div><button class="marca-toggle" onclick="toggleMarca()">Marca</button></div>
+                  <div><button class="btn-limpar-filtros" onclick="limparFiltros()">Limpar</button></div>
+                </div>
                 <div id="marcaFiltro">
-                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Apple"   onchange="aplicarFiltros()"/> Apple</label>
+                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Apple" onchange="aplicarFiltros()"/> Apple</label>
                   <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Samsung" onchange="aplicarFiltros()"/> Samsung</label>
-                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Xiaomi"  onchange="aplicarFiltros()"/> Xiaomi</label>
-                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Asus"    onchange="aplicarFiltros()"/> Asus</label>
-                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Dell"    onchange="aplicarFiltros()"/> Dell</label>
-                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Lenovo"  onchange="aplicarFiltros()"/> Lenovo</label>
-                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="HP"      onchange="aplicarFiltros()"/> HP</label>
-                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Tecno"   onchange="aplicarFiltros()"/> Tecno</label>
-                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="JBL"     onchange="aplicarFiltros()"/> JBL</label>
+                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Xiaomi" onchange="aplicarFiltros()"/> Xiaomi</label>
+                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Asus" onchange="aplicarFiltros()"/> Asus</label>
+                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Dell" onchange="aplicarFiltros()"/> Dell</label>
+                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Lenovo" onchange="aplicarFiltros()"/> Lenovo</label>
+                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="HP" onchange="aplicarFiltros()"/> HP</label>
+                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="Tecno" onchange="aplicarFiltros()"/> Tecno</label>
+                  <label><input type="checkbox" class="filtro-marca" data-cat="global" value="JBL" onchange="aplicarFiltros()"/> JBL</label>
                 </div>
               </section>
             </div>
-
-            <!-- GRADE DE PRODUTOS -->
             <div class="produtos-grade-area">
               <div class="topo-produtos">
                 <h1>Todos os Produtos</h1>
@@ -245,15 +230,13 @@
               </div>
               <div id="grade-produtos" class="grade"></div>
             </div>
-
-          </div><!-- fim .produtos-conteudo -->
-        </div><!-- fim .produtos-wrapper -->
+          </div>
+        </div>
       </section>
 
       <!-- ===== DETALHE ===== -->
       <section id="view-detalhe" class="pagina oculta">
         <div class="container">
-          
           <div id="detalhe-conteudo" class="detalhe"><button class="btn-voltar" onclick="ir('home')">← Voltar</button></div>
         </div>
       </section>
@@ -266,16 +249,10 @@
             <div id="itens-carrinho"></div>
             <aside class="resumo">
               <h2>Resumo do Pedido</h2>
-              <div class="linha">
-                <span>Subtotal</span><span id="subtotal">R$ 0,00</span>
-              </div>
+              <div class="linha"><span>Subtotal</span><span id="subtotal">0 MZN</span></div>
               <div class="linha"><span>Frete</span><span>A calcular</span></div>
-              <div class="linha total">
-                <span>Total</span><span id="total">R$ 0,00</span>
-              </div>
-              <button class="btn primario full" onclick="finalizar()">
-                Finalizar Compra
-              </button>
+              <div class="linha total"><span>Total</span><span id="total">0 MZN</span></div>
+              <button class="btn primario full" onclick="finalizar()">Finalizar Compra</button>
             </aside>
           </div>
         </div>
@@ -288,45 +265,23 @@
           <p>Somos uma loja de tecnologia dedicada a oferecer produtos de qualidade e serviços excepcionais para nossos clientes.</p>
           <button>Conheça nossa história</button>
         </article>
-
         <article class="Com-Img">
-          <h1> Nossa Missão</h1>
+          <h1>Nossa Missão</h1>
           <p>Democratizar o acesso a equipamentos de informática de qualidade, garantindo que todos tenham as ferramentas para prosperar no mundo digital.</p>
-          <p>
-            O problema não era falta de tecnologia. <br>
-            Era a forma como ela era vendida. <br>
-
-            Lojas tradicionais limitavam horários, <br>
-            dificultavam comparações e nem sempre <br>
-            ofereciam uma experiência simples. <br>
-          </p>
+          <p>O problema não era falta de tecnologia.<br>Era a forma como ela era vendida.<br>Lojas tradicionais limitavam horários,<br>dificultavam comparações e nem sempre<br>ofereciam uma experiência simples.</p>
         </article>
-
         <article class="Sem-img2">
-          <h1> Nossos Valores</h1>
+          <h1>Nossos Valores</h1>
           <p>Compromisso, integridade, inovação e excelência são os valores que orientam nossa atuação e nos guidam no objetivo de satisfazer nossos clientes.</p>
-          <span>
-            <h2>Compra Inteligente</h2>
-            <p>Pesquisa rápida, filtros por marca, <br>
-            categorias e experiência intuitiva.</p>
-          </span>
-          <span>
-            <h2>Confiança e Segurança</h2>
-            Validação de stock, autenticação <br>
-            e recibos detalhados.
-          </span>
+          <span><h2>Compra Inteligente</h2><p>Pesquisa rápida, filtros por marca,<br>categorias e experiência intuitiva.</p></span>
+          <span><h2>Confiança e Segurança</h2><p>Validação de stock, autenticação<br>e recibos detalhados.</p></span>
         </article>
-
         <article class="Com-Img2">
           <h1>Foi aqui que nasceu a BASGAM Tech.</h1>
-          <p>
-            Criámos uma plataforma capaz de unir <br>
-            pesquisa, compra, autenticação, <br>
-            gestão de produtos e uma experiência moderna <br>
-            num único ecossistema. <br>
-          </p>
+          <p>Criámos uma plataforma capaz de unir<br>pesquisa, compra, autenticação,<br>gestão de produtos e uma experiência moderna<br>num único ecossistema.</p>
         </article>
       </section>
+
       <!-- ===== CONTATO ===== -->
       <section id="view-contato" class="pagina oculta">
         <div class="container">
@@ -336,27 +291,17 @@
           </div>
           <div class="layout-contato">
             <form onsubmit="enviarForm(event)">
-              <div class="campo">
-                <label for="nome">Nome Completo</label>
-                <input type="text" id="nome" required placeholder="Seu nome" />
-              </div>
-              <div class="campo">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" required placeholder="seu@email.com" />
-              </div>
-              <div class="campo">
-                <label for="msg">Mensagem</label>
-                <textarea id="msg" rows="5" required placeholder="Como podemos ajudar?"></textarea>
-              </div>
+              <div class="campo"><label for="nome">Nome Completo</label><input type="text" id="nome" required placeholder="Seu nome" /></div>
+              <div class="campo"><label for="email">E-mail</label><input type="email" id="email" required placeholder="seu@email.com" /></div>
+              <div class="campo"><label for="msg">Mensagem</label><textarea id="msg" rows="5" required placeholder="Como podemos ajudar?"></textarea></div>
               <button type="submit" class="btn primario full">Enviar Mensagem</button>
             </form>
-
             <div class="card">
               <h3>Informações</h3>
               <ul class="info-lista">
-                <li><img src="../../imagens/icon/geo-alt-fill.svg" alt="" /> Av. do Zimbabwe , 1037 - Maputo</li>
-                <li><img src="../../imagens/icon/telephone-fill.svg" alt="" /> (+258) 84 135 4863</li>
-                <li><img src="../../imagens/icon/envelope-fill.svg" alt="" /> guercoxavierCEO@basgamtech.com</li>
+                <li><img src="/imagens/icon/geo-alt-fill.svg" alt="" /> Av. do Zimbabwe , 1037 - Maputo</li>
+                <li><img src="/imagens/icon/telephone-fill.svg" alt="" /> (+258) 84 135 4863</li>
+                <li><img src="/imagens/icon/envelope-fill.svg" alt="" /> guercoxavierCEO@basgamtech.com</li>
               </ul>
               <h3>Horário</h3>
               <ul class="horario">
@@ -374,80 +319,41 @@
     <footer>
       <h1 style="color: rgba(255, 255, 255, 0.703);">Marcas Parceiras</h1>
       <div id="Parceiros">
-        <a href="https://www.asus.com" target="_blank">
-            <img src="../../imagens/icon/asus.png" alt="asus" />
-        </a>
-
-        <a href="https://www.apple.com" target="_blank">
-            <img src="../../imagens/icon/apple.png" alt="apple" />
-        </a>
-
-        <a href="https://www.samsung.com" target="_blank">
-            <img src="../../imagens/icon/Samsung.png" alt="samsung" />
-        </a>
-
-        <a href="https://www.nvidia.com" target="_blank">
-            <img src="../../imagens/icon/nvidia.png" alt="nvidia" />
-        </a>
-
-        <a href="https://www.intel.com" target="_blank">
-            <img src="../../imagens/icon/Intel.png" alt="intel" />
-        </a>
-
-        <a href="https://www.corsair.com" target="_blank">
-            <img src="../../imagens/icon/corsair.png" alt="corsair" />
-        </a>
-
-        <a href="https://www.msi.com" target="_blank">
-            <img src="../../imagens/icon/msi.png" alt="msi" />
-        </a>
-
+        <a href="https://www.asus.com" target="_blank"><img src="/imagens/icon/asus.png" alt="asus" /></a>
+        <a href="https://www.apple.com" target="_blank"><img src="/imagens/icon/apple.png" alt="apple" /></a>
+        <a href="https://www.samsung.com" target="_blank"><img src="/imagens/icon/Samsung.png" alt="samsung" /></a>
+        <a href="https://www.nvidia.com" target="_blank"><img src="/imagens/icon/nvidia.png" alt="nvidia" /></a>
+        <a href="https://www.intel.com" target="_blank"><img src="/imagens/icon/Intel.png" alt="intel" /></a>
+        <a href="https://www.corsair.com" target="_blank"><img src="/imagens/icon/corsair.png" alt="corsair" /></a>
+        <a href="https://www.msi.com" target="_blank"><img src="/imagens/icon/msi.png" alt="msi" /></a>
       </div>
       <div class="container footer-container">
         <div class="footer-coluna">
           <div class="footer-logo" onclick="ir('home')">
-            <span class="logo-icone"><img src="../../imagens/colorless.png" alt="" /></span>
+            <span class="logo-icone"><img src="/imagens/colorless.png" alt="" /></span>
             <strong>BASGAM Tech</strong>
           </div>
           <p>Tecnologia premium para estudantes, profissionais e criadores. Qualidade e confiança em cada produto.</p>
           <div class="footer-social">
-            <a href="https://www.instagram.com/honkaistarrail/" target="_blank" aria-label="Instagram" rel="noopener">
-              <img src="../../imagens/icon/instagram.svg" alt="" />
-            </a>
-            <a href="https://x.com/honkaistarrail" target="_blank" aria-label="Twitter" rel="noopener">
-              <img src="../../imagens/icon/twitter-x.svg" alt="" />
-            </a>
-            <a href="https://www.linkedin.com/company/hoyoverse/" target="_blank" aria-label="LinkedIn" rel="noopener">
-              <img src="../../imagens/icon/linkedin.svg" alt="" />
-            </a>
+            <a href="https://www.instagram.com/honkaistarrail/" target="_blank" aria-label="Instagram" rel="noopener"><img src="/imagens/icon/instagram.svg" alt="" /></a>
+            <a href="https://x.com/honkaistarrail" target="_blank" aria-label="Twitter" rel="noopener"><img src="/imagens/icon/twitter-x.svg" alt="" /></a>
+            <a href="https://www.linkedin.com/company/hoyoverse/" target="_blank" aria-label="LinkedIn" rel="noopener"><img src="/imagens/icon/linkedin.svg" alt="" /></a>
           </div>
         </div>
-
         <div class="footer-coluna">
           <h3>Navegação</h3>
-          <ul>
-            <li><a href="javascript:void(0)" onclick="ir('home')">Início</a></li>
-            <li><a href="javascript:void(0)" onclick="ir('produtos')">Produtos</a></li>
-            <li><a href="javascript:void(0)" onclick="ir('sobre')">Sobre</a></li>
-            <li><a href="javascript:void(0)" onclick="ir('contato')">Contato</a></li>
-          </ul>
+          <ul><li><a href="javascript:void(0)" onclick="ir('home')">Início</a></li><li><a href="javascript:void(0)" onclick="ir('produtos')">Produtos</a></li><li><a href="javascript:void(0)" onclick="ir('sobre')">Sobre</a></li><li><a href="javascript:void(0)" onclick="ir('contato')">Contato</a></li></ul>
         </div>
-
         <div class="footer-coluna">
           <h3>Categorias</h3>
-          <ul>
-            <li><a href="javascript:void(0)" onclick="filtrar('Celulares'); ir('produtos')">Celulares</a></li>
-            <li><a href="javascript:void(0)" onclick="filtrar('Computadores'); ir('produtos')">Computadores</a></li>
-            <li><a href="javascript:void(0)" onclick="filtrar('Acessórios'); ir('produtos')">Acessorios</a></li>
-          </ul>
+          <ul><li><a href="javascript:void(0)" onclick="filtrar('Celulares'); ir('produtos')">Celulares</a></li><li><a href="javascript:void(0)" onclick="filtrar('Computadores'); ir('produtos')">Computadores</a></li><li><a href="javascript:void(0)" onclick="filtrar('Acessórios'); ir('produtos')">Acessorios</a></li></ul>
         </div>
-
         <div class="footer-coluna">
           <h3>Contato</h3>
           <ul class="footer-contato">
-            <li><img src="../../imagens/icon/geo-alt-fill.svg" alt="" /> Av. do Zimbabwe , 1037 - Maputo</li>
-            <li><img src="../../imagens/icon/telephone-fill.svg" alt="" /> (+258) 84 135 4863</li>
-            <li><img src="../../imagens/icon/envelope-fill.svg" alt="" /> guercoxavierCEO@basgamtech.com</li>
+            <li><img src="/imagens/icon/geo-alt-fill.svg" alt="" /> Av. do Zimbabwe , 1037 - Maputo</li>
+            <li><img src="/imagens/icon/telephone-fill.svg" alt="" /> (+258) 84 135 4863</li>
+            <li><img src="/imagens/icon/envelope-fill.svg" alt="" /> guercoxavierCEO@basgamtech.com</li>
           </ul>
           <div class="footer-newsletter">
             <div class="newsletter-input">
@@ -459,14 +365,12 @@
       </div>
     </footer>
 
-    <!-- Toast -->
+    <!-- Toast e Modal -->
     <div id="toast-container" class="toast-container"></div>
-
-    <!-- Modal de Confirmação -->
     <div id="modalConfirmacao" class="modal-confirmacao" style="display: none;">
       <div class="modal-confirmacao-content">
         <div class="modal-confirmacao-header">
-          <span class="toast-icon"><img src="../../imagens/icon/question-circle-fill.svg"></span>
+          <span class="toast-icon"><img src="/imagens/icon/question-circle-fill.svg"></span>
           <h3>Confirmação</h3>
         </div>
         <div class="modal-confirmacao-body">
@@ -479,7 +383,7 @@
       </div>
     </div>
 
-    <script src="app.js"></script>
-    <script src="../../posters/posters.js" defer></script>
+    <script src="/Telas/TelaPrincipal/app.js"></script>
+    <script src="/posters/posters.js" defer></script>
   </body>
 </html>

@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!token || !isTokenValido(token)) {
         mostrarToast('Sessão expirada. Faça login novamente.', 'erro');
         setTimeout(() => {
-            window.location.href = '../TelaLogin/tela_login.html';
+            window.location.href = '/Telas/TelaLogin/tela_login.html';
         }, 2000);
         return;
     }

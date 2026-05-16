@@ -105,8 +105,8 @@ function mostrarConfirmacao(mensagem, aoConfirmar, aoCancelar) {
 function mostrarBotaoLogin() {
     const el = document.querySelector('.user-menu-container');
     if (el) el.innerHTML = `
-        <a href="../TelaLogin/tela_login.html" class="btn-login-header">
-            <img src="../../imagens/icon/person-circle.svg" alt="Login"/>
+        <a href="/Telas/TelaLogin/tela_login.html" class="btn-login-header">
+            <img src="/imagens/icon/person-circle.svg" alt="Login"/>
             <span>Entrar / Registrar</span>
         </a>`;
 }
@@ -134,7 +134,7 @@ function logout() {
     mostrarConfirmacao('Tem certeza que deseja sair?', () => {
         localStorage.removeItem('token');
         localStorage.removeItem('utilizador');
-        window.location.href = '../TelaLogin/tela_login.html';
+        window.location.href = '/Telas/TelaLogin/tela_login.html';
     }, () => mostrarMensagem('Operação cancelada', 'info'));
 }
 
@@ -180,7 +180,6 @@ async function carregarProdutos() {
         getMarcasSelecionadas().forEach(m => params.append('marca', m));
 
         const produtosData = await apiFetch(`/produtos?${params}`);
-        // O backend retorna array directamente
         produtos = produtosData.map(p => ({
             id: p.id, nome: p.nome, preco: p.preco, descricao: p.descricao,
             imagem: normalizarImagem(p.imagem) || 'https://via.placeholder.com/300x200?text=Sem+Imagem',
@@ -296,7 +295,7 @@ async function renderDetalhe(id) {
                     <div class="detalhe-garantias">
                         ${garantias.map(([ic, txt]) => `
                         <div class="detalhe-garantia-item">
-                            <img src="../../imagens/icon/${ic}.svg" alt=""><span>${txt}</span>
+                            <img src="/imagens/icon/${ic}.svg" alt=""><span>${txt}</span>
                         </div>`).join('')}
                     </div>
                 </div>
@@ -312,7 +311,6 @@ async function renderDetalhe(id) {
                 </div>
             </div>`;
 
-        // Se o backend enviou relacionados, usa-os; senão, carrega por categoria
         const relacionados = data.relacionados || [];
         const grade = document.getElementById('grade-veja-tambem');
         if (grade) {
@@ -403,7 +401,6 @@ async function addCarrinho(produtoId) {
     if (!produto) {
         try {
             produto = await apiFetch(`/produtos/${produtoId}`);
-            // Se vier wrapper, extrai
             produto = produto.produto || produto;
             produto.imagem = normalizarImagem(produto.imagem) || 'https://via.placeholder.com/80x80?text=Sem+Imagem';
         } catch { return; }
@@ -455,7 +452,7 @@ async function atualizarQuantidade(produtoId, quantidade) {
     } catch (err) { mostrarMensagem(err.message, 'erro'); }
 }
 
-const removerItemCarrinho = produitId => atualizarQuantidade(produitId, 0);
+const removerItemCarrinho = produtoId => atualizarQuantidade(produtoId, 0);
 
 async function limparCarrinho() {
     mostrarConfirmacao('Limpar todo o carrinho?', async () => {
@@ -529,7 +526,7 @@ async function finalizar() {
     if (!getToken()) {
         mostrarConfirmacao(
             'Para finalizar precisa fazer login. Deseja ir para a página de login?',
-            () => { localStorage.setItem('carrinho_local', JSON.stringify(carrinhoAtual)); window.location.href = '../TelaLogin/tela_login.html'; },
+            () => { localStorage.setItem('carrinho_local', JSON.stringify(carrinhoAtual)); window.location.href = '/Telas/TelaLogin/tela_login.html'; },
             () => mostrarMensagem('Compra não finalizada.', 'info')
         );
         return;

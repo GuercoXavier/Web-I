@@ -7,7 +7,7 @@ let pedidosUsuario = [];
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = '../TelaLogin/tela_login.html';
+        window.location.href = '/Telas/TelaLogin/tela_login.html';
         return;
     }
     await carregarUtilizador();
@@ -127,16 +127,12 @@ async function carregarCreditos() {
         const response = await fetch(`${API}/auth/creditos`, { headers: getAuthHeaders() });
         if (response.ok) {
             const data = await response.json();
-            // O backend pode retornar em centavos ou unidades. Convertemos para unidade.
             let creditos = data.creditos || 0;
-            // Se o valor for muito grande (ex: 2000000) provavelmente está em centavos
-            // Para 20000 MZN, centavos seriam 2.000.000. Assumimos que valores > 10000 são centavos.
             if (creditos > 10000) {
                 creditos = creditos / 100;
             }
             const statCreditos = document.getElementById('stat-creditos');
             if (statCreditos) statCreditos.textContent = creditos.toLocaleString('pt-PT');
-            // Guardar também no localStorage em unidades
             localStorage.setItem('creditos', creditos);
         }
     } catch (err) {
@@ -172,7 +168,7 @@ function renderizarPedidos() {
         container.innerHTML = `
             <div class="estado-vazio-pedidos">
                 <div class="icone">
-                    <img src="../../imagens/icon/box-seam-fill.svg" style="width:70px; height:70px;" />
+                    <img src="/imagens/icon/box-seam-fill.svg" style="width:70px; height:70px;" />
                 </div>
                 <p>Nenhum pedido encontrado!</p>
                 <button class="btn-ir-comprar" onclick="irPara('produtos')">Fazer Compras</button>
@@ -288,7 +284,7 @@ function mostrarModalDetalhe(pedido) {
 }
 
 function imprimirRecibo(pedidoId) {
-    window.open(`../TelaRecibo/Recibo.html?id=${pedidoId}`, '_blank');
+    window.open(`/Telas/TelaRecibo/Recibo.html?id=${pedidoId}`, '_blank');
 }
 
 function escapeHtml(str) {
@@ -324,13 +320,11 @@ async function adicionarCredito() {
         }
         
         const data = await response.json();
-        // A resposta deve conter `creditos` em unidades (já convertido pelo backend)
         if (data.creditos !== undefined) {
             const statCreditos = document.getElementById('stat-creditos');
             if (statCreditos) statCreditos.textContent = data.creditos.toLocaleString('pt-PT');
             localStorage.setItem('creditos', data.creditos);
         } else {
-            // Fallback: recarregar créditos
             await carregarCreditos();
         }
         
@@ -396,7 +390,7 @@ function confirmarSair() {
             localStorage.removeItem('utilizador');
             localStorage.removeItem('avatar');
             localStorage.removeItem('creditos');
-            window.location.href = '../TelaLogin/tela_login.html';
+            window.location.href = '/Telas/TelaLogin/tela_login.html';
         },
         () => {
             mostrarToast('Operação cancelada', 'info');
@@ -406,11 +400,11 @@ function confirmarSair() {
 
 function irPara(pagina) {
     const rotas = {
-        'home': '../TelaPrincipal/index.html',
-        'produtos': '../TelaPrincipal/index.html',
+        'home': '/Telas/TelaPrincipal/index.html',
+        'produtos': '/Telas/TelaPrincipal/index.html',
         'perfil': 'perfil.html'
     };
-    window.location.href = rotas[pagina] || '../TelaPrincipal/index.html';
+    window.location.href = rotas[pagina] || '/Telas/TelaPrincipal/index.html';
 }
 
 function formatarMoeda(valor) {

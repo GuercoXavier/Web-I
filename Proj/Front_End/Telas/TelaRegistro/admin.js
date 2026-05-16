@@ -32,7 +32,7 @@ function mostrarToast(mensagem, erro = false) {
 // ==================== VALIDAÇÃO DE TOKEN ====================
 if (!token) {
     mostrarToast('Faça login primeiro!', true);
-    setTimeout(() => (window.location.href = '../TelaLogin/tela_login.html'), 2000);
+    setTimeout(() => (window.location.href = '/Telas/TelaLogin/tela_login.html'), 2000);
 }
 
 // ==================== UTILITÁRIOS ====================
@@ -369,7 +369,7 @@ function confirmarSair() {
     if (confirm('Deseja realmente sair?')) {
         localStorage.removeItem('token');
         localStorage.removeItem('utilizador');
-        window.location.href = '../TelaLogin/tela_login.html';
+        window.location.href = '/Telas/TelaLogin/tela_login.html';
     }
 }
 
