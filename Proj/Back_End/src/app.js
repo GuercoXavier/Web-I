@@ -158,19 +158,15 @@ app.get('/health', (req, res) => {
   }
 });
 
-// ==================== ROTA PRINCIPAL ====================
+// ==================== ROTA PRINCIPAL (frontend) ====================
+// Serve o index.html da pasta TelaPrincipal na raiz do site
 app.get('/', (req, res) => {
-  res.json({
-    nome: 'BasGam API',
-    versao: '1.0.0',
-    descricao: 'API para loja de produtos gaming/eletrônicos',
-    endpoints: {
-      documentacao: '/api',
-      health: '/health',
-      api: '/api'
-    },
-    status: 'online'
-  });
+  const indexPath = path.join(frontendPath, 'Telas/TelaPrincipal/index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).send('Página não encontrada');
+  }
 });
 
 // ==================== 404 PARA API ====================
