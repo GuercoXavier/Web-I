@@ -69,7 +69,15 @@ app.use((req, res, next) => {
   res.setHeader('X-XSS-Protection', '1; mode=block');
   next();
 });
-
+// Garantir que ficheiros .js e .css têm o MIME type correcto
+app.use((req, res, next) => {
+    if (req.path.endsWith('.js')) {
+        res.type('application/javascript');
+    } else if (req.path.endsWith('.css')) {
+        res.type('text/css');
+    }
+    next();
+});
 // ==================== ARQUIVOS ESTÁTICOS ====================
 const uploadsDir = path.join(BACKEND_ROOT, 'uploads');
 const produtosDir = path.join(uploadsDir, 'produtos');

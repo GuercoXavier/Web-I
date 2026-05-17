@@ -83,43 +83,43 @@ async function carregarProdutos() {
         const vazio = document.getElementById('estado-vazio');
         const badge = document.getElementById('badge-count');
 
-        badge.textContent = `${produtos.length} produtos`;
-
-        if (!produtos.length) {
-            vazio.style.display = 'block';
-            grid.innerHTML = '';
-            return;
+        if (grid && vazio && badge) {
+            badge.textContent = `${produtos.length} produtos`;
+            if (!produtos.length) {
+                vazio.style.display = 'block';
+                grid.innerHTML = '';
+                return;
+            }
+            vazio.style.display = 'none';
+            grid.innerHTML = produtos.map(p => `
+                <div class="card-reg">
+                    <div class="card-reg-img">
+                        <img src="${formatarImagem(p.imagem)}" />
+                    </div>
+                    <div class="card-reg-corpo">
+                        <div class="card-reg-nome">${escapeHtml(p.nome)}</div>
+                        <div class="card-reg-cat">
+                            <span>${p.categoria_nome || ''}</span>
+                            <span>${p.subcategoria_nome || ''}</span>
+                            <span>${p.marca || ''}</span>
+                        </div>
+                        <div class="card-reg-desc">${escapeHtml(p.descricao || '')}</div>
+                        <div class="card-reg-meta">
+                            <div class="card-reg-preco">${formatarMoeda(p.preco)}</div>
+                            <div class="card-reg-stock ${p.stock > 0 ? 'ok' : 'zero'}">${p.stock}</div>
+                        </div>
+                    </div>
+                    <button class="btn-remover-card" onclick="removerProduto(${p.id})">Remover</button>
+                </div>
+            `).join('');
         }
-
-        vazio.style.display = 'none';
-        grid.innerHTML = produtos.map(p => `
-            <div class="card-reg">
-                <div class="card-reg-img">
-                    <img src="${formatarImagem(p.imagem)}" />
-                </div>
-                <div class="card-reg-corpo">
-                    <div class="card-reg-nome">${escapeHtml(p.nome)}</div>
-                    <div class="card-reg-cat">
-                        <span>${p.categoria_nome || ''}</span>
-                        <span>${p.subcategoria_nome || ''}</span>
-                        <span>${p.marca || ''}</span>
-                    </div>
-                    <div class="card-reg-desc">${escapeHtml(p.descricao || '')}</div>
-                    <div class="card-reg-meta">
-                        <div class="card-reg-preco">${formatarMoeda(p.preco)}</div>
-                        <div class="card-reg-stock ${p.stock > 0 ? 'ok' : 'zero'}">${p.stock}</div>
-                    </div>
-                </div>
-                <button class="btn-remover-card" onclick="removerProduto(${p.id})">Remover</button>
-            </div>
-        `).join('');
     } catch (err) {
         mostrarToast(err.message, true);
     }
 }
 
 // ==================== REMOVER PRODUTO (botão na lista) ====================
-async function removerProduto(id) {
+window.removerProduto = async function(id) {
     if (!confirm('Tem certeza que quer remover este produto?')) return;
     try {
         const res = await fetch(`${API}/produtos/${id}`, {
@@ -138,7 +138,7 @@ async function removerProduto(id) {
     } catch (err) {
         mostrarToast(err.message, true);
     }
-}
+};
 
 // ==================== CARREGAR CATEGORIAS ====================
 async function carregarCategorias() {
@@ -165,7 +165,7 @@ async function carregarCategorias() {
 }
 
 // ==================== MUDANÇA DE CATEGORIA ====================
-async function onCategoria() {
+window.onCategoria = async function() {
     const catId = document.getElementById('sel-cat')?.value;
     const wrapSub = document.getElementById('wrap-sub');
     const selSub = document.getElementById('sel-sub');
@@ -204,7 +204,7 @@ async function onCategoria() {
     } catch (err) {
         mostrarToast('Erro ao carregar subcategorias', true);
     }
-}
+};
 
 // ==================== CRIAR PRODUTO ====================
 const btnAdicionar = document.getElementById('btn-adicionar');
@@ -378,24 +378,24 @@ async function carregarRelatorio() {
 }
 
 // ==================== ABAS ====================
-function mudarAba(id, el) {
+window.mudarAba = function(id, el) {
     document.querySelectorAll('.aba-conteudo').forEach(a => a.classList.remove('ativa'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('ativo'));
     document.getElementById(`aba-${id}`).classList.add('ativa');
-    el.classList.add('ativo');
-}
+    if (el) el.classList.add('ativo');
+};
 
 // ==================== LOGOUT ====================
-function confirmarSair() {
+window.confirmarSair = function() {
     if (confirm('Deseja realmente sair?')) {
         localStorage.removeItem('token');
         localStorage.removeItem('utilizador');
         window.location.href = '/Telas/TelaLogin/tela_login.html';
     }
-}
+};
 
 // ==================== PREVIEW DE IMAGEM ====================
-function fotoSelecionada(input) {
+window.fotoSelecionada = function(input) {
     const file = input.files[0];
     const preview = document.getElementById('preview-img');
     const placeholder = document.querySelector('.placeholder-foto');
@@ -414,11 +414,11 @@ function fotoSelecionada(input) {
         if (placeholder) placeholder.style.display = 'block';
         if (zona) zona.classList.remove('tem-foto');
     }
-}
+};
 
-function dragOver(e) { e.preventDefault(); }
-function dragLeave(e) { e.preventDefault(); }
-function drop(e) {
+window.dragOver = function(e) { e.preventDefault(); };
+window.dragLeave = function(e) { e.preventDefault(); };
+window.drop = function(e) {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     const input = document.getElementById('input-foto');
@@ -428,7 +428,7 @@ function drop(e) {
         input.files = dt.files;
         fotoSelecionada(input);
     }
-}
+};
 
 // ==================== INICIALIZAÇÃO ====================
 document.addEventListener('DOMContentLoaded', () => {
