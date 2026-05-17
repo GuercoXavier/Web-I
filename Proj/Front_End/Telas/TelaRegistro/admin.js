@@ -151,10 +151,12 @@ async function carregarCategorias() {
         categorias = data.categorias || [];
 
         const selCat = document.getElementById('sel-cat');
-        selCat.innerHTML = '<option value="">— selecione —</option>';
-        categorias.forEach(cat => {
-            selCat.innerHTML += `<option value="${cat.id}">${escapeHtml(cat.nome)}</option>`;
-        });
+        if (selCat) {
+            selCat.innerHTML = '<option value="">— selecione —</option>';
+            categorias.forEach(cat => {
+                selCat.innerHTML += `<option value="${cat.id}">${escapeHtml(cat.nome)}</option>`;
+            });
+        }
         document.getElementById('wrap-sub')?.classList.add('hidden');
         document.getElementById('wrap-marca')?.classList.add('hidden');
     } catch (err) {
@@ -164,7 +166,7 @@ async function carregarCategorias() {
 
 // ==================== MUDANÇA DE CATEGORIA ====================
 async function onCategoria() {
-    const catId = document.getElementById('sel-cat').value;
+    const catId = document.getElementById('sel-cat')?.value;
     const wrapSub = document.getElementById('wrap-sub');
     const selSub = document.getElementById('sel-sub');
     const wrapMarca = document.getElementById('wrap-marca');
@@ -183,17 +185,21 @@ async function onCategoria() {
         const data = await res.json();
         const subcats = data.categoria?.subcategorias || [];
 
-        selSub.innerHTML = '<option value="">— selecione —</option>';
-        subcats.forEach(sub => {
-            selSub.innerHTML += `<option value="${sub.id}">${escapeHtml(sub.nome)}</option>`;
-        });
+        if (selSub) {
+            selSub.innerHTML = '<option value="">— selecione —</option>';
+            subcats.forEach(sub => {
+                selSub.innerHTML += `<option value="${sub.id}">${escapeHtml(sub.nome)}</option>`;
+            });
+        }
         wrapSub?.classList.remove('hidden');
 
         const selMarca = document.getElementById('sel-marca');
-        selMarca.innerHTML = '<option value="">— selecione —</option>';
-        marcas.forEach(m => {
-            selMarca.innerHTML += `<option value="${m}">${escapeHtml(m)}</option>`;
-        });
+        if (selMarca) {
+            selMarca.innerHTML = '<option value="">— selecione —</option>';
+            marcas.forEach(m => {
+                selMarca.innerHTML += `<option value="${m}">${escapeHtml(m)}</option>`;
+            });
+        }
         wrapMarca?.classList.remove('hidden');
     } catch (err) {
         mostrarToast('Erro ao carregar subcategorias', true);
@@ -201,110 +207,119 @@ async function onCategoria() {
 }
 
 // ==================== CRIAR PRODUTO ====================
-document.getElementById('btn-adicionar')?.addEventListener('click', async () => {
-    const formData = new FormData();
-    formData.append('nome', document.getElementById('inp-nome').value);
-    formData.append('preco', document.getElementById('inp-preco').value);
-    formData.append('stock', document.getElementById('inp-stock').value);
-    formData.append('descricao', document.getElementById('inp-desc').value);
-    formData.append('categoria_id', document.getElementById('sel-cat').value);
-    formData.append('subcategoria_id', document.getElementById('sel-sub').value);
-    formData.append('marca', document.getElementById('sel-marca').value);
-    const file = document.getElementById('input-foto').files[0];
-    if (file) formData.append('imagem', file);
+const btnAdicionar = document.getElementById('btn-adicionar');
+if (btnAdicionar) {
+    btnAdicionar.addEventListener('click', async () => {
+        const formData = new FormData();
+        formData.append('nome', document.getElementById('inp-nome')?.value || '');
+        formData.append('preco', document.getElementById('inp-preco')?.value || 0);
+        formData.append('stock', document.getElementById('inp-stock')?.value || 0);
+        formData.append('descricao', document.getElementById('inp-desc')?.value || '');
+        formData.append('categoria_id', document.getElementById('sel-cat')?.value || '');
+        formData.append('subcategoria_id', document.getElementById('sel-sub')?.value || '');
+        formData.append('marca', document.getElementById('sel-marca')?.value || '');
+        const file = document.getElementById('input-foto')?.files[0];
+        if (file) formData.append('imagem', file);
 
-    try {
-        const res = await fetch(`${API}/produtos`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}` },
-            body: formData
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.erro || 'Erro ao criar produto');
-        mostrarToast('Produto criado com sucesso!');
-        // Limpar formulário
-        document.getElementById('inp-nome').value = '';
-        document.getElementById('inp-preco').value = '';
-        document.getElementById('inp-stock').value = '';
-        document.getElementById('inp-desc').value = '';
-        document.getElementById('sel-cat').value = '';
-        document.getElementById('sel-sub').innerHTML = '<option value="">— selecione —</option>';
-        document.getElementById('sel-marca').innerHTML = '<option value="">— selecione —</option>';
-        document.getElementById('input-foto').value = '';
-        const preview = document.getElementById('preview-img');
-        const placeholder = document.querySelector('.placeholder-foto');
-        if (preview) preview.classList.add('hidden');
-        if (placeholder) placeholder.style.display = 'block';
-        document.getElementById('zona-foto')?.classList.remove('tem-foto');
-        carregarProdutos();
-    } catch (err) {
-        mostrarToast(err.message, true);
-    }
-});
+        try {
+            const res = await fetch(`${API}/produtos`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.erro || 'Erro ao criar produto');
+            mostrarToast('Produto criado com sucesso!');
+            // Limpar formulário
+            document.getElementById('inp-nome').value = '';
+            document.getElementById('inp-preco').value = '';
+            document.getElementById('inp-stock').value = '';
+            document.getElementById('inp-desc').value = '';
+            document.getElementById('sel-cat').value = '';
+            if (document.getElementById('sel-sub')) document.getElementById('sel-sub').innerHTML = '<option value="">— selecione —</option>';
+            if (document.getElementById('sel-marca')) document.getElementById('sel-marca').innerHTML = '<option value="">— selecione —</option>';
+            document.getElementById('input-foto').value = '';
+            const preview = document.getElementById('preview-img');
+            const placeholder = document.querySelector('.placeholder-foto');
+            if (preview) preview.classList.add('hidden');
+            if (placeholder) placeholder.style.display = 'block';
+            document.getElementById('zona-foto')?.classList.remove('tem-foto');
+            carregarProdutos();
+        } catch (err) {
+            mostrarToast(err.message, true);
+        }
+    });
+}
 
 // ==================== REMOVER PRODUTO POR ID (aba específica) ====================
-document.getElementById('btn-remover-produto')?.addEventListener('click', async () => {
-    const id = document.getElementById('inp-id-produto').value.trim();
-    if (!id) {
-        mostrarToast('Digite o ID do produto', true);
-        return;
-    }
-    if (!confirm(`Remover produto ID ${id}?`)) return;
-    try {
-        const res = await fetch(`${API}/produtos/${id}`, {
-            method: 'DELETE',
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        if (!res.ok) {
-            const data = await res.json();
-            throw new Error(data.erro || 'Erro ao remover');
-        }
-        mostrarToast('Produto removido com sucesso');
-        document.getElementById('inp-id-produto').value = '';
-        carregarProdutos();
-    } catch (err) {
-        mostrarToast(err.message, true);
-    }
-});
-
-// ==================== REMOVER UTILIZADOR ====================
-document.getElementById('btn-remover-perfil')?.addEventListener('click', async () => {
-    const nome = document.getElementById('inp-nome-perfil').value.trim();
-    const email = document.getElementById('inp-email-perfil').value.trim();
-    if (!nome && !email) {
-        mostrarToast('Digite nome ou email do utilizador', true);
-        return;
-    }
-    try {
-        const busca = nome || email;
-        const res = await fetch(`${API}/users?busca=${encodeURIComponent(busca)}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        if (!res.ok) throw new Error('Erro ao buscar utilizador');
-        const data = await res.json();
-        const users = data.utilizadores || [];
-        if (users.length === 0) {
-            mostrarToast('Utilizador não encontrado', true);
+const btnRemoverProduto = document.getElementById('btn-remover-produto');
+if (btnRemoverProduto) {
+    btnRemoverProduto.addEventListener('click', async () => {
+        const id = document.getElementById('inp-id-produto')?.value.trim();
+        if (!id) {
+            mostrarToast('Digite o ID do produto', true);
             return;
         }
-        const user = users[0];
-        if (!confirm(`Remover utilizador "${user.username}" (ID ${user.id})?`)) return;
-
-        const delRes = await fetch(`${API}/users/${user.id}`, {
-            method: 'DELETE',
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        if (!delRes.ok) {
-            const errData = await delRes.json();
-            throw new Error(errData.erro || 'Erro ao remover utilizador');
+        if (!confirm(`Remover produto ID ${id}?`)) return;
+        try {
+            const res = await fetch(`${API}/produtos/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.erro || 'Erro ao remover');
+            }
+            mostrarToast('Produto removido com sucesso');
+            document.getElementById('inp-id-produto').value = '';
+            carregarProdutos();
+        } catch (err) {
+            mostrarToast(err.message, true);
         }
-        mostrarToast('Utilizador removido com sucesso');
-        document.getElementById('inp-nome-perfil').value = '';
-        document.getElementById('inp-email-perfil').value = '';
-    } catch (err) {
-        mostrarToast(err.message, true);
-    }
-});
+    });
+}
+
+// ==================== REMOVER UTILIZADOR ====================
+const btnRemoverPerfil = document.getElementById('btn-remover-perfil');
+if (btnRemoverPerfil) {
+    btnRemoverPerfil.addEventListener('click', async () => {
+        const nome = document.getElementById('inp-nome-perfil')?.value.trim();
+        const email = document.getElementById('inp-email-perfil')?.value.trim();
+        if (!nome && !email) {
+            mostrarToast('Digite nome ou email do utilizador', true);
+            return;
+        }
+        try {
+            const busca = nome || email;
+            const res = await fetch(`${API}/users?busca=${encodeURIComponent(busca)}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Erro ao buscar utilizador');
+            const data = await res.json();
+            const users = data.utilizadores || [];
+            if (users.length === 0) {
+                mostrarToast('Utilizador não encontrado', true);
+                return;
+            }
+            const user = users[0];
+            if (!confirm(`Remover utilizador "${user.username}" (ID ${user.id})?`)) return;
+
+            const delRes = await fetch(`${API}/users/${user.id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!delRes.ok) {
+                const errData = await delRes.json();
+                throw new Error(errData.erro || 'Erro ao remover utilizador');
+            }
+            mostrarToast('Utilizador removido com sucesso');
+            document.getElementById('inp-nome-perfil').value = '';
+            document.getElementById('inp-email-perfil').value = '';
+        } catch (err) {
+            mostrarToast(err.message, true);
+        }
+    });
+}
 
 // ==================== RELATÓRIOS ====================
 async function carregarRelatorio() {
@@ -327,12 +342,10 @@ async function carregarRelatorio() {
         }
         const data = await res.json();
 
-        // Resumo
         document.getElementById('totalVendas').textContent = data.resumo?.total_pedidos || 0;
         document.getElementById('faturacaoTotal').textContent = formatarMoeda(data.resumo?.faturacao_total || 0);
         document.getElementById('totalClientes').textContent = data.resumo?.total_clientes || 0;
 
-        // Tabela de pedidos
         const tbody = document.getElementById('tabelaBody');
         if (!data.pedidos?.length) {
             tbody.innerHTML = '<tr><td colspan="5" style="padding:12px;text-align:center;">Nenhum pedido encontrado</td></tr>';
@@ -348,7 +361,6 @@ async function carregarRelatorio() {
             `).join('');
         }
 
-        // Top produtos
         const topDiv = document.getElementById('topProdutos');
         if (!data.top_produtos?.length) {
             topDiv.innerHTML = '<p>Nenhum produto vendido ainda.</p>';
@@ -373,10 +385,9 @@ function mudarAba(id, el) {
     el.classList.add('ativo');
 }
 
-// ==================== LOGOUT CORRIGIDO ====================
+// ==================== LOGOUT ====================
 function confirmarSair() {
-    const sair = confirm('Deseja realmente sair?');
-    if (sair) {
+    if (confirm('Deseja realmente sair?')) {
         localStorage.removeItem('token');
         localStorage.removeItem('utilizador');
         window.location.href = '/Telas/TelaLogin/tela_login.html';
@@ -429,7 +440,6 @@ document.addEventListener('DOMContentLoaded', () => {
         inputFoto.addEventListener('change', () => fotoSelecionada(inputFoto));
     }
 
-    // Carregar relatório quando a aba de relatórios for mostrada pela primeira vez
     const observer = new MutationObserver(() => {
         const abaRelatorios = document.getElementById('aba-relatorios');
         if (abaRelatorios && abaRelatorios.classList.contains('ativa')) {

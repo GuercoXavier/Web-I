@@ -1,5 +1,12 @@
 // ==================== CONFIGURAÇÃO ====================
-const API = `${window.location.protocol}//${window.location.hostname}:3000/api`;
+const API = (() => {
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return `${protocol}//${hostname}:3000/api`;
+    }
+    return `${protocol}//${hostname}/api`;
+})();
 
 let utilizadorAtual = null;
 let pedidosUsuario = [];
@@ -121,13 +128,14 @@ async function carregarUtilizador() {
     }
 }
 
-// ==================== CARREGAR CRÉDITOS (converte centavos para unidades) ====================
+// ==================== CARREGAR CRÉDITOS ====================
 async function carregarCreditos() {
     try {
         const response = await fetch(`${API}/auth/creditos`, { headers: getAuthHeaders() });
         if (response.ok) {
             const data = await response.json();
             let creditos = data.creditos || 0;
+            // Se o backend devolver centavos (valor muito alto), converte
             if (creditos > 10000) {
                 creditos = creditos / 100;
             }
@@ -292,59 +300,61 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
 }
 
-// ==================== ADICIONAR CRÉDITOS ====================
-async function adicionarCredito() {
-    const input = document.getElementById('inp-credito');
-    const btn = document.querySelector('.btn-adicionar-credito');
-    let valor = parseInt(input.value);
-    
-    if (!valor || valor <= 0) {
-        mostrarToast('Valor inválido', 'erro');
-        return;
-    }
-    
-    const textoOriginal = btn.textContent;
-    btn.textContent = '⏳ Adicionando...';
-    btn.disabled = true;
-    
-    try {
-        const response = await fetch(`${API}/auth/creditos/adicionar`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify({ valor, descricao: 'Adicionado pelo perfil' })
-        });
+// ==================== ADICIONAR CRÉDITOS (CORRIGIDO) ====================
+const btnAdicionarCredito = document.querySelector('.btn-adicionar-credito');
+if (btnAdicionarCredito) {
+    btnAdicionarCredito.addEventListener('click', async () => {
+        const input = document.getElementById('inp-credito');
+        let valor = parseInt(input?.value);
         
-        if (!response.ok) {
-            const erro = await response.json();
-            throw new Error(erro.erro || 'Erro ao adicionar créditos');
+        if (!valor || valor <= 0) {
+            mostrarToast('Valor inválido', 'erro');
+            return;
         }
         
-        const data = await response.json();
-        if (data.creditos !== undefined) {
-            const statCreditos = document.getElementById('stat-creditos');
-            if (statCreditos) statCreditos.textContent = data.creditos.toLocaleString('pt-PT');
-            localStorage.setItem('creditos', data.creditos);
-        } else {
-            await carregarCreditos();
-        }
+        const textoOriginal = btnAdicionarCredito.textContent;
+        btnAdicionarCredito.textContent = '⏳ Adicionando...';
+        btnAdicionarCredito.disabled = true;
         
-        input.value = '';
-        mostrarToast(`${formatarMoeda(valor)} adicionado com sucesso!`, 'sucesso');
-    } catch (err) {
-        console.error('Erro:', err);
-        mostrarToast(err.message || 'Erro ao adicionar créditos', 'erro');
-    } finally {
-        btn.textContent = textoOriginal;
-        btn.disabled = false;
-    }
+        try {
+            const response = await fetch(`${API}/auth/creditos/adicionar`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ valor, descricao: 'Adicionado pelo perfil' })
+            });
+            
+            if (!response.ok) {
+                const erro = await response.json();
+                throw new Error(erro.erro || 'Erro ao adicionar créditos');
+            }
+            
+            const data = await response.json();
+            // Actualiza o saldo com o valor retornado (em unidades)
+            if (data.creditos !== undefined) {
+                const statCreditos = document.getElementById('stat-creditos');
+                if (statCreditos) statCreditos.textContent = data.creditos.toLocaleString('pt-PT');
+                localStorage.setItem('creditos', data.creditos);
+            } else {
+                await carregarCreditos();
+            }
+            
+            if (input) input.value = '';
+            mostrarToast(`${formatarMoeda(valor)} adicionado com sucesso!`, 'sucesso');
+        } catch (err) {
+            console.error('Erro ao adicionar créditos:', err);
+            mostrarToast(err.message || 'Erro ao adicionar créditos', 'erro');
+        } finally {
+            btnAdicionarCredito.textContent = textoOriginal;
+            btnAdicionarCredito.disabled = false;
+        }
+    });
 }
 
 // ==================== PERFIL ====================
 function preencherDadosPerfil() {
     const nomeSpan = document.getElementById('sidebar-nome');
-    if (utilizadorAtual) {
-        const nome = utilizadorAtual.username || 'Utilizador';
-        if (nomeSpan) nomeSpan.textContent = nome;
+    if (utilizadorAtual && nomeSpan) {
+        nomeSpan.textContent = utilizadorAtual.username || 'Utilizador';
     }
 }
 
